@@ -1,0 +1,48 @@
+{
+  "name": "@openassistant/core",
+  "version": "0.0.1",
+  "author": "Xun Li<lixun910@gmail.com>",
+  "description": "Core library for OpenAssistant",
+  "main": "src/index.ts",
+  "module": "dist/index.esm.js",
+  "types": "src/index.ts",
+  "exports": {
+    "import": "./dist/index.esm.js",
+    "require": "./dist/index.cjs.js"
+  },
+  "scripts": {
+    "test": "jest --coverage",
+    "build": "node esbuild.config.mjs",
+    "declaration": "tsc --declaration --emitDeclarationOnly --declarationDir ./dist --outDir ./dist --project tsconfig.json",
+    "prepublishOnly": "npm run test && npm run build && npm run declaration"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "dependencies": {
+    "@langchain/core": "^0.3.26",
+    "@langchain/google-genai": "^0.1.6",
+    "@langchain/ollama": "^0.1.4",
+    "@langchain/openai": "^0.3.16",
+    "axios": "^1.7.9"
+  },
+  "peerDependencies": {
+    "@langchain/core": "^0.3.26",
+    "@langchain/google-genai": "^0.1.6",
+    "@langchain/ollama": "^0.1.4",
+    "@langchain/openai": "^0.3.16",
+    "react": "^18.2.0"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "package.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "volta": {
+    "node": "18.19.0",
+    "yarn": "3.6.4"
+  }
+}
