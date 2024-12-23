@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["dom", "es2020"],
+    "outDir": "./dist",
+    "allowSyntheticDefaultImports": true,
+    "noEmit": false,
+    "skipLibCheck": true,
+    "baseUrl": "."
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "./src/index.tsx",
+    ".eslintrc.js"
+  ],
+  "exclude": ["node_modules", "dist", "__tests__/**/*"]
+}
