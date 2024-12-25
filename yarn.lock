@@ -3166,7 +3166,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openassistant/core@npm:*, @openassistant/core@workspace:packages/core":
+"@openassistant/core@npm:*, @openassistant/core@npm:^0.0.1, @openassistant/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@openassistant/core@workspace:packages/core"
   dependencies:
@@ -3190,6 +3190,7 @@ __metadata:
   dependencies:
     "@duckdb/duckdb-wasm": "npm:^1.29.0"
     "@nextui-org/react": "npm:^2.6.8"
+    "@openassistant/core": "npm:^0.0.1"
     apache-arrow: "npm:^13.0.0"
     framer-motion: "npm:^11.15.0"
     react: "npm:^18.2.0"
@@ -3197,6 +3198,7 @@ __metadata:
     tailwindcss: "npm:^3.4.17"
   peerDependencies:
     "@duckdb/duckdb-wasm": ^1.29.0
+    "@openassistant/core": ^0.0.1
     apache-arrow: ^13.0.0
     react: ^18 || ^19
     react-dom: ^18 || ^19
@@ -3206,6 +3208,11 @@ __metadata:
 "@openassistant/geoda@workspace:packages/geoda":
   version: 0.0.0-use.local
   resolution: "@openassistant/geoda@workspace:packages/geoda"
+  dependencies:
+    "@openassistant/core": "npm:^0.0.1"
+    geoda-wasm: "npm:^0.0.2"
+  peerDependencies:
+    "@openassistant/core": ^0.0.1
   languageName: unknown
   linkType: soft
 
@@ -8078,6 +8085,13 @@ __metadata:
   version: 1.0.0-beta.2
   resolution: "gensync@npm:1.0.0-beta.2"
   checksum: 17d8333460204fbf1f9160d067e1e77f908a5447febb49424b8ab043026049835c9ef3974445c57dbd39161f4d2b04356d7de12b2eecaa27a7a7ea7d871cbedd
+  languageName: node
+  linkType: hard
+
+"geoda-wasm@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "geoda-wasm@npm:0.0.2"
+  checksum: 4b77240aa9afc106d72575eb6e4f4bedaa591e342dc4b438109c34922546d146c74576fd4e0d2896f29ec621edb291c093e3648d530b6df0c5c9a0726dda1bb0
   languageName: node
   linkType: hard
 
