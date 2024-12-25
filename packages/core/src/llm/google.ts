@@ -131,7 +131,7 @@ export class GoogleAssistant extends LangChainAssistant {
       ],
     });
 
-    // @ts-expect-error Fix issue that message.getType is not a function in @langchain/google-genai
+    // @ts-ignore Fix issue that message.getType is not a function in @langchain/google-genai
     newMessage.getType = () => null;
 
     const stream = await this.llm.stream([newMessage], {

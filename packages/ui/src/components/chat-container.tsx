@@ -1,10 +1,15 @@
-import React, { ReactNode } from 'react';
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import { ThemeProvider } from 'next-themes';
 
-export function ChatContainer({ children, theme }: { children: ReactNode, theme: string }) {
+export function ChatContainer({
+  children,
+  theme,
+}: {
+  children: JSX.Element;
+  theme: string;
+}) {
   return (
-    <NextThemesProvider attribute="class" defaultTheme={theme}>
+    <ThemeProvider attribute="class" defaultTheme={theme}>
       {children}
-    </NextThemesProvider>
+    </ThemeProvider>
   );
 }

@@ -1,3 +1,23 @@
+# Development
+
+This project is a monorepo managed by yarn. The packages are located in the `packages` directory.
+
+- `@openassistant/core`: The core package.
+- `@openassistant/ui`: The UI package.
+- `@openassistant/cli`: The CLI package.
+
+Addons
+- `@openassistant/geoda`: The Geoda addon.
+- `@openassistant/duckdb`: The DuckDB addon.
+- `@openassistant/echarts`: The ECharts addon.
+
+## Quick Start
+
+```bash
+yarn install
+yarn start
+```
+
 
 ## Build
 

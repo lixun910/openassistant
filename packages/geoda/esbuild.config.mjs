@@ -3,13 +3,7 @@ import { dtsPlugin } from 'esbuild-plugin-d.ts';
 
 const baseConfig = createBaseConfig({
   entryPoints: ['src/index.ts'],
-  external: [
-    'react',
-    '@langchain/core',
-    '@langchain/google-genai',
-    '@langchain/ollama',
-    '@langchain/openai',
-  ],
+  external: ['react'],
   plugins: [dtsPlugin()],
 });
 

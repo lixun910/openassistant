@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { AiAssistant } from './components/assistant';
 import { ScreenshotWrapper } from './components/screenshot-wrapper';
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import { ThemeProvider } from 'next-themes';
 
 export function App() {
   const [startScreenCapture, setStartScreenCapture] = useState(false);
   const [screenCaptured, setScreenCaptured] = useState('');
 
   return (
-    <NextThemesProvider attribute="class" defaultTheme={'dark'}>
+    <ThemeProvider attribute="class" defaultTheme="dark">
       <div>
         <ScreenshotWrapper
           setScreenCaptured={setScreenCaptured}
@@ -36,6 +36,6 @@ export function App() {
           </div>
         </ScreenshotWrapper>
       </div>
-    </NextThemesProvider>
+    </ThemeProvider>
   );
 }

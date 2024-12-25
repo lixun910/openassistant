@@ -1,3 +1,4 @@
+// duckdb/tsconfig.json
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
@@ -6,18 +7,16 @@
     "lib": ["dom", "es2020"],
     "outDir": "./dist",
     "baseUrl": ".",
-    // "rootDir": "./src",
+    "rootDir": "./src",
     "declaration": true,
     "declarationMap": false,
     "declarationDir": "./dist",
     "emitDeclarationOnly": true,
     "skipLibCheck": true
   },
-  "references": [{ "path": "../core" }],
-  "include": ["src/**/*"],
+  "include": ["./src/**/*.ts", "./src/**/*.tsx"],
   "exclude": [
     "node_modules",
-    "../../node_modules",
     "dist",
     "**/*.test.ts",
     "**/*.test.tsx",

@@ -1,0 +1,33 @@
+{
+  "name": "@openassistant/geoda",
+  "version": "0.0.1",
+  "author": "Xun Li<lixun910@gmail.com>",
+  "description": "The GeoDa spatial analysis addon for OpenAssistant",
+  "main": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "import": "./dist/index.esm.js",
+    "require": "./dist/index.cjs.js"
+  },
+  "scripts": {
+    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --coverage",
+    "build": "node esbuild.config.mjs",
+    "declaration": "tsc --project tsconfig.json",
+    "prepublishOnly": "yarn test && yarn build && yarn declaration"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "package.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "volta": {
+    "node": "18.19.0",
+    "yarn": "3.6.4"
+  }
+}
