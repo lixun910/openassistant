@@ -5,7 +5,8 @@
     "packages/core",
     "packages/ui",
     "packages/duckdb",
-    "packages/geoda"
+    "packages/geoda",
+    "packages/echarts"
   ],
   "scripts": {
     "clean": "rm -rf packages/*/dist",

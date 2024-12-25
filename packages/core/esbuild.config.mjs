@@ -17,4 +17,7 @@ const baseConfig = createBaseConfig({
 Promise.all([
   buildFormat(baseConfig, 'esm', 'dist/index.esm.js'),
   buildFormat(baseConfig, 'cjs', 'dist/index.cjs.js'),
-]).catch(() => process.exit(1));
+]).catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

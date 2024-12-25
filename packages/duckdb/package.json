@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "build": "node esbuild.config.mjs",
-    "prepublishOnly": "yarn build && yarn declaration"
+    "prepublishOnly": "yarn build"
   },
   "dependencies": {
     "@nextui-org/react": "^2.6.8",
