@@ -24,7 +24,7 @@ const baseConfig = createBaseConfig({
     }),
     dtsPlugin(),
   ],
-  external: ['react', 'react-dom', '@duckdb/duckdb-wasm', 'apache-arrow'],
+  external: ['react', 'react-dom', '@duckdb/duckdb-wasm', 'apache-arrow', '@openassistant/core'],
   alias: {
     '@openassistant/core': '../core/src/index.ts',
   },
@@ -43,5 +43,8 @@ if (isStart) {
     buildFormat(baseConfig, 'cjs', 'dist/index.cjs.js'),
     buildFormat(baseConfig, 'esm', 'dist/index.esm.js'),
     buildFormat(baseConfig, 'iife', 'dist/index.iife.js'),
-  ]).catch(() => process.exit(1));
+  ]).catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
 }

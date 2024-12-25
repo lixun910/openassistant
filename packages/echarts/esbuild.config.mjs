@@ -3,7 +3,7 @@ import { dtsPlugin } from 'esbuild-plugin-d.ts';
 
 const baseConfig = createBaseConfig({
   entryPoints: ['src/index.ts'],
-  external: ['react', 'react-dom', '@openassistant/core'],
+  external: ['react', 'react-dom', 'echarts', '@openassistant/core'],
   plugins: [dtsPlugin()],
 });
 
