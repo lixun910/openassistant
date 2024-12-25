@@ -1,5 +1,1 @@
-export function test() {
-  return 'test';
-}
-
-export * from './components';
+export * from './data-classify';

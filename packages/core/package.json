@@ -13,7 +13,6 @@
   "scripts": {
     "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --coverage",
     "build": "node esbuild.config.mjs",
-    "declaration": "tsc --skipLibCheck --project tsconfig.json",
     "prepublishOnly": "yarn test && yarn build && yarn declaration"
   },
   "keywords": [],

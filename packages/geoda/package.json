@@ -10,9 +10,7 @@
     "require": "./dist/index.cjs.js"
   },
   "scripts": {
-    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --coverage",
     "build": "node esbuild.config.mjs",
-    "declaration": "tsc --project tsconfig.json",
     "prepublishOnly": "yarn test && yarn build && yarn declaration"
   },
   "keywords": [],
@@ -23,6 +21,9 @@
     "README.md",
     "package.json"
   ],
+  "dependencies": {
+    "geoda-wasm": "^0.0.2"
+  },
   "publishConfig": {
     "access": "public"
   },
