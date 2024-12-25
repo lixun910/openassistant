@@ -1,17 +1,25 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "composite": true,
+    "target": "es2020",
     "lib": ["dom", "es2020"],
     "outDir": "./dist",
-    "allowSyntheticDefaultImports": true,
-    "noEmit": false,
-    "baseUrl": "."
+    "rootDir": "./src",
+    "baseUrl": ".",
+    "declaration": true,
+    "declarationMap": false,
+    "declarationDir": "./dist",
+    "skipLibCheck": true,
+    "types": []
   },
-  "include": ["src/**/*", "__tests__/**/*"],
+  "include": ["./src/**/*"],
   "exclude": [
-    "**/__mocks__/**",
-    "jest.config.ts",
-    "jest.setup.ts"
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.stories.tsx"
   ],
   "typedocOptions": {
     "entryPoints": ["src/index.ts"],

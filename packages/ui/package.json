@@ -4,8 +4,8 @@
   "description": "Chat UI components for OpenAssistant",
   "author": "Xun Li<lixun910@gmail.com>",
   "license": "MIT",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/index.esm.js",
+  "types": "dist/ui/src/index.d.ts",
   "exports": {
     "import": "./dist/index.esm.js",
     "require": "./dist/index.cjs.js"
@@ -21,15 +21,15 @@
     "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --coverage",
     "start": "node esbuild.config.mjs --start",
     "build": "node esbuild.config.mjs",
-    "declaration": "tsc --declaration --emitDeclarationOnly --declarationDir ./dist --outDir ./dist --project tsconfig.json",
-    "prepublishOnly": "npm run build && npm run declaration"
+    "declaration": "tsc --project tsconfig.json",
+    "prepublishOnly": "yarn build && yarn declaration"
   },
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
     "@iconify/react": "^5.1.0",
-    "@nextui-org/react": "^2.6.8",
+    "@nextui-org/react": "^2.6.10",
     "@openassistant/core": "*",
     "framer-motion": "^11.15.0",
     "html2canvas": "^1.4.1",
@@ -43,5 +43,9 @@
     "@testing-library/dom": "^9.0.0",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.0.0"
+  },
+  "volta": {
+    "node": "18.19.0",
+    "yarn": "3.6.4"
   }
 }

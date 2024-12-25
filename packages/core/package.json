@@ -11,10 +11,10 @@
     "require": "./dist/index.cjs.js"
   },
   "scripts": {
-    "test": "jest --coverage",
+    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --coverage",
     "build": "node esbuild.config.mjs",
-    "declaration": "tsc --declaration --emitDeclarationOnly --declarationDir ./dist --outDir ./dist --project tsconfig.json",
-    "prepublishOnly": "npm run test && npm run build && npm run declaration"
+    "declaration": "tsc --skipLibCheck --project tsconfig.json",
+    "prepublishOnly": "yarn test && yarn build && yarn declaration"
   },
   "keywords": [],
   "license": "MIT",

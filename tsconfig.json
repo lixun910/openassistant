@@ -4,22 +4,38 @@
     "module": "esnext",
     "moduleResolution": "node",
     "jsx": "react-jsx",
-    "declaration": false,
-    "declarationMap": false,
     "sourceMap": true,
     "strict": true,
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
     "esModuleInterop": true,
     "allowJs": false,
     "checkJs": false,
     "skipLibCheck": true,
-    "noEmit": true,
     "noImplicitAny": false,
-    "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
       "@openassistant/core/(.*)": ["./packages/core/src/$1"],
       "@openassistant/core": ["./packages/core/src"]
     }
   },
-  "exclude": ["node_modules", "dist", "coverage"]
+  "exclude": [
+    "node_modules",
+    "../../node_modules",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/*.d.ts",
+    "**/coverage/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.stories.tsx"
+  ],
+  "references": [
+    { "path": "./packages/duckdb" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/core" },
+    { "path": "./packages/geoda" }
+  ]
 }
