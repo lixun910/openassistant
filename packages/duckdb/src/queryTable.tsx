@@ -87,7 +87,7 @@ function QueryDuckDBComponent({
           await conn.query(`DROP TABLE IF EXISTS ${data.dbTableName}`);
 
           // insert the arrow table to the database
-          // @ts-ignore TODO: fix this type error
+          // @ts-expect-error TODO: fix this type error
           await conn.insertArrowTable(arrowTable, { name: data.dbTableName });
 
           // Execute the provided SQL query
@@ -107,7 +107,7 @@ function QueryDuckDBComponent({
       }
     };
     query();
-  }, []);
+  }, [data]);
 
   const onSyncSelection = (e: ChangeEvent<HTMLInputElement>) => {
     setSyncSelection(e.target.checked);
@@ -144,7 +144,7 @@ function QueryDuckDBComponent({
         );
       }
     }
-  }, [selectedKeys]);
+  }, [selectedKeys, syncSelection, syncSelectionBy, data]);
 
   return error ? (
     <div>

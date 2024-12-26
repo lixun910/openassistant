@@ -3,12 +3,9 @@
   "version": "0.0.1",
   "author": "Xun Li<lixun910@gmail.com>",
   "description": "The echarts addon for OpenAssistant",
-  "main": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    "import": "./dist/index.esm.js",
-    "require": "./dist/index.cjs.js"
-  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "module": "src/index.ts",
   "scripts": {
     "build": "node esbuild.config.mjs",
     "prepublishOnly": "yarn build"
