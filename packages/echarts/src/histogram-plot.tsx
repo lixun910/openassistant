@@ -32,7 +32,11 @@ echartsUse([
 
 echartsRegisterTheme('dark', ECHARTS_DARK_THEME);
 
-export function ResizablePlotContainer({ children }: { children: JSX.Element }) {
+export function ResizablePlotContainer({
+  children,
+}: {
+  children: JSX.Element;
+}) {
   return (
     <div className="w-full mt-4 mb-8">
       <Resizable
@@ -74,7 +78,6 @@ export function ResizablePlotContainer({ children }: { children: JSX.Element }) 
 export function histogramCallbackMessage(
   props: CustomFunctionCall
 ): JSX.Element | null {
-  // const theme = (props.output.data as HistogramOuputData)?.theme || 'dark';
   return (
     <ResizablePlotContainer>
       <HistogramComponent {...props} />
@@ -155,7 +158,10 @@ export function HistogramComponent({
     <AutoSizer>
       {({ height, width }) => (
         <div style={{ height, width }}>
-          <div className="h-full w-full flex flex-col rounded-lg bg-gray-50 p-6 text-gray-900 shadow-secondary-1 dark:bg-gray-950 dark:text-gray-100">
+          <div
+            style={{ height: '100%' }}
+            className="h-full w-full flex flex-col rounded-lg bg-gray-50 p-6 text-gray-900 shadow-secondary-1 dark:bg-gray-950 dark:text-gray-100"
+          >
             <div className="flex-col items-start p-2">
               <p className="text-tiny font-bold uppercase">
                 {data?.variableName}
@@ -164,13 +170,14 @@ export function HistogramComponent({
                 {data?.variableName}
               </small>
             </div>
-            <div className="py-2 flex-grow">
+            <div style={{ height: '100%' }} className="py-2 flex-grow">
               <ReactEChartsCore
                 option={option}
                 notMerge={true}
                 lazyUpdate={true}
                 style={{ height: '100%', width: '100%' }}
                 ref={eChartsRef}
+                theme={data?.theme || 'dark'}
                 onEvents={bindEvents}
                 onChartReady={() => {
                   setRendered(true);

@@ -17,8 +17,8 @@
     "noImplicitAny": false,
     "baseUrl": ".",
     "paths": {
-      "@openassistant/core/(.*)": ["./packages/core/src/$1"],
-      "@openassistant/core": ["./packages/core/src"]
+      "@openassistant/core": ["./packages/core/src"],
+      "@openassistant/echarts": ["./packages/echarts/src"]
     }
   },
   "exclude": [
