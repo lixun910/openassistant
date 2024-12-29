@@ -7,3 +7,6 @@ meta.esm.json
 build
 packages/ui/.DS_Store
 *.tsbuildinfo
+.DS_Store
+*.tgz
+meta.json

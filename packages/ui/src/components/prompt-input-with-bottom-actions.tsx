@@ -266,7 +266,7 @@ export default function Component({
               </Button>
             </Tooltip>
           </div>
-          <p className="py-1 text-xs text-gray-400 dark:text-gray-600">
+          <p className="py-1 text-tiny text-gray-400 dark:text-gray-600">
             {prompt.length}/2000
           </p>
         </div>

@@ -1,2 +1,3 @@
-export * from './components/assistant';
-export * from './components/screenshot-wrapper';
+export { AiAssistant } from './components/assistant';
+export { ScreenshotWrapper } from './components/screenshot-wrapper';
+

@@ -6,7 +6,7 @@
     "lib": ["dom", "es2020"],
     "outDir": "./dist",
     "baseUrl": ".",
-    // "rootDir": "./src",
+    "rootDir": "./src",
     "declaration": true,
     "declarationMap": false,
     "declarationDir": "./dist",

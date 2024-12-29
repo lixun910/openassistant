@@ -1,5 +1,9 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import { MessageModel, useAssistant, UseAssistantProps } from '@openassistant/core';
+import {
+  MessageModel,
+  useAssistant,
+  UseAssistantProps,
+} from '@openassistant/core';
 import MessageCard from './message-card';
 import PromptInputWithBottomActions from './prompt-input-with-bottom-actions';
 import { ChatContainer } from './chat-container';
@@ -219,7 +223,7 @@ export function AiAssistant(props: AiAssistantProps) {
     <ChatContainer theme={props.theme || 'light'}>
       <div
         className={`order-1 m-2 flex h-full flex-grow flex-col overflow-y-auto overflow-x-hidden ${
-          props.fontSize ?? 'text-sm'
+          props.fontSize ?? 'text-small'
         }`}
       >
         <div
@@ -240,17 +244,17 @@ export function AiAssistant(props: AiAssistantProps) {
                   customMessage={message.payload}
                   messageClassName={
                     message.direction === 'outgoing'
-                      ? props.userMessageClassName ??
+                      ? props.userMessageClassName ||
                         'bg-content3 text-content3-foreground'
-                      : props.botMessageClassName ?? 'bg-content2'
+                      : props.botMessageClassName || 'bg-content2'
                   }
                   showFeedback={message.direction === 'incoming'}
                   status={
                     isPrompting && i === messages.length - 1
                       ? 'pending'
                       : message.sender === 'Error'
-                      ? 'failed'
-                      : 'success'
+                        ? 'failed'
+                        : 'success'
                   }
                   onFeedback={reportQuestion}
                   draggable={props.isMessageDraggable || false}
