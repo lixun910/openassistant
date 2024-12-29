@@ -4,8 +4,8 @@
   "description": "The duckdb SQL query addon for OpenAssistant",
   "author": "Xun Li<lixun910@gmail.com>",
   "license": "MIT",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.esm.js",
+  "types": "./dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   },

@@ -42,7 +42,7 @@ If your project is using tailwindcss, you can install the source files of the ch
 Yes, just like Shadcn UI, so you can customize the components to your needs.
 
 ```bash
-npx create-ai-chat
+npx add-ai-chat
 ```
 
 The CLI will prompt you for:

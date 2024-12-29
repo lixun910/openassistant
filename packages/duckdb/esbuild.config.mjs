@@ -8,7 +8,7 @@ import tailwindPlugin from 'esbuild-plugin-tailwindcss';
 import { dtsPlugin } from 'esbuild-plugin-d.ts';
 
 const baseConfig = createBaseConfig({
-  entryPoints: ['src/query.tsx'],
+  entryPoints: ['src/index.ts'],
   loader: {
     '.js': 'jsx',
     '.ts': 'tsx',
@@ -24,10 +24,13 @@ const baseConfig = createBaseConfig({
     }),
     dtsPlugin(),
   ],
-  external: ['react', 'react-dom', '@duckdb/duckdb-wasm', 'apache-arrow', '@openassistant/core'],
-  alias: {
-    '@openassistant/core': '../core/src/index.ts',
-  },
+  external: [
+    'react',
+    'react-dom',
+    '@duckdb/duckdb-wasm',
+    'apache-arrow',
+    '@openassistant/core',
+  ],
 });
 
 const isStart = process.argv.includes('--start');

@@ -11,7 +11,7 @@
   "scripts": {
     "clean": "rm -rf packages/*/dist",
     "start": "lerna run start --scope=@openassistant/ui",
-    "build": "lerna run build",
+    "build": "lerna run build --concurrency=1",
     "declaration": "lerna run declaration",
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
     "lint": "eslint packages/*/src --ext .js,.jsx,.ts,.tsx",

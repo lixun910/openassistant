@@ -5,7 +5,7 @@ module.exports = {
     ecmaVersion: 2020,
     sourceType: 'module',
     project: ['./tsconfig.json', './packages/*/tsconfig.json'],
-    tsconfigRootDir: __dirname
+    tsconfigRootDir: __dirname,
   },
   plugins: ['@typescript-eslint', 'react', 'prettier'],
   extends: [
@@ -13,20 +13,21 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
-    'prettier'
+    'prettier',
   ],
   env: {
     browser: true,
     node: true,
-    es6: true
+    es6: true,
   },
   settings: {
     react: {
-      version: 'detect'
-    }
+      version: 'detect',
+    },
   },
   rules: {
     'react/react-in-jsx-scope': 'off',
-    'react/prop-types': 'off'
-  }
-}; 
+    'react/prop-types': 'off',
+  },
+  ignorePatterns: ['examples/**/*'],
+};
