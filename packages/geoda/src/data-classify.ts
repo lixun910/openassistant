@@ -35,7 +35,8 @@ export type DataClassifyFunctionContext = {
 };
 
 type ValueOf<T> = T[keyof T];
-export type DataClassifyFunctionContextValues = ValueOf<DataClassifyFunctionContext>;
+export type DataClassifyFunctionContextValues =
+  ValueOf<DataClassifyFunctionContext>;
 
 /**
  * The definition of the data classify function. The function tool can be used to classify the data into k bins or classes.
@@ -175,7 +176,9 @@ async function dataClassifyCallbackFunction({
     };
   }
 
-  setGeoDaDelivery('https://unpkg.com/geoda-wasm@latest/dist/geoda.wasm');
+  setGeoDaDelivery(
+    'https://cdn.jsdelivr.net/npm/geoda-wasm@0.0.2/dist/geoda.wasm'
+  );
   await initGeoDa();
 
   let breakPoints;

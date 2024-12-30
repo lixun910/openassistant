@@ -7,7 +7,6 @@ import tailwindPlugin from 'esbuild-plugin-tailwindcss';
 import { dtsPlugin } from 'esbuild-plugin-d.ts';
 
 const baseConfig = createBaseConfig({
-  minify: false,
   entryPoints: ['src/index.ts'],
   jsx: 'automatic',
   plugins: [dtsPlugin()],

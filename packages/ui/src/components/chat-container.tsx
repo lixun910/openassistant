@@ -1,14 +1,19 @@
 import { ThemeProvider } from 'next-themes';
 
-export function ChatContainer({
-  children,
-  theme,
-}: {
+/**
+ * Type of ChatContainerProps.
+ *
+ * @param children - The children of the chat container.
+ * @param theme - The theme of the chat container. Here we force the theme to be the same as the theme of the chat container. Default is light.
+ */
+type ChatContainerProps = {
   children: JSX.Element;
   theme: string;
-}) {
+};
+
+export function ChatContainer({ children, theme }: ChatContainerProps) {
   return (
-    <ThemeProvider attribute="class" defaultTheme={theme}>
+    <ThemeProvider attribute="class" forcedTheme={theme}>
       {children}
     </ThemeProvider>
   );
