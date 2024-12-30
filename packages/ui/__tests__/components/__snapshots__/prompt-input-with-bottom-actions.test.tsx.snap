@@ -50,7 +50,7 @@ exports[`PromptInputWithBottomActions Component renders without crashing 1`] = `
             data-slot="base"
           >
             <div
-              class="relative w-full inline-flex tap-highlight-transparent flex-row items-center px-3 gap-3 bg-default-100 data-[hover=true]:bg-default-50 group-data-[focus=true]:bg-default-100 h-10 min-h-10 rounded-large !h-auto transition-background motion-reduce:transition-none !duration-150 outline-none group-data-[focus-visible=true]:z-10 group-data-[focus-visible=true]:ring-2 group-data-[focus-visible=true]:ring-focus group-data-[focus-visible=true]:ring-offset-2 group-data-[focus-visible=true]:ring-offset-background py-2 !bg-transparent shadow-none"
+              class="relative w-full inline-flex tap-highlight-transparent flex-row items-center px-3 gap-3 bg-default-100 data-[hover=true]:bg-default-200 group-data-[focus=true]:bg-default-100 h-10 min-h-10 rounded-large !h-auto transition-background motion-reduce:transition-none !duration-150 outline-none group-data-[focus-visible=true]:z-10 group-data-[focus-visible=true]:ring-2 group-data-[focus-visible=true]:ring-focus group-data-[focus-visible=true]:ring-offset-2 group-data-[focus-visible=true]:ring-offset-background py-2 !bg-transparent shadow-none"
               data-has-multiple-rows="true"
               data-slot="input-wrapper"
               style="cursor: text;"
@@ -141,7 +141,7 @@ exports[`PromptInputWithBottomActions Component renders without crashing 1`] = `
               </button>
             </div>
             <p
-              class="py-1 text-xs text-gray-400 dark:text-gray-600"
+              class="py-1 text-tiny text-gray-400 dark:text-gray-600"
             >
               0
               /2000
@@ -197,7 +197,7 @@ exports[`PromptInputWithBottomActions Component renders without crashing 1`] = `
           data-slot="base"
         >
           <div
-            class="relative w-full inline-flex tap-highlight-transparent flex-row items-center px-3 gap-3 bg-default-100 data-[hover=true]:bg-default-50 group-data-[focus=true]:bg-default-100 h-10 min-h-10 rounded-large !h-auto transition-background motion-reduce:transition-none !duration-150 outline-none group-data-[focus-visible=true]:z-10 group-data-[focus-visible=true]:ring-2 group-data-[focus-visible=true]:ring-focus group-data-[focus-visible=true]:ring-offset-2 group-data-[focus-visible=true]:ring-offset-background py-2 !bg-transparent shadow-none"
+            class="relative w-full inline-flex tap-highlight-transparent flex-row items-center px-3 gap-3 bg-default-100 data-[hover=true]:bg-default-200 group-data-[focus=true]:bg-default-100 h-10 min-h-10 rounded-large !h-auto transition-background motion-reduce:transition-none !duration-150 outline-none group-data-[focus-visible=true]:z-10 group-data-[focus-visible=true]:ring-2 group-data-[focus-visible=true]:ring-focus group-data-[focus-visible=true]:ring-offset-2 group-data-[focus-visible=true]:ring-offset-background py-2 !bg-transparent shadow-none"
             data-has-multiple-rows="true"
             data-slot="input-wrapper"
             style="cursor: text;"
@@ -288,7 +288,7 @@ exports[`PromptInputWithBottomActions Component renders without crashing 1`] = `
             </button>
           </div>
           <p
-            class="py-1 text-xs text-gray-400 dark:text-gray-600"
+            class="py-1 text-tiny text-gray-400 dark:text-gray-600"
           >
             0
             /2000

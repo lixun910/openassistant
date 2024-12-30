@@ -1,5 +1,5 @@
 import { AiAssistant } from '@openassistant/ui';
-import '@openassistant/ui/dist/bundle.css';
+import '@openassistant/ui/dist/index.css';
 import { ThemeProvider } from 'next-themes';
 
 function App() {

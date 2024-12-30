@@ -49,13 +49,9 @@ describe('MessageCard Component', () => {
 
   it('calls onMessageCopy when copy button is clicked', async () => {
     const onMessageCopy = jest.fn();
-    await act(async () => {
-      render(<MessageCard {...defaultProps} onMessageCopy={onMessageCopy} />);
-    });
+    render(<MessageCard {...defaultProps} onMessageCopy={onMessageCopy} />);
     const copyButton = screen.getByTestId('copytext-button');
-    await act(async () => {
-      fireEvent.click(copyButton);
-    });
+    fireEvent.click(copyButton);
     expect(onMessageCopy).toHaveBeenCalledWith('Test message');
   });
 

@@ -4,7 +4,6 @@
 import '@testing-library/jest-dom';
 import React, { act } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
 import PromptInputWithBottomActions from '../../src/components/prompt-input-with-bottom-actions';
 
 // mock react-audio-voice-recorder used in VoiceChatButton
