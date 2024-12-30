@@ -2,6 +2,7 @@
 
 OpenAssistant is a powerful React library that helps transform React applications into AI-powered applications with minimal setup. 
 
+Check out the following examples using OpenAssistant in action:
 | kepler.gl AI Assistant (kepler.gl) |  GeoDa.AI AI Assistant (geoda.ai)    |
 |----|----|
 | [<img width="215" alt="Screenshot 2024-12-08 at 9 12 22 PM" src="https://github.com/user-attachments/assets/edc11aee-8945-434b-bec9-cc202fee547c">](https://kepler.gl) |  [<img width="240" alt="Screenshot 2024-12-08 at 9 13 43 PM" src="https://github.com/user-attachments/assets/de418af5-7663-48fb-9410-74b4750bc944">](https://geoda.ai) |
@@ -13,9 +14,9 @@ OpenAssistant is a powerful React library that helps transform React application
   - Google Gemini
   - Ollama (local AI models)
 - 🎯 **Advanced Capabilities**
-  - Take screenshot to ask
-  - Talk to ask
-  - Function calling support
+  - Take screenshot to ask [[Demo]](https://geoda.ai/img/highlight-screenshot.mp4)
+  - Talk to ask [[Demo]](https://geoda.ai/img/highlight-ai-talk.mp4)
+  - Function calling support [[Demo]](https://geoda.ai/img/highlight-prompt.mp4)
 - 🌟 **AI Assistant Plugins**
   - DuckDB: in-browser query data using duckdb
   - ECharts: visualize data using echarts

@@ -1,0 +1,66 @@
+name: Build and Publish
+
+on:
+  push:
+    branches:
+      - 'main'
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - 'main'  # Run on PRs targeting main branch
+
+jobs:
+  build:  # Renamed from 'publish' to 'build' since it's not always publishing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for Lerna to access tags
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.1'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Lint
+        run: yarn lint
+      
+      - name: Test
+        run: yarn test
+      
+      - name: Build packages
+        run: yarn build
+      
+      # Publishing steps only run on tag
+      - name: Configure Git User
+        if: github.ref_type == 'tag'
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+      
+      - name: Check version match
+        if: github.ref_type == 'tag'
+        run: |
+          # Extract version from git tag (remove 'v' prefix)
+          TAG_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')
+          # Read version from package.json
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          
+          # Compare versions
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "Version mismatch!"
+            echo "Tag version: $TAG_VERSION"
+            echo "Package.json version: $PKG_VERSION"
+            exit 1
+          fi
+          echo "Versions match: $TAG_VERSION"
+      
+      - name: Publish packages
+        if: github.ref_type == 'tag'
+        run: yarn publish-packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} 

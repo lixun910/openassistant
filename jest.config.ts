@@ -11,8 +11,8 @@ const commonModuleNameMapper = {
   '@langchain/ollama': path.join(__dirname, '__mocks__/ollama.ts'),
   '@langchain/core/runnables': path.join(__dirname, '__mocks__/runnable.ts'),
   openai: path.join(__dirname, '__mocks__/openai.ts'),
-  '@openassistant/core/(.*)': '<rootDir>/packages/core/src/$1',
-  '@openassistant/core': '<rootDir>/packages/core/src',
+  '^@openassistant/core$': '<rootDir>/packages/core/src/index.ts',
+  '^@openassistant/geoda$': '<rootDir>/packages/geoda/src/index.ts'
 };
 
 const config: Config.InitialOptions = {
@@ -22,14 +22,12 @@ const config: Config.InitialOptions = {
   coverageDirectory: '<rootDir>/coverage',
   testPathIgnorePatterns: ['<rootDir>/node_modules'],
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
-  transform: {
-    '^.+\\.(ts|tsx)?$': ['ts-jest', {}],
-  },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageReporters: ['html', 'json', 'lcov', 'text'],
   projects: [
     {
       displayName: 'core',
+      moduleDirectories: ['node_modules', 'src'],
       testEnvironment: 'jsdom',
       transform: {
         '^.+\\.ts?$': ['ts-jest', {}],
@@ -50,7 +48,12 @@ const config: Config.InitialOptions = {
       displayName: 'ui',
       testEnvironment: 'jsdom',
       transform: {
-        '^.+\\.(ts|tsx|js|jsx)?$': ['ts-jest', { useESM: true }],
+        '^.+\\.(ts|tsx|js|jsx)?$': [
+          'ts-jest',
+          {
+            tsconfig: './packages/ui/tsconfig.json',
+          },
+        ],
       },
       testMatch: [
         '<rootDir>/packages/ui/__tests__/**/*.test.ts',
