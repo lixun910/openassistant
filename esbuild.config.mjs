@@ -1,7 +1,6 @@
 import esbuild from 'esbuild';
 import fs from 'fs';
 import open from 'open';
-import tailwindPlugin from 'esbuild-plugin-tailwindcss';
 
 // Shared utilities
 export const openURL = (url) => {
@@ -13,7 +12,7 @@ export const openURL = (url) => {
 // Create base configuration factory
 export const createBaseConfig = (options = {}) => {
   const isStart = process.argv.includes('--start');
-  
+
   return {
     bundle: true,
     minify: !isStart,
@@ -22,8 +21,11 @@ export const createBaseConfig = (options = {}) => {
     target: ['chrome58', 'firefox57', 'safari11'],
     format: 'esm',
     platform: 'browser',
+    mainFields: ['module', 'main'], // Prioritize ESM modules
+    conditions: ['import', 'module'], // Ensure ESM resolution
     define: {
       'process.env.NODE_ENV': isStart ? '"development"' : '"production"',
+      require: 'undefined', // Prevent dynamic requires
     },
     ...options,
   };
@@ -68,12 +70,19 @@ export const buildFormat = async (config, format, outfile) => {
   const result = await esbuild.build({
     ...config,
     format,
+    define: {
+      ...config.define,
+      // Ensure consistent module loading behavior
+      'import.meta.url': 'undefined',
+    },
     ...(outfile ? { outfile } : {}),
   });
 
-  const metaFile = outfile ? outfile.replace('.js', '.meta.json') : 'dist/meta.json';
+  const metaFile = outfile
+    ? outfile.replace('.js', '.meta.json')
+    : 'dist/meta.json';
   fs.writeFileSync(metaFile, JSON.stringify(result.metafile));
   console.log(`${format.toUpperCase()} build complete! ✨`);
-  
+
   return result;
-}; 
+};

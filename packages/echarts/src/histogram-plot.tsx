@@ -160,7 +160,7 @@ export function HistogramComponent({
         <div style={{ height, width }}>
           <div
             style={{ height: '100%' }}
-            className="h-full w-full flex flex-col rounded-lg bg-gray-50 p-6 text-gray-900 shadow-secondary-1 dark:bg-gray-950 dark:text-gray-100"
+            className="h-full w-full flex flex-col rounded-lg bg-default-100 p-6 text-gray-900 shadow-secondary-1 dark:bg-gray-950 dark:text-gray-100"
           >
             <div className="flex-col items-start p-2">
               <p className="text-tiny font-bold uppercase">

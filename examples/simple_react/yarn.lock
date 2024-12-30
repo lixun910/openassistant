@@ -3835,7 +3835,7 @@ __metadata:
 
 "@openassistant/core@file:/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.1.tgz::locator=simple-react-app%40workspace%3A.":
   version: 0.0.1
-  resolution: "@openassistant/core@file:/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.1.tgz#/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.1.tgz::hash=aed2c3&locator=simple-react-app%40workspace%3A."
+  resolution: "@openassistant/core@file:/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.1.tgz#/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.1.tgz::hash=30e4dc&locator=simple-react-app%40workspace%3A."
   dependencies:
     "@langchain/core": "npm:^0.3.26"
     "@langchain/google-genai": "npm:^0.1.6"
@@ -3848,23 +3848,21 @@ __metadata:
     "@langchain/ollama": ^0.1.4
     "@langchain/openai": ^0.3.16
     react: ^18.2.0
-  checksum: 69ec384578e77ffe3b06ba53b884b5ef149240ea274cd49bd2950aa7c800bd8edcf4910691df92defd1e2707775c4560c9be8e64b15a2cb3302d309d347bf575
+  checksum: e48d5718249455069a9594beadebb09801a54a0a8e3a7dc81ddad82a7327650ba4c111e0af4be20aaeb6079276bd6e34958dc73bdd5e8a44c80452aa001b93e4
   languageName: node
   linkType: hard
 
 "@openassistant/ui@file:/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.1.tgz::locator=simple-react-app%40workspace%3A.":
   version: 0.0.1
-  resolution: "@openassistant/ui@file:/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.1.tgz#/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.1.tgz::hash=a707a1&locator=simple-react-app%40workspace%3A."
+  resolution: "@openassistant/ui@file:/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.1.tgz#/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.1.tgz::hash=8f7bb0&locator=simple-react-app%40workspace%3A."
   dependencies:
     "@iconify/react": "npm:^5.1.0"
     "@nextui-org/react": "npm:^2.6.10"
     framer-motion: "npm:^11.15.0"
     html2canvas: "npm:^1.4.1"
     next-themes: "npm:^0.4.4"
-    react: "npm:^18.2.0"
     react-audio-voice-recorder: "npm:^2.2.0"
-    react-dom: "npm:^18.2.0"
-  checksum: 705c02eb4b0d67bfc9fcc82d9d2bc74f4c0ea5210eadd6059e4a1300d7a085a041de38c9a8641ef83e2c5ae0a59c5e481f888db8cdb8426ab5a861119d50bd2d
+  checksum: abaf9d8249f2272f5fe88646deee874f9d48ddbb135f152760a307e5bd4070378cdf00f15610b1167d69a95ed17a221dcb0e8183cc64fd56a7fced8ba6296e4a
   languageName: node
   linkType: hard
 
