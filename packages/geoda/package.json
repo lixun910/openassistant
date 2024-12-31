@@ -1,6 +1,6 @@
 {
   "name": "@openassistant/geoda",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "author": "Xun Li<lixun910@gmail.com>",
   "description": "The GeoDa spatial analysis addon for OpenAssistant",
   "main": "dist/index.esm.js",
@@ -21,12 +21,13 @@
     "geoda-wasm": "^0.0.2"
   },
   "devDependencies": {
-    "@openassistant/core": "^0.0.2"
+    "@openassistant/core": "^0.0.1"
   },
   "peerDependencies": {
     "react": "^18.2.0"
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "d79ee3046ad7f103054a1856c808684fa64e8017"
 }
