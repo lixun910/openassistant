@@ -9,8 +9,8 @@
   "author": "Xun Li <lixun910@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "@openassistant/core": "/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.1.tgz",
-    "@openassistant/ui": "/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.1.tgz",
+    "@openassistant/core": "^0.0.1",
+    "@openassistant/ui": "^0.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

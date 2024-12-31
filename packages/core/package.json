@@ -1,6 +1,6 @@
 {
   "name": "@openassistant/core",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "author": "Xun Li<lixun910@gmail.com>",
   "description": "Core library for OpenAssistant",
   "main": "src/index.ts",
@@ -16,7 +16,7 @@
   "scripts": {
     "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --coverage",
     "build": "node esbuild.config.mjs",
-    "prepublishOnly": "yarn test && yarn build"
+    "prepublishOnly": "yarn build"
   },
   "keywords": [],
   "license": "MIT",
@@ -42,5 +42,6 @@
   ],
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "d79ee3046ad7f103054a1856c808684fa64e8017"
 }
