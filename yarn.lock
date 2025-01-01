@@ -3279,7 +3279,7 @@ __metadata:
     "@langchain/google-genai": ^0.1.6
     "@langchain/ollama": ^0.1.4
     "@langchain/openai": ^0.3.16
-    react: ^18.2.0
+    react: ^18.3.1
   languageName: unknown
   linkType: soft
 
@@ -3297,7 +3297,6 @@ __metadata:
     tailwindcss: "npm:^3.4.17"
   peerDependencies:
     "@duckdb/duckdb-wasm": ^1.29.0
-    "@openassistant/core": ^0.0.1
     apache-arrow: ^13.0.0
     react: ^18 || ^19
     react-dom: ^18 || ^19
@@ -3311,16 +3310,16 @@ __metadata:
     "@openassistant/core": "npm:^0.0.1"
     echarts: "npm:^5.5.1"
     echarts-for-react: "npm:^3.0.2"
+    jstat: "npm:^1.9.6"
     next-themes: "npm:^0.4.4"
     re-resizable: "npm:^6.10.3"
-    react: "npm:^18.2.0"
-    react-dom: "npm:^18.2.0"
     react-virtualized-auto-sizer: "npm:^1.0.24"
+    simple-statistics: "npm:^7.8.7"
     tailwindcss: "npm:^3.4.17"
   peerDependencies:
     echarts: ^5.5.1
-    react: ^18 || ^19
-    react-dom: ^18 || ^19
+    react: ^18.3.1
+    react-dom: ^18.3.1
   languageName: unknown
   linkType: soft
 
@@ -10239,6 +10238,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jstat@npm:^1.9.6":
+  version: 1.9.6
+  resolution: "jstat@npm:1.9.6"
+  checksum: 092719bee07d3039459f82d42fc5ee9ba7c35eb0e81b3ad1df08d2d1f4d048ca36a9f9e33767041d2eeadd7319109efb4499eb4e23b7ed153cb0cbc50e5ff9c7
+  languageName: node
+  linkType: hard
+
 "jsx-ast-utils@npm:^2.4.1 || ^3.0.0, jsx-ast-utils@npm:^3.3.5":
   version: 3.3.5
   resolution: "jsx-ast-utils@npm:3.3.5"
@@ -13201,6 +13207,13 @@ __metadata:
     "@sigstore/tuf": "npm:^2.3.4"
     "@sigstore/verify": "npm:^1.2.1"
   checksum: 4e0a82338d12370264dced2395cda18aaaad45fec630365ec88eaa1a4ba40f5eb08cd3b0c8688489d52e93f643b6598d682961f67858636f55300c590b1ddf62
+  languageName: node
+  linkType: hard
+
+"simple-statistics@npm:^7.8.7":
+  version: 7.8.7
+  resolution: "simple-statistics@npm:7.8.7"
+  checksum: 3796c27760eae32b9c530784f04c685628ca22a706c6980dc661ba6b4982da5b22e9f7dedca2a4cd10dcad1b05fbeb6beeb5e788c5b0050240a6db7eb0263569
   languageName: node
   linkType: hard
 

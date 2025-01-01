@@ -13,14 +13,14 @@ import { histogramCallbackMessage, HistogramDataProps } from './histogram-plot';
  * @param variableName - The name of the variable.
  * @returns The values of the variable.
  */
-export type GetValues = (datasetName: string, variableName: string) => number[];
+type GetValues = (datasetName: string, variableName: string) => number[];
 
 /**
  * The callback function can be used to sync the selections of the histogram plot with the original dataset.
  * @param datasetName - The name of the dataset.
  * @param selectedIndices - The indices of the selected bars in the histogram plot.
  */
-export type OnSelectedCallback = (
+type OnSelectedCallback = (
   datasetName: string,
   selectedIndices: number[]
 ) => void;
@@ -29,6 +29,7 @@ export type OnSelectedCallback = (
  * The context of the histogram function.
  * @param getValues - Get the values of a variable from the dataset. See {@link GetValues} for more details.
  * @param onSelected - The callback function can be used to sync the selections of the histogram plot with the original dataset. See {@link OnSelectedCallback} for more details.
+ * @param theme - The theme of the histogram plot. The possible values are 'light' and 'dark'.
  */
 export type HistogramFunctionContext = {
   getValues: GetValues;
@@ -40,7 +41,7 @@ type ValueOf<T> = T[keyof T];
 type HistogramFunctionContextValues = ValueOf<HistogramFunctionContext>;
 
 /**
- * Define the histogram function. This function can assist user to create a histogram plot using the values of a variable in the dataset.
+ * Define the histogram function for tool calling. This function can assist user to create a histogram plot using the values of a variable in the dataset.
  * The values should be retrieved using the getValues() callback function.
  *
  * User can select the bars in the histogram plot, and the selections can be synced back to the original dataset using the onSelected() callback.
@@ -103,6 +104,13 @@ type HistogramOutputResult =
       details: string;
     };
 
+/**
+ * Type guard of HistogramFunctionArgs
+ */
+function isHistogramFunctionArgs(data: unknown): data is HistogramFunctionArgs {
+  return typeof data === 'object' && data !== null && 'datasetName' in data && 'variableName' in data;
+}
+
 function histogramCallbackFunction({
   functionName,
   functionArgs,
@@ -111,8 +119,18 @@ function histogramCallbackFunction({
   HistogramOutputResult,
   HistogramOuputData
 > {
-  const { datasetName, variableName, numberOfBins } =
-    functionArgs as HistogramFunctionArgs;
+  if (!isHistogramFunctionArgs(functionArgs)) {
+    return {
+      type: 'error',
+      name: functionName,
+      result: {
+        success: false,
+        details: 'Invalid histogram function arguments.',
+      },
+    };
+  }
+
+  const { datasetName, variableName, numberOfBins } = functionArgs;
 
   if (!datasetName || !variableName) {
     return {
@@ -178,6 +196,13 @@ function histogramCallbackFunction({
   }
 }
 
+/**
+ * Create histogram bins.
+ * 
+ * @param values - The values of the variable.
+ * @param numberOfBins - The number of bins to create.
+ * @returns The histogram bins.
+ */
 function createHistogramBins(
   values: number[],
   numberOfBins: number = 5
