@@ -1,6 +1,6 @@
 import type { StorybookConfig } from '@storybook/nextjs';
 
-import { join, dirname } from 'path';
+import path, { join, dirname } from 'path';
 
 /**
  * This function is used to resolve the absolute path of a package.
@@ -22,5 +22,17 @@ const config: StorybookConfig = {
     options: {},
   },
   staticDirs: ['../public'],
+  // webpackFinal: async (config) => {
+  //   if (config.resolve) {
+  //     config.resolve.alias = {
+  //       ...config.resolve.alias,
+  //       'react': require.resolve('react'),
+  //       'react-dom': require.resolve('react-dom'),
+  //       '@openassistant/echarts': path.join(__dirname, '../../packages/echarts/src'),
+  //       '@openassistant/core': path.join(__dirname, '../../packages/core/src'),
+  //     };
+  //   }
+  //   return config;
+  // },
 };
 export default config;

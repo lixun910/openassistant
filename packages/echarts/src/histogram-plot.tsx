@@ -1,7 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { CustomFunctionCall } from '@openassistant/core';
 import { EChartsOption } from 'echarts';
-import { Resizable } from 're-resizable';
 import ReactEChartsCore from 'echarts-for-react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import {
@@ -20,6 +19,8 @@ import { TopLevelFormatterParams } from 'echarts/types/dist/shared';
 import { ECHARTS_DARK_THEME } from './echarts-theme';
 import { HistogramOuputData } from './histogram';
 import './index.css';
+import { ResizablePlotContainer } from './common/resizable-container';
+import { numericFormatter } from './common/utils';
 
 echartsUse([
   BarChart,
@@ -31,49 +32,6 @@ echartsUse([
 ]);
 
 echartsRegisterTheme('dark', ECHARTS_DARK_THEME);
-
-export function ResizablePlotContainer({
-  children,
-}: {
-  children: JSX.Element;
-}) {
-  return (
-    <div className="w-full mt-4 mb-8">
-      <Resizable
-        defaultSize={{
-          width: '100%',
-          height: 280,
-        }}
-        minHeight={280}
-        maxHeight={600}
-        enable={{ bottom: true, bottomRight: true, right: false }}
-        handleComponent={{
-          bottomRight: (
-            <div className="group absolute bottom-0 right-0 h-6 w-6 cursor-se-resize">
-              <div className="flex h-full w-full items-center justify-center transition-colors hover:bg-gray-100/10">
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 12 12"
-                  className="text-gray-300 group-hover:text-gray-400"
-                >
-                  <path
-                    d="M11 6V11H6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    fill="none"
-                  />
-                </svg>
-              </div>
-            </div>
-          ),
-        }}
-      >
-        {children}
-      </Resizable>
-    </div>
-  );
-}
 
 export function histogramCallbackMessage(
   props: CustomFunctionCall
@@ -89,6 +47,7 @@ export function HistogramComponent({
   output,
 }: CustomFunctionCall): JSX.Element | null {
   const data = output.data as HistogramOuputData | undefined;
+
   // get chart option by calling getChartOption only once
   const option = useMemo(() => {
     try {
@@ -190,18 +149,6 @@ export function HistogramComponent({
     </AutoSizer>
   );
 }
-
-/**
- * Formats a number to a more human-readable format, using compact notation
- * @param value The number to format
- * @returns The formatted number
- */
-export const numericFormatter = (value: number): string => {
-  return Intl.NumberFormat('en-US', {
-    notation: 'compact',
-    maximumFractionDigits: 1,
-  }).format(value);
-};
 
 export type HistogramDataProps = {
   bin: number;

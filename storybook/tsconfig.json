@@ -10,12 +10,12 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@openassistant/echarts": ["./src/stories/echarts/src"],
-      "@openassistant/core": ["./src/stories/core/src"]
+      "@openassistant/echarts": ["../packages/echarts/src"],
+      "@openassistant/core": ["../packages/core/src"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
