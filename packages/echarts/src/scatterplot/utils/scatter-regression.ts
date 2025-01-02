@@ -1,8 +1,13 @@
-import { chowTest, ChowTestResult, linearRegression, RegressionResults } from "../../math/linear-regression";
+import {
+  chowTest,
+  ChowTestResult,
+  linearRegression,
+  RegressionResults,
+} from '../../math/linear-regression';
 
 /**
  * The properties of the regression.
- * 
+ *
  * @param xData - The x data. The array of x values.
  * @param yData - The y data. The array of y values.
  * @param filteredIndex - The indices of the selected points. The array of indices of the selected points.
@@ -15,7 +20,7 @@ export type ComputeRegressionProps = {
 
 /**
  * The results of the regression.
- * 
+ *
  * @param regression - The regression results.
  * @param regressionSelected - The regression results for the selected points.
  * @param regressionUnselected - The regression results for the unselected points.
@@ -29,49 +34,59 @@ export type ComputeRegressionResult = {
 };
 
 /**
- * Compute the regression for the scatterplot.
- * 
+ * Compute the regression for the scatterplot. If filteredIndex is provided, compute the regression for the selected points and the unselected points.
+ * Otherwise, only the regression for all points is computed.
+ *
  * @param xData - The x data.
  * @param yData - The y data.
  * @param filteredIndex - The indices of the selected points.
  * @returns The results of the regression. See {@link ComputeRegressionResult} for more details.
  */
-export function computeRegression({xData, yData, filteredIndex}: ComputeRegressionProps): ComputeRegressionResult {
+export function computeRegression({
+  xData,
+  yData,
+  filteredIndex,
+}: ComputeRegressionProps): ComputeRegressionResult {
   const regression = linearRegression(xData, yData);
 
   // If filteredIndex is provided, compute the regression for the selected points and the unselected points
   if (filteredIndex && filteredIndex.length > 0) {
     const selected = new Set(filteredIndex);
-      const selectedX: number[] = [];
-      const selectedY: number[] = [];
-      const unselectedX: number[] = [];
-      const unselectedY: number[] = [];
+    const selectedX: number[] = [];
+    const selectedY: number[] = [];
+    const unselectedX: number[] = [];
+    const unselectedY: number[] = [];
 
-      xData.forEach((x, i) => {
-        if (selected.has(i)) {
-          selectedX.push(x);
-          selectedY.push(yData[i]);
-        } else {
-          unselectedX.push(x);
-          unselectedY.push(yData[i]);
-        }
-      });
+    xData.forEach((x, i) => {
+      if (selected.has(i)) {
+        selectedX.push(x);
+        selectedY.push(yData[i]);
+      } else {
+        unselectedX.push(x);
+        unselectedY.push(yData[i]);
+      }
+    });
 
-      const regressionSelected = linearRegression(selectedX, selectedY);
-      const regressionUnselected = linearRegression(unselectedX, unselectedY);
-    
+    const regressionSelected = linearRegression(selectedX, selectedY);
+    const regressionUnselected = linearRegression(unselectedX, unselectedY);
+
     // run Chow test to check if the regression is different between the selected and unselected points
-    const chowResults = chowTest(selectedX, selectedY, unselectedX, unselectedY);
+    const chowResults = chowTest(
+      selectedX,
+      selectedY,
+      unselectedX,
+      unselectedY
+    );
 
     return {
       regression,
       regressionSelected,
       regressionUnselected,
-      chowResults 
+      chowResults,
     };
   }
 
   return {
-    regression
-  }
+    regression,
+  };
 }

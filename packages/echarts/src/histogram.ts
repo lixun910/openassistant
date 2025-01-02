@@ -108,7 +108,12 @@ type HistogramOutputResult =
  * Type guard of HistogramFunctionArgs
  */
 function isHistogramFunctionArgs(data: unknown): data is HistogramFunctionArgs {
-  return typeof data === 'object' && data !== null && 'datasetName' in data && 'variableName' in data;
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'datasetName' in data &&
+    'variableName' in data
+  );
 }
 
 function histogramCallbackFunction({
@@ -143,7 +148,8 @@ function histogramCallbackFunction({
     };
   }
 
-  const { getValues, onSelected, theme } = functionContext as HistogramFunctionContext;
+  const { getValues, onSelected, theme } =
+    functionContext as HistogramFunctionContext;
 
   let values;
 
@@ -198,7 +204,7 @@ function histogramCallbackFunction({
 
 /**
  * Create histogram bins.
- * 
+ *
  * @param values - The values of the variable.
  * @param numberOfBins - The number of bins to create.
  * @returns The histogram bins.

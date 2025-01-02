@@ -1,4 +1,4 @@
-import {mean, standardDeviation} from 'simple-statistics';
+import { mean, standardDeviation } from 'simple-statistics';
 import jStat from 'jstat';
 
 /**
@@ -9,12 +9,12 @@ import jStat from 'jstat';
 export function standardize(data: number[]): number[] {
   const meanValue = mean(data);
   const stdValue = standardDeviation(data);
-  return data.map(value => (value - meanValue) / stdValue);
+  return data.map((value) => (value - meanValue) / stdValue);
 }
 
 /**
  * The results of the linear regression.
- * 
+ *
  * @param valid - Whether the regression is valid.
  * @param rSquared - The R-squared value.
  * @param intercept - The intercept of the regression.
@@ -56,8 +56,8 @@ export function linearRegression(x: number[], y: number[]): RegressionResults {
     return {
       valid: false,
       rSquared: 0,
-      intercept: {estimate: 0, standardError: 0, tStatistic: 0, pValue: 0},
-      slope: {estimate: 0, standardError: 0, tStatistic: 0, pValue: 0}
+      intercept: { estimate: 0, standardError: 0, tStatistic: 0, pValue: 0 },
+      slope: { estimate: 0, standardError: 0, tStatistic: 0, pValue: 0 },
     };
   }
 
@@ -84,7 +84,7 @@ export function linearRegression(x: number[], y: number[]): RegressionResults {
   const intercept = yMean - slope * xMean;
 
   // Calculate predicted values and residuals
-  const predicted = x.map(xi => slope * xi + intercept);
+  const predicted = x.map((xi) => slope * xi + intercept);
   const residuals = y.map((yi, i) => yi - predicted[i]);
 
   // Calculate R-squared
@@ -111,14 +111,14 @@ export function linearRegression(x: number[], y: number[]): RegressionResults {
       estimate: intercept,
       standardError: interceptStdError,
       tStatistic: interceptTStat,
-      pValue: interceptPValue
+      pValue: interceptPValue,
     },
     slope: {
       estimate: slope,
       standardError: slopeStdError,
       tStatistic: slopeTStat,
-      pValue: slopePValue
-    }
+      pValue: slopePValue,
+    },
   };
 }
 
@@ -160,7 +160,7 @@ function incompleteBeta(x: number, a: number, b: number): number {
 
 /**
  * The results of the loess regression.
- * 
+ *
  * @param fitted - The fitted values.
  * @param upper - The upper confidence interval.
  * @param lower - The lower confidence interval.
@@ -191,9 +191,11 @@ export function calculateLoessRegression(
   const t = jStat.studentt.inv((1 + confidenceLevel) / 2, n - 2);
 
   // Sort x values and rearrange y accordingly
-  const sorted = xData.map((x, i) => ({x, y: yData[i]})).sort((a, b) => a.x - b.x);
-  const sortedX = sorted.map(p => p.x);
-  const sortedY = sorted.map(p => p.y);
+  const sorted = xData
+    .map((x, i) => ({ x, y: yData[i] }))
+    .sort((a, b) => a.x - b.x);
+  const sortedX = sorted.map((p) => p.x);
+  const sortedY = sorted.map((p) => p.y);
 
   const minX = Math.min(...xData);
   const maxX = Math.max(...xData);
@@ -212,7 +214,10 @@ export function calculateLoessRegression(
     // Calculate weights and weighted sum
     for (let j = 0; j < n; j++) {
       const distance = Math.abs(x - sortedX[j]);
-      const weight = Math.pow(1 - Math.pow(Math.min(1, distance / (bandwidth * span)), 3), 3);
+      const weight = Math.pow(
+        1 - Math.pow(Math.min(1, distance / (bandwidth * span)), 3),
+        3
+      );
       weights.push(weight);
       weightedSum += weight * sortedY[j];
       weightSum += weight;
@@ -243,7 +248,7 @@ export function calculateLoessRegression(
     lower.push([x, fittedValue - margin]);
   }
 
-  return {fitted, upper, lower};
+  return { fitted, upper, lower };
 }
 
 /**
@@ -278,13 +283,12 @@ function calculateSSR(x: number[], y: number[]): number {
   return ssr;
 }
 
-
 /**
  * Performs Chow test to check for structural break in linear regression
  * The fStat is the F-statistic and the pValue is the p-value.
  * If the pValue is less than 0.05, we can reject the null hypothesis and conclude that the regression is different between the first and second subset.
  * The larger the fStat, the more significant the difference between the two subsets.
- * 
+ *
  * @param x1 First subset x values
  * @param y1 First subset y values
  * @param x2 Second subset x values
@@ -298,14 +302,19 @@ export type ChowTestResult = {
 
 /**
  * Perform the Chow test to check if the regression is different between the first and second subset.
- * 
+ *
  * @param x1 - The first subset x values.
  * @param y1 - The first subset y values.
  * @param x2 - The second subset x values.
  * @param y2 - The second subset y values.
  * @returns The results of the Chow test. See {@link ChowTestResult} for more details.
  */
-export function chowTest(x1: number[], y1: number[], x2: number[], y2: number[]): ChowTestResult {
+export function chowTest(
+  x1: number[],
+  y1: number[],
+  x2: number[],
+  y2: number[]
+): ChowTestResult {
   // Calculate SSR for pooled data
   const xPooled = [...x1, ...x2];
   const yPooled = [...y1, ...y2];
@@ -327,5 +336,5 @@ export function chowTest(x1: number[], y1: number[], x2: number[], y2: number[])
   // Calculate p-value using F-distribution
   const pValue = 1 - jStat.centralF.cdf(fStat, k, n1 + n2 - 2 * k);
 
-  return {fStat, pValue};
+  return { fStat, pValue };
 }
