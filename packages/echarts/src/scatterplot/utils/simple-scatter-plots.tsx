@@ -3,11 +3,11 @@ import {
   TooltipComponent,
   GridComponent,
   BrushComponent,
-  ToolboxComponent
+  ToolboxComponent,
 } from 'echarts/components';
-import {LineChart, ScatterChart} from 'echarts/charts';
+import { LineChart, ScatterChart } from 'echarts/charts';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
-import {CanvasRenderer} from 'echarts/renderers';
+import { CanvasRenderer } from 'echarts/renderers';
 import { useMemo, useRef } from 'react';
 import { getSimpleScatterChartOption } from './simple-chart-option';
 
@@ -19,7 +19,7 @@ echarts.use([
   CanvasRenderer,
   BrushComponent,
   ToolboxComponent,
-  LineChart
+  LineChart,
 ]);
 
 type SimpleScatterPlotProps = {
@@ -41,7 +41,7 @@ export function SimpleScatterPlot({
   yData,
   theme = 'dark',
   onSelected,
-  setFilteredIndexes
+  setFilteredIndexes,
 }: SimpleScatterPlotProps) {
   // ref for the echarts instance
   const eChartsRef = useRef<ReactEChartsCore>(null);
@@ -75,23 +75,22 @@ export function SimpleScatterPlot({
         setTimeout(() => {
           if (eChart && brushed.length === 0) {
             // clear any highlighted if no data is brushed
-            eChart.dispatchAction({type: 'downplay'});
+            eChart.dispatchAction({ type: 'downplay' });
           }
         }, 100);
 
-        if (brushed.length > 0) {
-          // Debounce the onSelected callback
-          onSelected?.(datasetName || '', brushed);
-          if (setFilteredIndexes) {
-            setFilteredIndexes(brushed);
-          }
+        // Debounce the onSelected callback
+        onSelected?.(datasetName || '', brushed);
+        if (setFilteredIndexes) {
+          setFilteredIndexes(brushed);
         }
-      }
+      },
     }),
     [onSelected, datasetName, setFilteredIndexes]
   );
 
-  return (<div className="h-full w-full">
+  return (
+    <div className="h-full w-full">
       <ReactEChartsCore
         echarts={echarts}
         option={option}
@@ -99,8 +98,9 @@ export function SimpleScatterPlot({
         lazyUpdate={false}
         theme={theme}
         onEvents={bindEvents}
-        style={{height: '100%', width: '100%', opacity: '0.5'}}
+        style={{ height: '100%', width: '100%', opacity: '0.8' }}
         ref={eChartsRef}
       />
-    </div>);
+    </div>
+  );
 }

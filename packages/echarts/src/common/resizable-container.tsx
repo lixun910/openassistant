@@ -1,4 +1,4 @@
-import { Resizable } from "re-resizable";
+import { Resizable } from 're-resizable';
 
 export function ResizablePlotContainer({
   children,
@@ -10,10 +10,10 @@ export function ResizablePlotContainer({
       <Resizable
         defaultSize={{
           width: '100%',
-          height: 280,
+          height: 380,
         }}
         minHeight={280}
-        maxHeight={600}
+        maxHeight={800}
         enable={{ bottom: true, bottomRight: true, right: false }}
         handleComponent={{
           bottomRight: (

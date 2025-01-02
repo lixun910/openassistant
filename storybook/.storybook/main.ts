@@ -22,17 +22,5 @@ const config: StorybookConfig = {
     options: {},
   },
   staticDirs: ['../public'],
-  // webpackFinal: async (config) => {
-  //   if (config.resolve) {
-  //     config.resolve.alias = {
-  //       ...config.resolve.alias,
-  //       'react': require.resolve('react'),
-  //       'react-dom': require.resolve('react-dom'),
-  //       '@openassistant/echarts': path.join(__dirname, '../../packages/echarts/src'),
-  //       '@openassistant/core': path.join(__dirname, '../../packages/core/src'),
-  //     };
-  //   }
-  //   return config;
-  // },
 };
 export default config;

@@ -1,10 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import {
-  HistogramComponent,
-  ResizablePlotContainer,
-} from '@openassistant/echarts';
-import { ThemeProvider } from 'next-themes';
-
+import { HistogramComponent } from '@openassistant/echarts';
+import { ThemeWrapper } from './common';
 const meta: Meta<typeof HistogramComponent> = {
   title: 'Charts/Histogram',
   component: HistogramComponent,
@@ -21,32 +17,13 @@ A histogram component that visualizes data distribution in bins.
   },
   // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
   tags: ['autodocs'],
-  decorators: [
-    (Story, context) => {
-      // Get the current theme from Storybook's context
-      const theme = context.globals.theme || 'light'; // 'light' or 'dark'
-
-      return (
-        <ThemeProvider
-          attribute="class"
-          forcedTheme={theme}
-          enableSystem={false}
-        >
-          <div className="histogram-wrapper w-80 h-80">
-            <ResizablePlotContainer>
-              <Story />
-            </ResizablePlotContainer>
-          </div>
-        </ThemeProvider>
-      );
-    },
-  ],
+  decorators: [(Story) => <Story />],
 };
 
 export default meta;
 type Story = StoryObj<typeof HistogramComponent>;
 
-const sampleData = {
+const output = {
   type: 'function',
   name: 'histogram',
   result: 'success',
@@ -70,9 +47,21 @@ const sampleData = {
 };
 
 export const Default: Story = {
-  args: {
-    output: { ...sampleData, data: { ...sampleData.data, theme: 'light' } },
-  },
+  render: () => (
+    <ThemeWrapper forcedTheme="light">
+      <HistogramComponent
+        functionName="histogram"
+        functionArgs={{}}
+        output={{
+          ...output,
+          data: {
+            ...output.data,
+            theme: 'light',
+          },
+        }}
+      />
+    </ThemeWrapper>
+  ),
   parameters: {
     docs: {
       description: {
@@ -84,10 +73,19 @@ export const Default: Story = {
 };
 
 export const Dark: Story = {
-  args: {
-    output: {
-      ...sampleData,
-      data: { ...sampleData.data, theme: 'dark' },
-    },
-  },
+  render: () => (
+    <ThemeWrapper forcedTheme="dark">
+      <HistogramComponent
+        functionName="histogram"
+        functionArgs={{}}
+        output={{
+          ...output,
+          data: {
+            ...output.data,
+            theme: 'dark',
+          },
+        }}
+      />
+    </ThemeWrapper>
+  ),
 };

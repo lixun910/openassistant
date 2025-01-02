@@ -2465,7 +2465,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nextui-org/theme@npm:2.4.4":
+"@nextui-org/theme@npm:2.4.4, @nextui-org/theme@npm:^2.4.4":
   version: 2.4.4
   resolution: "@nextui-org/theme@npm:2.4.4"
   dependencies:
@@ -3307,6 +3307,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openassistant/echarts@workspace:packages/echarts"
   dependencies:
+    "@iconify/react": "npm:^5.1.0"
+    "@nextui-org/react": "npm:^2.6.10"
+    "@nextui-org/theme": "npm:^2.4.4"
     "@openassistant/core": "npm:^0.0.1"
     echarts: "npm:^5.5.1"
     echarts-for-react: "npm:^3.0.2"

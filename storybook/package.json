@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.3",
+    "@nextui-org/theme": "^2.4.4",
     "@storybook/addon-essentials": "^8.4.7",
     "@storybook/addon-interactions": "^8.4.7",
     "@storybook/addon-onboarding": "^8.4.7",
@@ -29,6 +30,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-storybook": "^0.11.1",
     "storybook": "^8.4.7",
+    "storybook-dark-mode": "^4.0.2",
     "typescript": "^5"
   }
 }

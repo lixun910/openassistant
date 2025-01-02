@@ -1,10 +1,17 @@
-import { CallbackFunctionProps, CustomFunctionOutputProps, ErrorCallbackResult } from "@openassistant/core";
-import { ScatterplotFunctionContext } from "./definition";
-import { computeRegression, ComputeRegressionResult } from "./utils/scatter-regression";
+import {
+  CallbackFunctionProps,
+  CustomFunctionOutputProps,
+  ErrorCallbackResult,
+} from '@openassistant/core';
+import { ScatterplotFunctionContext } from './definition';
+import {
+  computeRegression,
+  ComputeRegressionResult,
+} from './utils/scatter-regression';
 
 /**
  * The arguments of the scatterplot function.
- * 
+ *
  * @param datasetName - The name of the dataset.
  * @param xVariableName - The name of the x variable.
  * @param yVariableName - The name of the y variable.
@@ -19,24 +26,26 @@ type ScatterplotFunctionArgs = {
 
 /**
  * The result of the scatterplot function.
- * 
+ *
  * @param success - Whether the function call is successful.
  * @param xVariableName - The name of the x variable.
  * @param yVariableName - The name of the y variable.
  * @param numberOfRows - The number of rows in the dataset.
  * @param details - The details of the function call.
  */
-type ScatterplotOutputResult = ErrorCallbackResult | {
-  success: boolean;
-  xVariableName: string;
-  yVariableName: string;
-  numberOfRows: number;
-  details: string;
-};
+type ScatterplotOutputResult =
+  | ErrorCallbackResult
+  | {
+      success: boolean;
+      xVariableName: string;
+      yVariableName: string;
+      numberOfRows: number;
+      details: string;
+    };
 
 /**
  * The data of the scatterplot function.
- * 
+ *
  * @param datasetName - The name of the dataset.
  * @param xVariableName - The name of the x variable.
  * @param yVariableName - The name of the y variable.
@@ -66,21 +75,31 @@ export type ScatterplotOutputData = {
 /**
  * Type guard of ScatterplotFunctionArgs
  */
-function isScatterplotFunctionArgs(data: unknown): data is ScatterplotFunctionArgs {
-  return typeof data === 'object' && data !== null && 'datasetName' in data && 'xVariableName' in data && 'yVariableName' in data;
+function isScatterplotFunctionArgs(
+  data: unknown
+): data is ScatterplotFunctionArgs {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'datasetName' in data &&
+    'xVariableName' in data &&
+    'yVariableName' in data
+  );
 }
 
 /**
- * Type guard of ScatterplotFunctionContext 
+ * Type guard of ScatterplotFunctionContext
  */
-function isScatterplotFunctionContext(data: unknown): data is ScatterplotFunctionContext {
+function isScatterplotFunctionContext(
+  data: unknown
+): data is ScatterplotFunctionContext {
   return typeof data === 'object' && data !== null && 'getValues' in data;
 }
 
 /**
  * The callback function for the scatterplot. When LLM calls the scatterplot function, it will be executed.
  * The result will be returned as a reponse of the function call to the LLM.
- * 
+ *
  * @param functionName - The name of the function.
  * @param functionArgs - The arguments of the function.
  * @param functionContext - The context of the function.
@@ -90,7 +109,10 @@ export function scatterplotCallbackFunction({
   functionName,
   functionArgs,
   functionContext,
-}: CallbackFunctionProps): CustomFunctionOutputProps<ScatterplotOutputResult, ScatterplotOutputData> {
+}: CallbackFunctionProps): CustomFunctionOutputProps<
+  ScatterplotOutputResult,
+  ScatterplotOutputData
+> {
   if (!isScatterplotFunctionArgs(functionArgs)) {
     return {
       type: 'error',
@@ -148,7 +170,11 @@ export function scatterplotCallbackFunction({
   const numberOfRows = xData.length;
 
   try {
-    const regressionResults = computeRegression({ xData, yData, filteredIndex });
+    const regressionResults = computeRegression({
+      xData,
+      yData,
+      filteredIndex,
+    });
 
     return {
       type: 'plot',
@@ -171,7 +197,7 @@ export function scatterplotCallbackFunction({
         regressionResults,
         theme,
         showLoess: false,
-        showRegressionLine: true
+        showRegressionLine: true,
       },
     };
   } catch (error) {
