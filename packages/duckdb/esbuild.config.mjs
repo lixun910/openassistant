@@ -30,6 +30,9 @@ const baseConfig = createBaseConfig({
     '@duckdb/duckdb-wasm',
     'apache-arrow',
     '@openassistant/core',
+    '@nextui-org/react',
+    'framer-motion',
+    'tailwindcss',
   ],
 });
 
