@@ -27,23 +27,21 @@
     "package.json"
   ],
   "dependencies": {
+    "@iconify/react": "^5.1.0",
+    "@nextui-org/react": "^2.6.10",
+    "@nextui-org/theme": "^2.4.4",
+    "echarts": "^5.5.1",
     "echarts-for-react": "^3.0.2",
+    "framer-motion": "^11.15.0",
     "jstat": "^1.9.6",
     "next-themes": "^0.4.4",
     "re-resizable": "^6.10.3",
     "react-virtualized-auto-sizer": "^1.0.24",
-    "simple-statistics": "^7.8.7"
-  },
-  "devDependencies": {
-    "@iconify/react": "^5.1.0",
-    "@nextui-org/react": "^2.6.10",
-    "@nextui-org/theme": "^2.4.4",
-    "@openassistant/core": "^0.0.3",
-    "echarts": "^5.5.1",
+    "simple-statistics": "^7.8.7",
     "tailwindcss": "^3.4.17"
   },
   "peerDependencies": {
-    "echarts": "^5.5.1",
+    "@openassistant/core": "*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
