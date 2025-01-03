@@ -9,10 +9,12 @@ import { LineChart, ScatterChart } from 'echarts/charts';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ScatterplotOutputData } from '../callback-function';
 import { calculateLoessRegression } from '../../math/linear-regression';
 import { getScatterplotChartOption } from './scatter-option';
-import { computeRegression } from './scatter-regression';
+import {
+  computeRegression,
+  ComputeRegressionResult,
+} from './scatter-regression';
 
 // Register the required ECharts components
 echarts.use([
@@ -26,12 +28,24 @@ echarts.use([
 ]);
 
 type ScatterRegressionPlotProps = {
-  data: ScatterplotOutputData;
+  filteredIndex?: number[];
+  regressionResults?: ComputeRegressionResult;
+  xData: number[];
+  yData: number[];
+  showLoess: boolean;
+  showRegressionLine: boolean;
+  theme?: string;
   filteredIndexes: number[];
 };
 
 export function ScatterRegressionPlot({
-  data,
+  filteredIndex,
+  regressionResults,
+  xData,
+  yData,
+  showLoess = false,
+  showRegressionLine = true,
+  theme,
   filteredIndexes,
 }: ScatterRegressionPlotProps) {
   // ref for the echarts instance
@@ -41,42 +55,45 @@ export function ScatterRegressionPlot({
   const [rendered, setRendered] = useState(false);
 
   const loessResult = useMemo(() => {
-    if (!data) return null;
-    if (!data.showLoess) return null;
-    return calculateLoessRegression(data.xData, data.yData);
-  }, [data]);
+    if (!showLoess) return null;
+    return calculateLoessRegression(xData, yData);
+  }, [xData, yData, showLoess]);
 
   // get chart option by calling getChartOption only once
   const option = useMemo(() => {
-    if (!data) return {};
     try {
-      const { xData, yData, showRegressionLine, showLoess, filteredIndex } =
-        data;
       // if regressionResults is not provided, compute it
-      const regressionResults =
-        data.regressionResults ??
-        computeRegression({ xData, yData, filteredIndex });
+      const updatedRegressionResults =
+        regressionResults ?? computeRegression({ xData, yData, filteredIndex });
       return getScatterplotChartOption({
         xData,
         yData,
         showRegressionLine: showRegressionLine ?? false,
         showLoess: showLoess ?? false,
-        allRegressionResults: regressionResults.regression,
-        selectedRegressionResults: regressionResults.regressionSelected,
-        unselectedRegressionResults: regressionResults.regressionUnselected,
+        allRegressionResults: updatedRegressionResults.regression,
+        selectedRegressionResults: updatedRegressionResults.regressionSelected,
+        unselectedRegressionResults:
+          updatedRegressionResults.regressionUnselected,
         ...(loessResult ? { loessResult } : {}),
       });
     } catch {
       return {};
     }
-  }, [data, loessResult]);
+  }, [
+    regressionResults,
+    xData,
+    yData,
+    filteredIndex,
+    showRegressionLine,
+    showLoess,
+    loessResult,
+  ]);
 
   // when filteredIndexTrigger changes, update the chart option using setOption
   useEffect(() => {
     const chart = eChartsRef.current;
     if (rendered && filteredIndexes && chart) {
-      const { xData, yData, showRegressionLine, showLoess } = data;
-      const regressionResults = computeRegression({
+      const updatedRegressionResults = computeRegression({
         xData,
         yData,
         filteredIndex: filteredIndexes,
@@ -86,9 +103,10 @@ export function ScatterRegressionPlot({
         yData,
         showRegressionLine: showRegressionLine ?? false,
         showLoess: showLoess ?? false,
-        allRegressionResults: regressionResults.regression,
-        selectedRegressionResults: regressionResults.regressionSelected,
-        unselectedRegressionResults: regressionResults.regressionUnselected,
+        allRegressionResults: updatedRegressionResults.regression,
+        selectedRegressionResults: updatedRegressionResults.regressionSelected,
+        unselectedRegressionResults:
+          updatedRegressionResults.regressionUnselected,
       });
       if (chart && updatedOption) {
         const chartInstance = chart.getEchartsInstance();
@@ -105,7 +123,7 @@ export function ScatterRegressionPlot({
         option={option}
         notMerge={true}
         lazyUpdate={false}
-        theme={data?.theme || 'dark'}
+        theme={theme || 'dark'}
         style={{ height: '100%', width: '100%', opacity: '0.5' }}
         ref={eChartsRef}
         onChartReady={() => {

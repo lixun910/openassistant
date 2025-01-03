@@ -1,7 +1,7 @@
 import { RegisterFunctionCallingProps } from '@openassistant/core';
 import { CustomFunctionContext } from '@openassistant/core';
-import { scatterplotCallbackFunction } from './callback-function';
-import { scatterplotCallbackComponent } from './callback-component';
+import { ScatterplotCallbackFunction } from './callback-function';
+import { ScatterplotCallbackComponent } from './callback-component';
 
 /**
  * The callback function can be used to retrieve the values of two variables from the dataset.
@@ -86,8 +86,8 @@ export function scatterplotFunctionDefinition(
       },
     },
     required: ['datasetName', 'xVariableName', 'yVariableName'],
-    callbackFunction: scatterplotCallbackFunction,
+    callbackFunction: ScatterplotCallbackFunction,
     callbackFunctionContext: context,
-    callbackMessage: scatterplotCallbackComponent,
+    callbackMessage: ScatterplotCallbackComponent,
   };
 }

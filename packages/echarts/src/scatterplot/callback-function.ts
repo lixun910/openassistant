@@ -70,6 +70,7 @@ export type ScatterplotOutputData = {
   theme?: string;
   showLoess?: boolean;
   showRegressionLine?: boolean;
+  isExpanded?: boolean;
 };
 
 /**
@@ -105,14 +106,13 @@ function isScatterplotFunctionContext(
  * @param functionContext - The context of the function.
  * @returns The result of the function.
  */
-export function scatterplotCallbackFunction({
+export async function ScatterplotCallbackFunction({
   functionName,
   functionArgs,
   functionContext,
-}: CallbackFunctionProps): CustomFunctionOutputProps<
-  ScatterplotOutputResult,
-  ScatterplotOutputData
-> {
+}: CallbackFunctionProps): Promise<CustomFunctionOutputProps<
+    ScatterplotOutputResult, ScatterplotOutputData
+  >> {
   if (!isScatterplotFunctionArgs(functionArgs)) {
     return {
       type: 'error',
@@ -150,10 +150,10 @@ export function scatterplotCallbackFunction({
 
   const { getValues, filteredIndex, onSelected, theme } = functionContext;
 
-  let values;
+  let values: { x: number[]; y: number[] };
 
   try {
-    values = getValues(datasetName, xVariableName, yVariableName);
+    values = await getValues(datasetName, xVariableName, yVariableName);
   } catch (error) {
     return {
       type: 'error',
@@ -165,8 +165,8 @@ export function scatterplotCallbackFunction({
     };
   }
 
-  const xData = values[xVariableName];
-  const yData = values[yVariableName];
+  const xData = values.x;
+  const yData = values.y;
   const numberOfRows = xData.length;
 
   try {
