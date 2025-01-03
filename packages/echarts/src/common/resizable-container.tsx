@@ -2,15 +2,19 @@ import { Resizable } from 're-resizable';
 
 export function ResizablePlotContainer({
   children,
+  defaultWidth,
+  defaultHeight = 380,
 }: {
   children: JSX.Element;
+  defaultWidth?: number;
+  defaultHeight?: number;
 }) {
   return (
     <div className="w-full mt-4 mb-8">
       <Resizable
         defaultSize={{
-          width: '100%',
-          height: 380,
+          width: defaultWidth ?? '100%',
+          height: defaultHeight ?? 380,
         }}
         minHeight={280}
         maxHeight={800}

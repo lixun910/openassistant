@@ -1,9 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import {
   ScatterplotComponent,
+  ScatterplotCallbackComponent,
   computeRegression,
 } from '@openassistant/echarts';
 import { ThemeWrapper } from './common';
+import { ThemeProvider } from 'next-themes';
 
 const meta: Meta<typeof ScatterplotComponent> = {
   title: 'Charts/Scatter Plot',
@@ -30,50 +32,38 @@ export default meta;
 type Story = StoryObj<typeof ScatterplotComponent>;
 
 const output = {
-  type: 'function',
-  name: 'scatterplot',
-  result: 'success',
-  data: {
-    xVariableName: 'X Variable',
-    yVariableName: 'Y Variable',
-    xData: [
-      1, 2.3, 3.1, 4.2, 5.5, 6.1, 7.3, 8.4, 9.2, 10.1, 11.5, 12.2, 13.4, 14.7,
-      15.1, 16.3, 17.8, 18.2, 19.5, 20,
-    ],
-    yData: [
-      2.1, 3.8, 4.2, 5.1, 5.8, 6.7, 7.2, 7.8, 8.9, 9.3, 8.7, 10.2, 11.5, 10.8,
-      12.3, 13.1, 14.2, 13.8, 15.2, 14.9,
-    ],
-    datasetName: 'sample',
-    onSelected: (datasetName: string, indexes: number[]) => {
-      console.log('Selected:', datasetName, indexes);
-    },
-    filteredIndex: [],
-    showLoess: false,
-    showRegressionLine: true,
+  xVariableName: 'X Variable',
+  yVariableName: 'Y Variable',
+  xData: [
+    1, 2.3, 3.1, 4.2, 5.5, 6.1, 7.3, 8.4, 9.2, 10.1, 11.5, 12.2, 13.4, 14.7,
+    15.1, 16.3, 17.8, 18.2, 19.5, 20,
+  ],
+  yData: [
+    2.1, 3.8, 4.2, 5.1, 5.8, 6.7, 7.2, 7.8, 8.9, 9.3, 8.7, 10.2, 11.5, 10.8,
+    12.3, 13.1, 14.2, 13.8, 15.2, 14.9,
+  ],
+  datasetName: 'sample',
+  onSelected: (datasetName: string, indexes: number[]) => {
+    console.log('Selected:', datasetName, indexes);
   },
+  filteredIndex: [],
+  showLoess: false,
+  showRegressionLine: true,
 };
 
 const regressionResults = computeRegression({
-  xData: output.data.xData,
-  yData: output.data.yData,
-  filteredIndex: output.data.filteredIndex,
+  xData: output.xData,
+  yData: output.yData,
+  filteredIndex: output.filteredIndex,
 });
 
 export const Default: Story = {
   render: () => (
     <ThemeWrapper forcedTheme="light">
       <ScatterplotComponent
-        functionName="scatterplot"
-        functionArgs={{}}
-        output={{
-          ...output,
-          data: {
-            ...output.data,
-            theme: 'light',
-            regressionResults
-          },
-        }}
+        {...output}
+        theme="light"
+        regressionResults={regressionResults}
       />
     </ThemeWrapper>
   ),
@@ -91,17 +81,42 @@ export const Dark: Story = {
   render: () => (
     <ThemeWrapper forcedTheme="dark">
       <ScatterplotComponent
-        functionName="scatterplot"
-        functionArgs={{}}
-        output={{
-          ...output,
-          data: {
-            ...output.data,
-            theme: 'dark',
-            regressionResults
-          },
-        }}
+        {...output}
+        theme="dark"
+        regressionResults={regressionResults}
       />
     </ThemeWrapper>
+  ),
+};
+
+export const ScatterInChat: Story = {
+  render: () => (
+    <ThemeProvider
+      attribute="class"
+      forcedTheme={'light'}
+      defaultTheme="light"
+      enableSystem={false}
+    >
+      <div className="common-wrapper w-[400px] h-[600px]">
+        <ScatterplotCallbackComponent
+          functionName="scatterplot"
+          functionArgs={{
+            datasetName: 'sample',
+            xVariableName: 'X Variable',
+            yVariableName: 'Y Variable',
+          }}
+          output={{
+            type: 'success',
+            name: 'scatterplot',
+            result: output,
+            data: {
+              ...output,
+              regressionResults,
+              theme: 'light',
+            },
+          }}
+        />
+      </div>
+    </ThemeProvider>
   ),
 };
