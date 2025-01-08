@@ -18,7 +18,8 @@
     "baseUrl": ".",
     "paths": {
       "@openassistant/core": ["./packages/core/src"],
-      "@openassistant/echarts": ["./packages/echarts/src"]
+      "@openassistant/echarts": ["./packages/echarts/src"],
+      "@openassistant/common": ["./packages/common/src"]
     }
   },
   "exclude": [
@@ -36,6 +37,7 @@
     { "path": "./packages/duckdb" },
     { "path": "./packages/ui" },
     { "path": "./packages/core" },
-    { "path": "./packages/geoda" }
+    { "path": "./packages/geoda" },
+    { "path": "./packages/common" }
   ]
 }

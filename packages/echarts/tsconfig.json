@@ -13,7 +13,7 @@
     "emitDeclarationOnly": true,
     "skipLibCheck": true
   },
-  "references": [{ "path": "../core" }],
+  "references": [{ "path": "../core" }, { "path": "../geoda" }],
   "include": ["src/**/*"],
   "exclude": [
     "node_modules",

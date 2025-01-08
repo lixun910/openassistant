@@ -13,14 +13,5 @@
     "emitDeclarationOnly": true,
     "skipLibCheck": true
   },
-  "references": [{ "path": "../core" }, { "path": "../common" }],
-  "include": ["src/**/*"],
-  "exclude": [
-    "node_modules",
-    "../../node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.stories.tsx"
-  ]
+  "include": ["src/**/*"]
 }

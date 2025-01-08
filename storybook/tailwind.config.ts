@@ -7,6 +7,8 @@ const config: Config = {
     './src/stories/**/*.{js,ts,jsx,tsx,mdx}',
     './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
     '../packages/echarts/src/**/*.{js,ts,jsx,tsx,mdx}',
+    '../packages/core/src/**/*.{js,ts,jsx,tsx,mdx}',
+    '../packages/geoda/src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   darkMode: 'class',
   theme: {

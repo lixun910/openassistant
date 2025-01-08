@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { HistogramComponent } from '@openassistant/echarts';
-import { ThemeWrapper } from './common';
+import { ResizableThemeWrapper } from './common';
 const meta: Meta<typeof HistogramComponent> = {
   title: 'Charts/Histogram',
   component: HistogramComponent,
@@ -48,7 +48,7 @@ const output = {
 
 export const Default: Story = {
   render: () => (
-    <ThemeWrapper forcedTheme="light">
+    <ResizableThemeWrapper forcedTheme="light">
       <HistogramComponent
         functionName="histogram"
         functionArgs={{}}
@@ -60,7 +60,7 @@ export const Default: Story = {
           },
         }}
       />
-    </ThemeWrapper>
+    </ResizableThemeWrapper>
   ),
   parameters: {
     docs: {
@@ -74,7 +74,7 @@ export const Default: Story = {
 
 export const Dark: Story = {
   render: () => (
-    <ThemeWrapper forcedTheme="dark">
+    <ResizableThemeWrapper forcedTheme="dark">
       <HistogramComponent
         functionName="histogram"
         functionArgs={{}}
@@ -86,6 +86,6 @@ export const Dark: Story = {
           },
         }}
       />
-    </ThemeWrapper>
+    </ResizableThemeWrapper>
   ),
 };

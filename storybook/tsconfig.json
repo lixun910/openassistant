@@ -15,7 +15,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@openassistant/echarts": ["../packages/echarts/src"],
-      "@openassistant/core": ["../packages/core/src"]
+      "@openassistant/core": ["../packages/core/src"],
+      "@openassistant/geoda": ["../packages/geoda/src"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

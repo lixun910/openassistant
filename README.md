@@ -135,7 +135,7 @@ npx add-ai-chat
 
 The CLI will help you set up the components and required dependencies.
 
-## 🔧 Requirements
+## 🔧 Dependencies
 
 Your project have these dependencies:
 

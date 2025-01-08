@@ -10,8 +10,18 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       // react: path.resolve(__dirname, "./node_modules/react"),
-      "@openassistant/echarts": path.resolve(__dirname, "../packages/echarts/src/index.ts"),
-      "@openassistant/core": path.resolve(__dirname, "../packages/core/src/index.ts"),
+      '@openassistant/echarts': path.resolve(
+        __dirname,
+        '../packages/echarts/src/index.ts'
+      ),
+      '@openassistant/core': path.resolve(
+        __dirname,
+        '../packages/core/src/index.ts'
+      ),
+      '@openassistant/geoda': path.resolve(
+        __dirname,
+        '../packages/geoda/src/index.ts'
+      ),
     };
     return config;
   },
