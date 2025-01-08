@@ -47,12 +47,22 @@ jobs:
           TAG_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')
           # Read version from package.json
           PKG_VERSION=$(node -p "require('./package.json').version")
+          UI_PKG_VERSION=$(node -p "require('./packages/ui/package.json').version")
+          CORE_PKG_VERSION=$(node -p "require('./packages/core/package.json').version")
+          DUCKDB_PKG_VERSION=$(node -p "require('./packages/duckdb/package.json').version")
+          ECHARTS_PKG_VERSION=$(node -p "require('./packages/echarts/package.json').version")
+          GEODA_PKG_VERSION=$(node -p "require('./packages/geoda/package.json').version")
           
           # Compare versions
-          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ] || [ "$TAG_VERSION" != "$UI_PKG_VERSION" ] || [ "$TAG_VERSION" != "$CORE_PKG_VERSION" ] || [ "$TAG_VERSION" != "$DUCKDB_PKG_VERSION" ] || [ "$TAG_VERSION" != "$ECHARTS_PKG_VERSION" ] || [ "$TAG_VERSION" != "$GEODA_PKG_VERSION" ]; then
             echo "Version mismatch!"
             echo "Tag version: $TAG_VERSION"
             echo "Package.json version: $PKG_VERSION"
+            echo "UI package.json version: $UI_PKG_VERSION"
+            echo "Core package.json version: $CORE_PKG_VERSION"
+            echo "DuckDB package.json version: $DUCKDB_PKG_VERSION"
+            echo "ECharts package.json version: $ECHARTS_PKG_VERSION"
+            echo "GeoDa package.json version: $GEODA_PKG_VERSION"
             exit 1
           fi
           echo "Versions match: $TAG_VERSION"

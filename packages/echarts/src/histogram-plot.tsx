@@ -36,6 +36,12 @@ echartsRegisterTheme('dark', ECHARTS_DARK_THEME);
 export function histogramCallbackMessage(
   props: CustomFunctionCall
 ): JSX.Element | null {
+  const data = props.output.data as HistogramOuputData | undefined;
+
+  if (!data?.variableName || !data?.histogramData || !data?.barDataIndexes) {
+    return null;
+  }
+
   return (
     <ResizablePlotContainer>
       <HistogramComponent {...props} />

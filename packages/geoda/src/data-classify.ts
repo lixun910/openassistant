@@ -8,7 +8,6 @@ import {
 
 import {
   initGeoDa,
-  setGeoDaDelivery,
   naturalBreaks,
   quantileBreaks,
   equalIntervalBreaks,
@@ -24,7 +23,7 @@ import {
  * @param variableName - The name of the variable.
  * @returns The values of the variable.
  */
-export type GetValues = (datasetName: string, variableName: string) => number[];
+type GetValues = (datasetName: string, variableName: string) => number[];
 
 /**
  * The context of the data classify function.
@@ -176,9 +175,6 @@ async function dataClassifyCallbackFunction({
     };
   }
 
-  setGeoDaDelivery(
-    'https://cdn.jsdelivr.net/npm/geoda-wasm@0.0.2/dist/geoda.wasm'
-  );
   await initGeoDa();
 
   let breakPoints;

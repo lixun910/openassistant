@@ -1,10 +1,33 @@
 import { createBaseConfig, buildFormat } from '../../esbuild.config.mjs';
+import tailwindPlugin from 'esbuild-plugin-tailwindcss';
 import { dtsPlugin } from 'esbuild-plugin-d.ts';
 
 const baseConfig = createBaseConfig({
   entryPoints: ['src/index.ts'],
-  external: ['react', 'react-dom', '@openassistant/core'],
-  plugins: [dtsPlugin()],
+  loader: {
+    '.js': 'jsx',
+    '.ts': 'tsx',
+    '.png': 'file',
+    '.jpg': 'file',
+    '.svg': 'file',
+    '.css': 'css',
+  },
+  jsx: 'automatic',
+  plugins: [
+    tailwindPlugin({
+      config: './tailwind.config.js',
+    }),
+    dtsPlugin(),
+  ],
+  external: [
+    'react',
+    'react-dom',
+    '@openassistant/core',
+    '@openassistant/common',
+    '@nextui-org/react',
+    'framer-motion',
+    'tailwindcss',
+  ],
 });
 
 // Build all formats
