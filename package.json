@@ -1,6 +1,6 @@
 {
   "name": "openassistant-monorepo",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "workspaces": [
     "packages/core",
@@ -17,7 +17,7 @@
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
     "lint": "eslint packages/*/src --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint packages/*/src --ext .js,.jsx,.ts,.tsx --fix",
-    "version": "lerna version"
+    "update-version": "lerna version --force-publish"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
