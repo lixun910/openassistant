@@ -1339,7 +1339,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@loaders.gl/schema@npm:4.3.3, @loaders.gl/schema@npm:^4.3.3":
+"@loaders.gl/schema@npm:4.3.3, @loaders.gl/schema@npm:^4.1.0-alpha.4, @loaders.gl/schema@npm:^4.3.3":
   version: 4.3.3
   resolution: "@loaders.gl/schema@npm:4.3.3"
   dependencies:
@@ -3320,8 +3320,8 @@ __metadata:
     framer-motion: "npm:^11.15.0"
     re-resizable: "npm:^6.10.3"
   peerDependencies:
-    react: ^18.3.1
-    react-dom: ^18.3.1
+    react: ">=18.2"
+    react-dom: ">=18.2"
   languageName: unknown
   linkType: soft
 
@@ -3335,7 +3335,7 @@ __metadata:
     "@langchain/openai": "npm:^0.3.16"
     axios: "npm:^1.7.9"
   peerDependencies:
-    react: ^18.3.1
+    react: ">=18.2"
   languageName: unknown
   linkType: soft
 
@@ -3350,8 +3350,8 @@ __metadata:
     tailwindcss: "npm:^3.4.17"
   peerDependencies:
     "@openassistant/core": "*"
-    react: ^18.3.1
-    react-dom: ^18.3.1
+    react: ">=18.2"
+    react-dom: ">=18.2"
   languageName: unknown
   linkType: soft
 
@@ -3373,8 +3373,8 @@ __metadata:
     tailwindcss: "npm:^3.4.17"
   peerDependencies:
     "@openassistant/core": "*"
-    react: ^18.3.1
-    react-dom: ^18.3.1
+    react: ">=18.2"
+    react-dom: ">=18.2"
   languageName: unknown
   linkType: soft
 
@@ -3387,12 +3387,12 @@ __metadata:
     "@nextui-org/react": "npm:^2.6.8"
     "@openassistant/common": "npm:*"
     framer-motion: "npm:^11.15.0"
-    geoda-wasm: "npm:^0.0.4"
+    geoda-wasm: "npm:^0.0.5"
     tailwindcss: "npm:^3.4.17"
   peerDependencies:
     "@openassistant/core": "*"
-    react: ^18.3.1
-    react-dom: ^18.3.1
+    react: ">=18.2"
+    react-dom: ">=18.2"
   languageName: unknown
   linkType: soft
 
@@ -3409,8 +3409,8 @@ __metadata:
     tailwindcss: "npm:^3.4.17"
   peerDependencies:
     "@openassistant/core": "*"
-    react: ^18.3.1
-    react-dom: ^18.3.1
+    react: ">=18.2"
+    react-dom: ">=18.2"
   languageName: unknown
   linkType: soft
 
@@ -8360,10 +8360,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"geoda-wasm@npm:^0.0.4":
-  version: 0.0.4
-  resolution: "geoda-wasm@npm:0.0.4"
-  checksum: bb8af10c939828749f7cc859f595d96b57a67281476832e9e198d19c1139d30212a939823acffc622b08fe0cc3f9d4388321168c2c116659876f3b7855639cdd
+"geoda-wasm@npm:^0.0.5":
+  version: 0.0.5
+  resolution: "geoda-wasm@npm:0.0.5"
+  dependencies:
+    "@loaders.gl/schema": "npm:^4.1.0-alpha.4"
+    geojson: "npm:^0.5.0"
+  checksum: 72385ef9136486da4c02d42f796009cf59d17df3761b8e0730139222ff6171fd8889d1e52880f7315f5002a56fcc3389df517db2ac7a2e0768bd0ab87517141d
+  languageName: node
+  linkType: hard
+
+"geojson@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "geojson@npm:0.5.0"
+  checksum: 7f821b9871d6095e2dcca3d7725e61f13dcf206ce83a1fc5ef746803ce49a5fd3d2d8e716c19dbf6d9ecd4153f4e09b4921a01e87c83ddcefa9e8579ecfe9264
   languageName: node
   linkType: hard
 
@@ -12610,7 +12620,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18.3.1":
+"react-dom@npm:18.3.1":
   version: 18.3.1
   resolution: "react-dom@npm:18.3.1"
   dependencies:
@@ -12691,7 +12701,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.3.1":
+"react@npm:18.3.1":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
