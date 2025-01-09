@@ -3311,7 +3311,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openassistant/common@npm:*, @openassistant/common@workspace:packages/common":
+"@openassistant/common@workspace:packages/common":
   version: 0.0.0-use.local
   resolution: "@openassistant/common@workspace:packages/common"
   dependencies:
@@ -3385,11 +3385,11 @@ __metadata:
     "@loaders.gl/core": "npm:^4.3.3"
     "@loaders.gl/schema": "npm:^4.3.3"
     "@nextui-org/react": "npm:^2.6.8"
-    "@openassistant/common": "npm:*"
     framer-motion: "npm:^11.15.0"
     geoda-wasm: "npm:^0.0.5"
     tailwindcss: "npm:^3.4.17"
   peerDependencies:
+    "@openassistant/common": "*"
     "@openassistant/core": "*"
     react: ">=18.2"
     react-dom: ">=18.2"
