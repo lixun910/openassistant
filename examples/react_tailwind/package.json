@@ -9,8 +9,8 @@
   "author": "Xun Li <lixun910@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "@openassistant/core": "^0.0.1",
-    "@openassistant/ui": "^0.0.1",
+    "@openassistant/core": "latest",
+    "@openassistant/ui": "latest",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

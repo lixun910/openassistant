@@ -25,10 +25,8 @@
     "geoda-wasm": "^0.0.5",
     "tailwindcss": "^3.4.17"
   },
-  "devDependencies": {
-    "@openassistant/common": "^0.0.5"
-  },
   "peerDependencies": {
+    "@openassistant/common": "*",
     "@openassistant/core": "*",
     "react": ">=18.2",
     "react-dom": ">=18.2"
