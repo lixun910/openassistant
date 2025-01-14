@@ -9,15 +9,11 @@ const config: Config = {
     '../packages/echarts/src/**/*.{js,ts,jsx,tsx,mdx}',
     '../packages/core/src/**/*.{js,ts,jsx,tsx,mdx}',
     '../packages/geoda/src/**/*.{js,ts,jsx,tsx,mdx}',
+    '../packages/ui/src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   darkMode: 'class',
   theme: {
-    extend: {
-      fontFamily: {
-        sans: ['var(--font-sans)'],
-        mono: ['var(--font-mono)'],
-      },
-    },
+    extend: {},
   },
   plugins: [nextui()],
 };

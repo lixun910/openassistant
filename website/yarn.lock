@@ -4450,9 +4450,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openassistant/ui@npm:^0.0.5":
+"@openassistant/ui@file:/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.5.tgz::locator=%40openassistant%2Fwebsite%40workspace%3A.":
   version: 0.0.5
-  resolution: "@openassistant/ui@npm:0.0.5"
+  resolution: "@openassistant/ui@file:/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.5.tgz#/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.5.tgz::hash=e8f9f6&locator=%40openassistant%2Fwebsite%40workspace%3A."
   dependencies:
     "@iconify/react": "npm:^5.1.0"
     "@nextui-org/react": "npm:^2.6.10"
@@ -4465,7 +4465,7 @@ __metadata:
     "@openassistant/core": "*"
     react: ">=18.2"
     react-dom: ">=18.2"
-  checksum: 82653c351b78441d3e762ce6c08527d6e2328dd5db7b62858df4c08c5937fb0df175c9991eb6756dcb171f7f2e23c12fef70828b0f0bf8c6c8a5db652297e7b1
+  checksum: 05a46ffc3d8e91614e71d92f8061306d1eef3e726c2ddf034a61ca929581788d1f7d42c2176b6355265e2f29dfdb6c1620e054376a50b2c6e9f8b7f81bbe408f
   languageName: node
   linkType: hard
 
@@ -4482,7 +4482,7 @@ __metadata:
     "@mdx-js/react": "npm:^3.0.0"
     "@nextui-org/react": "npm:^2.6.11"
     "@openassistant/core": "npm:^0.0.5"
-    "@openassistant/ui": "npm:^0.0.5"
+    "@openassistant/ui": /Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.5.tgz
     "@types/react": "npm:^18.3.1"
     autoprefixer: "npm:^10.4.20"
     clsx: "npm:^2.0.0"

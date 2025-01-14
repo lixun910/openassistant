@@ -22,6 +22,10 @@ const nextConfig = {
         __dirname,
         '../packages/geoda/src/index.ts'
       ),
+      '@openassistant/ui': path.resolve(
+        __dirname,
+        '../packages/ui/src/index.ts'
+      ),
     };
     return config;
   },
