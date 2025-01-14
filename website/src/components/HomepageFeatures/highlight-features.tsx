@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { Card, CardBody, Image } from '@nextui-org/react';
 import { Icon } from '@iconify/react';
 import { CopyBlock, dracula } from 'react-code-blocks';
+import { ConfigPanel } from '@openassistant/ui';
 
 const codeGetStarted = `import { AiAssistant } from '@openassistant/ui';
 // only for React app without tailwindcss
@@ -169,12 +170,16 @@ export function HighlightFeatureComponent({ title, items }: HighlightFeature) {
         <div className="w-[500px] min-w-[500px]">
           <Card>
             <CardBody className="p-4 flex justify-center items-center">
-              <Image
-                src={selectedItem.image}
-                alt="screenshot"
-                width={460}
-                className="rounded-none"
-              />
+              {selectedItem.iconLabel == 'LLM Models' ? (
+                <ConfigPanel onConfigChange={() => {}} />
+              ) : (
+                <Image
+                  src={selectedItem.image}
+                  alt="screenshot"
+                  width={460}
+                  className="rounded-none"
+                />
+              )}
             </CardBody>
           </Card>
         </div>
