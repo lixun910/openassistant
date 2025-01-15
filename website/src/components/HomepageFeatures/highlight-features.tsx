@@ -1,65 +1,87 @@
 import { useState, type ReactNode } from 'react';
 import { Card, CardBody, Image } from '@nextui-org/react';
 import { Icon } from '@iconify/react';
-import { CopyBlock, dracula } from 'react-code-blocks';
-import { ConfigPanel } from '@openassistant/ui';
+import { AiAssistantConfig, ConfigPanel } from '@openassistant/ui';
+import { useColorMode } from '@docusaurus/theme-common';
+import { CodeBlock } from './code-block';
+import {
+  codeGetStarted,
+  codeGetStartedDark,
+  codeConfig,
+  codeScreenCapture,
+  codeTailwind,
+  codeVoiceToText,
+  testData,
+} from './code-content';
 
-const codeGetStarted = `import { AiAssistant } from '@openassistant/ui';
-// only for React app without tailwindcss
-import '@openassistant/ui/dist/index.css';
-
-function App() {
-  return (
-    <AiAssistant
-      modelProvider="openai"
-      model="gpt-4"
-      apiKey="your-api-key"
-      enableVoice={true}
-      welcomeMessage="Hello! How can I help you today?"
-    />
-  );
-}`;
+type FeatureItem = {
+  image: string;
+  icon: string;
+  iconColor: string;
+  iconLabel: string;
+  code: CodeBlock;
+};
 
 type HighlightFeature = {
   title: ReactNode;
-  items: {
-    image: string;
-    icon: string;
-    iconColor: string;
-    iconLabel: string;
-    code: string;
-  }[];
+  items: FeatureItem[];
 };
 
 export const highlightFeatures: HighlightFeature[] = [
   {
-    title: (
-      <>
-        Add your own <span className="text-primary">AI Assistant</span> with
-        ease
-      </>
-    ),
+    title: <>Add AI Assistant to your app with ease</>,
     items: [
       {
-        image: '/img/getstart-model.png',
-        icon: 'fa6-solid:robot',
-        iconColor: 'text-purple-400',
-        iconLabel: 'LLM Models',
-        code: codeGetStarted,
+        image: '/img/getstart-light.png',
+        icon: 'solar:sun-bold',
+        iconColor: 'text-amber-400',
+        iconLabel: 'Light Mode',
+        code: [
+          {
+            title: 'page.tsx',
+            content: codeGetStarted,
+          },
+          {
+            title: 'tailwind.config.js (optional)',
+            content: codeTailwind,
+          },
+        ],
       },
       {
         image: '/img/getstart-dark.png',
         icon: 'solar:moon-bold',
         iconColor: 'text-blue-400',
         iconLabel: 'Dark Mode',
-        code: codeGetStarted,
+        code: [
+          {
+            title: 'page.tsx',
+            content: codeGetStartedDark,
+          },
+          {
+            title: 'tailwind.config.js (optional)',
+            content: codeTailwind,
+          },
+        ],
       },
       {
-        image: '/img/getstart-light.png',
-        icon: 'solar:sun-bold',
-        iconColor: 'text-amber-400',
-        iconLabel: 'Light Mode',
-        code: codeGetStarted,
+        image: '/img/getstart-model.png',
+        icon: 'fa6-solid:robot',
+        iconColor: 'text-purple-400',
+        iconLabel: 'LLM Models',
+        code: [
+          {
+            title: 'config.tsx',
+            content: codeConfig,
+          },
+          {
+            title: 'page.tsx',
+            content: codeGetStarted,
+          },
+          {
+            title: 'tailwind.config.js (optional)',
+            content: codeTailwind,
+          },
+        ],
       },
     ],
   },
@@ -76,28 +98,43 @@ export const highlightFeatures: HighlightFeature[] = [
         image: '/img/screenshot-dark.png',
         icon: 'iconoir:screenshot',
         iconColor: 'text-orange-400',
-        code: codeGetStarted,
+        code: [
+          {
+            title: 'page.tsx',
+            content: codeScreenCapture,
+          },
+        ],
       },
       {
         iconLabel: 'Voice to Text',
         image: '/img/voice-light.png',
         icon: 'icon-park-twotone:voice',
         iconColor: 'text-blue-400',
-        code: codeGetStarted,
+        code: [
+          {
+            title: 'page.tsx',
+            content: codeVoiceToText,
+          },
+        ],
       },
       {
         iconLabel: 'Function Calling',
         image: '/img/geoda-dark.png',
         icon: 'catppuccin:folder-functions',
         iconColor: 'text-green-400',
-        code: codeGetStarted,
+        code: [
+          {
+            title: 'page.tsx',
+            content: codeGetStarted,
+          },
+        ],
       },
     ],
   },
   {
     title: (
       <>
-        Extend your AI Assistant with{' '}
+        Extend your AI Assistant with powerful {' '}
         <span className="text-warning">Plugins</span>
       </>
     ),
@@ -107,37 +144,64 @@ export const highlightFeatures: HighlightFeature[] = [
         image: '/img/geoda-light.png',
         icon: 'gravity-ui:geo-polygons',
         iconColor: 'text-blue-400',
-        code: codeGetStarted,
+        code: [
+          {
+            title: 'page.tsx',
+            content: codeGetStarted,
+          },
+          {
+            title: 'test-data.json',
+            content: testData,
+          },
+        ],
       },
       {
         iconLabel: 'Plots (eCharts)',
         image: '/img/plots-dark.png',
         icon: 'ant-design:dot-chart-outlined',
         iconColor: 'text-blue-400',
-        code: codeGetStarted,
+        code: [
+          {
+            title: 'page.tsx',
+            content: codeGetStarted,
+          },
+        ],
       },
       {
         iconLabel: 'SQL Query (DuckDB)',
         image: '/img/sql-dark.png',
         icon: 'solar:database-bold',
         iconColor: 'text-blue-400',
-        code: codeGetStarted,
+        code: [
+          {
+            title: 'page.tsx',
+            content: codeGetStarted,
+          },
+        ],
       },
     ],
   },
 ];
 
-export function HighlightFeatureComponent({ title, items }: HighlightFeature) {
-  const [selectedItem, setSelectedItem] = useState(items[0]);
+export function HighlightFeatureComponent({
+  title,
+  items,
+  aiConfig,
+  onAiConfigChange,
+}: HighlightFeature & {
+  aiConfig: AiAssistantConfig;
+  onAiConfigChange: (config: AiAssistantConfig) => void;
+}) {
+  const { setColorMode } = useColorMode();
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const handleCardImageChange = (item: {
-    image: string;
-    icon: string;
-    iconColor: string;
-    iconLabel: string;
-    code: string;
-  }) => {
-    setSelectedItem(item);
+  const handleCardImageChange = (item: FeatureItem, index: number) => {
+    setSelectedIndex(index);
+    if (item.iconLabel === 'Dark Mode') {
+      setColorMode('dark');
+    } else if (item.iconLabel === 'Light Mode') {
+      setColorMode('light');
+    }
   };
 
   return (
@@ -150,14 +214,12 @@ export function HighlightFeatureComponent({ title, items }: HighlightFeature) {
           <div
             key={index}
             className={'flex flex-col items-center cursor-pointer'}
-            onClick={() => handleCardImageChange(item)}
+            onClick={() => handleCardImageChange(item, index)}
           >
             <Icon
               icon={item.icon}
               className={`text-xl ${
-                selectedItem.image === item.image
-                  ? item.iconColor
-                  : 'text-gray-400'
+                selectedIndex === index ? item.iconColor : 'text-gray-400'
               }`}
               width={32}
               height={32}
@@ -170,34 +232,24 @@ export function HighlightFeatureComponent({ title, items }: HighlightFeature) {
         <div className="w-[500px] min-w-[500px]">
           <Card>
             <CardBody className="p-4 flex justify-center items-center">
-              {selectedItem.iconLabel == 'LLM Models' ? (
-                <ConfigPanel onConfigChange={() => {}} />
+              {['LLM Models'].includes(items[selectedIndex].iconLabel) ? (
+                <ConfigPanel
+                  initialConfig={aiConfig}
+                  onConfigChange={onAiConfigChange}
+                  color="default"
+                />
               ) : (
                 <Image
-                  src={selectedItem.image}
+                  src={items[selectedIndex].image}
                   alt="screenshot"
-                  width={460}
-                  className="rounded-none"
+                  className="rounded-none w-full"
                 />
               )}
             </CardBody>
           </Card>
         </div>
-        <div className="w-[calc(100%-982px)] min-w-[500px]">
-          <CopyBlock
-            text={selectedItem.code}
-            language="typescript"
-            showLineNumbers={true}
-            wrapLongLines={true}
-            theme={dracula}
-            customStyle={{
-              overflowY: 'scroll',
-              margin: '0px 0.75rem',
-              borderRadius: '5px',
-              boxShadow: '1px 2px 3px rgba(0,0,0,0.35)',
-              fontSize: '0.75rem',
-            }}
-          />
+        <div className="w-[calc(100%-982px)] min-w-[500px] bg-gray-900 rounded-lg shadow-lg max-h-[400px]">
+          <CodeBlock code={items[selectedIndex].code} />
         </div>
       </div>
     </div>

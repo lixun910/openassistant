@@ -8,7 +8,8 @@
     "packages/duckdb",
     "packages/geoda",
     "packages/echarts",
-    "packages/common"
+    "packages/common",
+    "website"
   ],
   "scripts": {
     "clean": "rm -rf packages/*/dist",
@@ -52,12 +53,12 @@
   },
   "volta": {
     "node": "20.18.1",
-    "yarn": "4.0.0"
+    "yarn": "4.6.0"
   },
   "resolutions": {
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "esbuild": "0.24.2"
   },
-  "packageManager": "yarn@4.0.0"
+  "packageManager": "yarn@4.6.0"
 }

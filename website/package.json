@@ -5,7 +5,7 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
-    "build": "docusaurus build",
+    "build-website": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -19,8 +19,8 @@
     "@docusaurus/preset-classic": "3.7.0",
     "@mdx-js/react": "^3.0.0",
     "@nextui-org/react": "^2.6.11",
-    "@openassistant/core": "^0.0.5",
-    "@openassistant/ui": "/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.5.tgz",
+    "@openassistant/core": "0.0.5",
+    "@openassistant/ui": "0.0.5",
     "clsx": "^2.0.0",
     "framer-motion": "^11.17.0",
     "prism-react-renderer": "^2.3.0",
@@ -50,8 +50,5 @@
       "last 3 firefox version",
       "last 5 safari version"
     ]
-  },
-  "engines": {
-    "node": ">=18.0"
   }
 }

@@ -2,46 +2,86 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Quick Start
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Transform Your React Apps with OpenAssistant: The AI Integration Library You've Been Waiting For
 
-## Getting Started
+Looking to supercharge your React applications with AI capabilities? Meet OpenAssistant - your new favorite tool for seamlessly integrating AI power into existing React apps without the hassle.
 
-Get started by **creating a new site**.
+Unlike general-purpose chatbots such as ChatGPT or Google Gemini, OpenAssistant takes a different approach. It's specifically engineered to be the bridge between Large Language Models (LLMs) and your application's functionality. Think of it as your application's AI co-pilot that can not only chat with users but also execute complex tasks by leveraging your app's features and external AI plugins.
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+## **Installation**
 
-### What you'll need
-
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
+Install the core packages using npm:
 
 ```bash
-npm init docusaurus@latest my-website classic
+npm install @openassistant/core @openassistant/ui
 ```
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+### **Dependencies**
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+The following dependencies are required and should be installed in your project:
 
-## Start your site
+<li> react </li>
+<li> @langchain/core </li>
+<li> @langchain/google-genai </li>
+<li> @langchain/ollama </li>
+<li> @langchain/openai </li>
+<li> html2canvas </li>
+<li> next-themes </li>
+<li> @nextui-org/react </li>
+<li> framer-motion </li>
 
-Run the development server:
+## **Getting Started**
 
-```bash
-cd my-website
-npm run start
+Here's a basic example of using OpenAssistant in your React app:
+
+```tsx
+import { AiAssistant } from '@openassistant/ui';
+// only for React app without tailwindcss
+import '@openassistant/ui/dist/index.css';
+
+function App() {
+  return (
+    <AiAssistant
+      modelProvider="openai"
+      model="gpt-4"
+      apiKey="your-api-key"
+      enableVoice={true}
+      welcomeMessage="Hello! How can I help you today?"
+    />
+  );
+}
 ```
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+## **Key Features**
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+OpenAssistant comes with powerful features:
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+🤖 **Multiple AI Provider Support**
+  <li> OpenAI (GPT models) </li>
+  <li> Google Gemini </li>
+  <li> Ollama (local AI models) </li>
+
+🎯 **Advanced Capabilities**
+  <li> Take screenshot to ask </li>
+  <li> Talk to ask </li>
+  <li> Function calling support </li>
+
+🌟 **AI Assistant Plugins**
+  <li> DuckDB: in-browser query data using duckdb via prompt </li>
+  <li> ECharts: visualize data using echarts via prompt </li>
+  <li> GeoDa: apply spatial data analysis using geoda wasm via prompt </li>
+
+🎨 **Customizable UI Components**
+  <li> Pre-built chat interface </li>
+  <li> Pre-built LLM configuration interface </li>
+  <li> Screenshot wrapper for your app </li>
+  <li> Theme support </li>
+
+For more detailed documentation and examples, check out our package-specific guides:
+
+- Core Package Documentation
+- UI Components Guide
+- CLI Tool Tutorial
+- Plugin Documentation (DuckDB, GeoDa, ECharts)

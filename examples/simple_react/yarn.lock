@@ -3833,9 +3833,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openassistant/core@file:/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.1.tgz::locator=simple-react-app%40workspace%3A.":
-  version: 0.0.1
-  resolution: "@openassistant/core@file:/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.1.tgz#/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.1.tgz::hash=30e4dc&locator=simple-react-app%40workspace%3A."
+"@openassistant/core@file:/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.5.tgz::locator=simple-react-app%40workspace%3A.":
+  version: 0.0.5
+  resolution: "@openassistant/core@file:/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.5.tgz#/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.5.tgz::hash=7f2aff&locator=simple-react-app%40workspace%3A."
   dependencies:
     "@langchain/core": "npm:^0.3.26"
     "@langchain/google-genai": "npm:^0.1.6"
@@ -3843,18 +3843,14 @@ __metadata:
     "@langchain/openai": "npm:^0.3.16"
     axios: "npm:^1.7.9"
   peerDependencies:
-    "@langchain/core": ^0.3.26
-    "@langchain/google-genai": ^0.1.6
-    "@langchain/ollama": ^0.1.4
-    "@langchain/openai": ^0.3.16
-    react: ^18.2.0
-  checksum: e48d5718249455069a9594beadebb09801a54a0a8e3a7dc81ddad82a7327650ba4c111e0af4be20aaeb6079276bd6e34958dc73bdd5e8a44c80452aa001b93e4
+    react: ">=18.2"
+  checksum: d6ec60ac6a86fbef55c1347d710a96b21b889da5a2516fbcbfac407d0f7f0819a68ea1a4fd397f98ca04de07d0daf11b2f2d8770d8332e85211daef544a0c424
   languageName: node
   linkType: hard
 
-"@openassistant/ui@file:/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.1.tgz::locator=simple-react-app%40workspace%3A.":
-  version: 0.0.1
-  resolution: "@openassistant/ui@file:/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.1.tgz#/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.1.tgz::hash=8f7bb0&locator=simple-react-app%40workspace%3A."
+"@openassistant/ui@file:/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.5.tgz::locator=simple-react-app%40workspace%3A.":
+  version: 0.0.5
+  resolution: "@openassistant/ui@file:/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.5.tgz#/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.5.tgz::hash=fde1bb&locator=simple-react-app%40workspace%3A."
   dependencies:
     "@iconify/react": "npm:^5.1.0"
     "@nextui-org/react": "npm:^2.6.10"
@@ -3862,7 +3858,12 @@ __metadata:
     html2canvas: "npm:^1.4.1"
     next-themes: "npm:^0.4.4"
     react-audio-voice-recorder: "npm:^2.2.0"
-  checksum: abaf9d8249f2272f5fe88646deee874f9d48ddbb135f152760a307e5bd4070378cdf00f15610b1167d69a95ed17a221dcb0e8183cc64fd56a7fced8ba6296e4a
+    tailwindcss: "npm:^3.4.17"
+  peerDependencies:
+    "@openassistant/core": "*"
+    react: ">=18.2"
+    react-dom: ">=18.2"
+  checksum: ca8600d122e1db7aeed571faa295506695867dcfcb7406713a205131be60a417316566c9c58b99242e2f7dcd54e9a6b5f14c6fb703367c88336fba186b798ffd
   languageName: node
   linkType: hard
 
@@ -14869,8 +14870,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "simple-react-app@workspace:."
   dependencies:
-    "@openassistant/core": /Users/xun/github/openassistant/packages/core/openassistant-core-0.0.1.tgz
-    "@openassistant/ui": /Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.1.tgz
+    "@openassistant/core": /Users/xun/github/openassistant/packages/core/openassistant-core-0.0.5.tgz
+    "@openassistant/ui": /Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.5.tgz
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     react: "npm:^18.2.0"
@@ -15484,7 +15485,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:^3.0.2":
+"tailwindcss@npm:^3.0.2, tailwindcss@npm:^3.4.17":
   version: 3.4.17
   resolution: "tailwindcss@npm:3.4.17"
   dependencies:

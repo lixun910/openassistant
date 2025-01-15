@@ -153,7 +153,7 @@ const MessageCard = forwardRef<HTMLDivElement, MessageCardProps>(
         <div className="flex w-full flex-col gap-4 overflow-x-auto">
           <div
             className={`
-              group relative w-full rounded-medium px-4 py-3 text-gray-800 dark:text-gray-200
+              group relative w-full rounded-medium px-4 py-3 
               ${failedMessageClassName}
               ${messageClassName}
             `.trim()}

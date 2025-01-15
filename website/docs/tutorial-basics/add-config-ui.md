@@ -2,15 +2,19 @@
 sidebar_position: 1
 ---
 
-# Create a Page
+# 1. Assistant Configuration UI
 
-Add **Markdown or React** files to `src/pages` to create a **standalone page**:
+Add the Assistant Configuration UI to your app
 
 - `src/pages/index.js` → `localhost:3000/`
 - `src/pages/foo.md` → `localhost:3000/foo`
 - `src/pages/foo/bar.js` → `localhost:3000/foo/bar`
 
 ## Create your first React Page
+
+:::tip My tip
+
+Use this awesome feature option
 
 Create a file at `src/pages/my-react-page.js`:
 

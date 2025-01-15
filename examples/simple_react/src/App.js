@@ -4,7 +4,7 @@ import { ThemeProvider } from 'next-themes';
 
 function App() {
   return (
-    <ThemeProvider attribute="class" forcedTheme="light">
+    <ThemeProvider attribute="class" forcedTheme="dark">
       <div style={{ width: '400px', height: '800px', margin: '20px' }}>
         <AiAssistant
           name="My Assistant"
