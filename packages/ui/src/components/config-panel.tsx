@@ -53,6 +53,7 @@ export type ConfigPanelProps = {
   initialConfig?: AiAssistantConfig;
   showStartChatButton?: boolean;
   showParameters?: boolean;
+  color?: "default" | "primary" | "secondary" | "success" | "warning" | "danger";
   onConfigChange: (config: AiAssistantConfig) => void;
 };
 
@@ -153,7 +154,7 @@ export function ConfigPanel(props: ConfigPanelProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full">
       <Select
         selectedKeys={[provider]}
         label="AI Provider"
@@ -230,7 +231,7 @@ export function ConfigPanel(props: ConfigPanelProps) {
         isLoading={isRunning}
         onClick={onStartChat}
         className="mt-4"
-        color="primary"
+        color={props.color || "primary"}
       >
         Start Chat
       </Button>

@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Create a Document
+# 2. Theme Configuration
 
 Documents are **groups of pages** connected through:
 
