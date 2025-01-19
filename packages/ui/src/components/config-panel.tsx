@@ -3,7 +3,10 @@ import { Select } from '@nextui-org/react';
 import { testApiKey } from '@openassistant/core';
 import { ChangeEvent, useState } from 'react';
 
-const PROVIDER_MODELS = {
+// Add a type for valid providers
+type Provider = 'openai' | 'google' | 'ollama';
+
+const PROVIDER_MODELS: Record<Provider, string[]> = {
   openai: ['gpt-4o', 'gpt-4o-mini', 'gpt-3.5-turbo-0125', 'gpt-3.5-turbo'],
   google: ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-1.0-pro'],
   ollama: [
@@ -33,7 +36,7 @@ const PROVIDER_MODELS = {
  */
 export type AiAssistantConfig = {
   isReady: boolean;
-  provider: string;
+  provider: Provider;
   model: string;
   apiKey: string;
   baseUrl: string;
@@ -49,7 +52,7 @@ export type AiAssistantConfig = {
  * @property {function} onConfigChange - The function to call when the configuration changes.
  */
 export type ConfigPanelProps = {
-  defaultProviderModels?: Record<string, string[]>;
+  defaultProviderModels?: Record<Provider, string[]>;
   initialConfig?: AiAssistantConfig;
   showStartChatButton?: boolean;
   showParameters?: boolean;
@@ -88,7 +91,7 @@ export function ConfigPanel(props: ConfigPanelProps) {
     value: string | number | boolean | object | null
   ) => {
     if (value && typeof value === 'object' && 'currentKey' in value) {
-      const selectedProvider = value.currentKey as string;
+      const selectedProvider = value.currentKey as Provider;
       setProvider(selectedProvider);
       setModel(defaultProviderModels[selectedProvider][0]);
       setConnectionError(false);

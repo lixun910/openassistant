@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -10,16 +14,35 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "@openassistant/echarts": ["../packages/echarts/src"],
-      "@openassistant/core": ["../packages/core/src"],
-      "@openassistant/geoda": ["../packages/geoda/src"],
-      "@openassistant/ui": ["../packages/ui/src"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@openassistant/echarts": [
+        "../packages/echarts/src"
+      ],
+      "@openassistant/core": [
+        "../packages/core/src"
+      ],
+      "@openassistant/geoda": [
+        "../packages/geoda/src"
+      ],
+      "@openassistant/ui": [
+        "../packages/ui/src"
+      ],
+      "@openassistant/keplergl": [
+        "../packages/keplergl/src"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

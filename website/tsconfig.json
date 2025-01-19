@@ -4,6 +4,6 @@
   "compilerOptions": {
     "baseUrl": "."
   },
-  "references": [{ "path": "../../packages/ui" }],
+  "references": [{ "path": "../packages/common" }],
   "exclude": [".docusaurus", "build"]
 }

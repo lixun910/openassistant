@@ -9,6 +9,7 @@
     "packages/geoda",
     "packages/echarts",
     "packages/common",
+    "packages/keplergl",
     "website"
   ],
   "scripts": {
@@ -58,7 +59,8 @@
   "resolutions": {
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "esbuild": "0.24.2"
+    "esbuild": "0.24.2",
+    "styled-components": "6.1.8"
   },
   "packageManager": "yarn@4.6.0"
 }

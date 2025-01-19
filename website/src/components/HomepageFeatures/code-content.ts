@@ -156,64 +156,39 @@ function App() {
  * - population (int)
  */
 export const testData = `[
-  {
-    "latitude": 37.7749,
-    "longtitude": -122.4194,
-    "price": 1250000.0,
-    "population": 873965
-  },
-  {
-    "latitude": 34.0522,
-    "longtitude": -118.2437,
-    "price": 875000.0,
-    "population": 3967000
-  },
-  {
-    "latitude": 40.7128,
-    "longtitude": -74.0060,
-    "price": 2100000.0,
-    "population": 8419000
-  },
-  {
-    "latitude": 51.5074,
-    "longtitude": -0.1278,
-    "price": 1750000.0,
-    "population": 8982000
-  },
-  {
-    "latitude": 35.6762,
-    "longtitude": 139.6503,
-    "price": 925000.0,
-    "population": 9273000
-  },
-  {
-    "latitude": 48.8566,
-    "longtitude": 2.3522,
-    "price": 1450000.0,
-    "population": 2161000
-  },
-  {
-    "latitude": 25.2767,
-    "longtitude": 55.2962,
-    "price": 1850000.0,
-    "population": 3331000
-  },
-  {
-    "latitude": 1.3521,
-    "longtitude": 103.8198,
-    "price": 1650000.0,
-    "population": 5686000
-  },
-  {
-    "latitude": -33.8688,
-    "longtitude": 151.2093,
-    "price": 1150000.0,
-    "population": 5312000
-  },
-  {
-    "latitude": 22.3193,
-    "longtitude": 114.1694,
-    "price": 1950000.0,
-    "population": 7482000
-  }
-]`;
+    {
+      "name": "venue 1",
+      "longitude": -73.99389648,
+      "latitude": 40.75011063,
+      "revenue": 1000000,
+      "population": 1000000
+    },
+    {
+      "name": "venue 2",
+      "longitude": -73.97642517,
+      "latitude": 40.73981094,
+      "revenue": 2000000,
+      "population": 2000000
+    },
+    {
+      "name": "venue 3",
+      "longitude": -73.96870422,
+      "latitude": 40.75424576,
+      "revenue": 3000000,
+      "population": 3000000
+    },
+    {
+      "name": "venue 4",
+      "longitude": -73.95987634,
+      "latitude": 40.76012845,
+      "revenue": 4000000,
+      "population": 4000000
+    },
+    {
+      "name": "venue 5",
+      "longitude": -73.96543210,
+      "latitude": 40.75789321,
+      "revenue": 5000000,
+      "population": 5000000
+    }
+  ]`;

@@ -6,12 +6,7 @@ export { OpenAIAssistant } from './llm/openai';
 
 export * from './types';
 
-export {
-  useAssistant,
-  UseAssistantProps,
-  SendImageMessageProps,
-  SendTextMessageProps,
-} from './hooks/use-assistant';
+export * from './hooks/use-assistant';
 
 export {
   testApiKey,

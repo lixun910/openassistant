@@ -58,7 +58,7 @@ export class GoogleAssistant extends LangChainAssistant {
     GoogleAssistant.instance = null;
   }
 
-  private blobToBase64(blob) {
+  private blobToBase64(blob: Blob) {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve(reader.result);
@@ -75,7 +75,7 @@ export class GoogleAssistant extends LangChainAssistant {
     }
 
     // convert audio blob to base64 encoded string
-    const audioMessage = audioBase64 || (await this.blobToBase64(audioBlob));
+    const audioMessage = audioBase64 || (await this.blobToBase64(audioBlob as Blob));
 
     const newMessage = new HumanMessage({
       content: [

@@ -10,3 +10,7 @@ packages/ui/.DS_Store
 .DS_Store
 *.tgz
 meta.json
+storybook-static
+packages/.DS_Store
+packages/.DS_Store
+examples/plugin_simple_map/.env

@@ -34,7 +34,7 @@ export function CodeBlock({ code }: { code: CodeBlock }) {
         wrapLongLines={false}
         theme={dracula}
         customStyle={{
-          height: '100%',
+          maxHeight: '340px',
           overflowY: 'scroll',
           overflowX: 'scroll',
           margin: '0px 0.75rem',
