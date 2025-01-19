@@ -14,10 +14,17 @@ import {
   ConfigPanel,
   ScreenshotWrapper,
 } from '@openassistant/ui';
+import {
+  createMapFunctionDefinition,
+  GetDatasetForCreateMapFunctionArgs,
+} from '@openassistant/keplergl';
 import { MessageModel } from '@openassistant/core';
 import { Link, Tab, Tabs } from '@nextui-org/react';
 import { CodeBlock } from '../components/HomepageFeatures/code-block';
-import { codeScreenCapture } from '../components/HomepageFeatures/code-content';
+import {
+  codeScreenCapture,
+  testData,
+} from '../components/HomepageFeatures/code-content';
 
 function HomepageHeader() {
   // const { siteConfig } = useDocusaurusContext();
@@ -99,8 +106,7 @@ function HomeContent() {
     {
       message: `Here is the data you can use in the chat:
 
-dataset: openassistant_testdataset
-rows: 10 rows
+dataset: samples
 column names:
 - latitude (float)
 - longtitude (float)
@@ -122,6 +128,31 @@ Please select your prefered LLM model and use your API key to start the chat.
     },
   ];
 
+  const instructions = `You are a data and map analyst. You can help users to create a map from a dataset. If a function calling can be used to answer the user's question, please always confirm the function calling and its arguments with the user. Please use the following meta data for function callings: 
+dataset: samples
+rows: 10 rows
+column names:
+- latitude (float)
+- longtitude (float)
+- price (float)
+- population (int)`;
+
+  const myDatasets = {
+    samples: JSON.parse(testData),
+  };
+
+  const functions = [
+    createMapFunctionDefinition({
+      getDataset: ({ datasetName }: GetDatasetForCreateMapFunctionArgs) => {
+        // check if the dataset exists
+        if (!myDatasets[datasetName]) {
+          throw new Error('The dataset does not exist.');
+        }
+        return myDatasets[datasetName];
+      },
+    }),
+  ];
+
   return (
     <div>
       <ScreenshotWrapper
@@ -131,13 +162,15 @@ Please select your prefered LLM model and use your API key to start the chat.
       >
         <div className="relative">
           <HomepageHeader />
-          <main>
+          <main className="items-center flex justify-center">
             <HomepageFeatures
               aiConfig={aiConfig}
               onAiConfigChange={onAiConfigChange}
             />
           </main>
-          <div className="fixed right-0 top-20 w-[460px] p-5 h-[90vh] z-[1000] opacity-100">
+          <div
+            className={`md:fixed md:right-0 md:top-20 w-[380px] sm:w-[460px] sm:p-5 h-[90vh] z-[1000]`}
+          >
             <Tabs aria-label="Options" variant="underlined">
               <Tab key="assistant" title="Assistant" className="h-full">
                 <div
@@ -151,13 +184,13 @@ Please select your prefered LLM model and use your API key to start the chat.
                     model={aiConfig.model}
                     baseUrl={aiConfig.baseUrl}
                     welcomeMessage="Hello, how can I help you today?"
-                    instructions="You are a helpful assistant."
+                    instructions={instructions}
                     enableVoice={true}
                     enableScreenCapture={true}
                     screenCapturedBase64={screenCaptured}
                     onScreenshotClick={() => setStartScreenCapture(true)}
                     onRemoveScreenshot={() => setScreenCaptured('')}
-                    functions={[]}
+                    functions={functions}
                     theme={colorMode}
                     historyMessages={historyMessages}
                     githubIssueLink="https://github.com/geodacenter/openassistant/issues"

@@ -67,7 +67,7 @@ const FeatureList: FeatureItem[] = [
 
 function Feature({ title, icon, description }: FeatureItem) {
   return (
-    <Card className="overflow-none relative w-[380px] border-small border-foreground/10 bg-right-bottom">
+    <Card className="overflow-none relative w-[300px] sm:w-[380px] border-small border-foreground/10 bg-right-bottom">
       <CardHeader>
         <div className="flex items-center gap-3">
           <p className="text-4xl">{icon}</p>

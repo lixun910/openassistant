@@ -9,7 +9,6 @@ const nextConfig = {
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      // react: path.resolve(__dirname, "./node_modules/react"),
       '@openassistant/echarts': path.resolve(
         __dirname,
         '../packages/echarts/src/index.ts'
@@ -26,7 +25,23 @@ const nextConfig = {
         __dirname,
         '../packages/ui/src/index.ts'
       ),
+      '@openassistant/keplergl': path.resolve(
+        __dirname,
+        '../packages/keplergl/src/index.ts'
+      ),
+      // Force all styled-components imports to use the same instance
+      'styled-components': path.resolve(
+        __dirname,
+        '../node_modules/styled-components'
+      ),
     };
+
+    // Add resolution for styled-components
+    if (!config.resolve.extensions) {
+      config.resolve.extensions = [];
+    }
+    config.resolve.extensions.push('.js', '.jsx', '.ts', '.tsx');
+
     return config;
   },
 };

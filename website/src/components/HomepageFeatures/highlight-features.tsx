@@ -134,7 +134,7 @@ export const highlightFeatures: HighlightFeature[] = [
   {
     title: (
       <>
-        Extend your AI Assistant with powerful {' '}
+        Extend your AI Assistant with powerful{' '}
         <span className="text-warning">Plugins</span>
       </>
     ),
@@ -229,7 +229,7 @@ export function HighlightFeatureComponent({
         ))}
       </div>
       <div className="flex flex-col xl:flex-row gap-8">
-        <div className="w-[500px] min-w-[500px]">
+        <div className="w-[340px] min-w-[340px] sm:w-[500px] sm:min-w-[500px]">
           <Card>
             <CardBody className="p-4 flex justify-center items-center">
               {['LLM Models'].includes(items[selectedIndex].iconLabel) ? (
@@ -248,7 +248,7 @@ export function HighlightFeatureComponent({
             </CardBody>
           </Card>
         </div>
-        <div className="w-[calc(100%-982px)] min-w-[500px] bg-gray-900 rounded-lg shadow-lg max-h-[400px]">
+        <div className="w-[340px] min-w-[340px] sm:w-[calc(100%-982px)] sm:min-w-[500px] bg-gray-900 rounded-lg shadow-lg max-h-[400px] pb-2">
           <CodeBlock code={items[selectedIndex].code} />
         </div>
       </div>

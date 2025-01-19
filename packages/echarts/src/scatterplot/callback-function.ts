@@ -110,9 +110,9 @@ export async function ScatterplotCallbackFunction({
   functionName,
   functionArgs,
   functionContext,
-}: CallbackFunctionProps): Promise<CustomFunctionOutputProps<
-    ScatterplotOutputResult, ScatterplotOutputData
-  >> {
+}: CallbackFunctionProps): Promise<
+  CustomFunctionOutputProps<ScatterplotOutputResult, ScatterplotOutputData>
+> {
   if (!isScatterplotFunctionArgs(functionArgs)) {
     return {
       type: 'error',

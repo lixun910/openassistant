@@ -104,6 +104,11 @@ export function useAssistant({
   description,
   version,
 }: UseAssistantProps) {
+  /**
+   * The status of the API key.
+   * 'failed' - The API key is invalid.
+   * 'success' - The API key is valid.
+   */
   const [apiKeyStatus, setApiKeyStatus] = useState<string>('failed');
 
   /**
@@ -230,13 +235,59 @@ export function useAssistant({
   };
 
   return {
+    /**
+     * Initializes the AI assistant with the configured settings.
+     * Sets up the model, registers functions, and validates the API key.
+     * @returns {Promise<void>}
+     */
     initializeAssistant,
+
+    /**
+     * Sends a text message to the AI assistant and streams the response.
+     * @param {SendTextMessageProps} props - Object containing the message and stream callback
+     * @returns {Promise<void>}
+     */
     sendTextMessage,
+
+    /**
+     * Sends an image along with text to the AI assistant and streams the response.
+     * @param {SendImageMessageProps} props - Object containing the image data, message, and stream callback
+     * @returns {Promise<void>}
+     */
     sendImageMessage,
+
+    /**
+     * Converts an audio blob to text using the assistant's speech-to-text capabilities.
+     * @param {Blob} audioBlob - The audio data to transcribe
+     * @returns {Promise<string>} The transcribed text
+     */
     audioToText,
+
+    /**
+     * Adds additional context to the ongoing conversation with the assistant.
+     * @param {{ context: string }} params - Object containing the context to add
+     * @returns {Promise<void>}
+     */
     addAdditionalContext,
+
+    /**
+     * Immediately stops the current chat processing and response generation.
+     * @returns {void}
+     */
     stopChat,
+
+    /**
+     * Restarts the chat by stopping current processing and reinitializing the assistant.
+     * @returns {Promise<void>}
+     */
     restartChat,
+
+    /**
+     * Current status of the API key validation.
+     * 'failed' - The API key is invalid.
+     * 'success' - The API key is valid.
+     * @type {'failed' | 'success'}
+     */
     apiKeyStatus,
   };
 }

@@ -176,7 +176,7 @@ export function getScatterplotChartOption({
             itemStyle: { color: '#800080' },
             lineStyle: { width: 2, type: 'solid' },
           },
-          ...['lower', 'upper'].map((bound) => ({
+          ...(['lower', 'upper'] as const).map((bound: 'lower' | 'upper') => ({
             type: 'line',
             data: loessResult[bound].map((value, index) => [
               loessResult.fitted[index][0],

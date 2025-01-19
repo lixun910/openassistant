@@ -102,7 +102,7 @@ export async function SpatialCountCallbackFunction({
   // get basic statistics of the result
   const basicStatistics = getBasicStatistics(result);
 
-  const joinValues = {
+  const joinValues: Record<string, number[]> = {
     Count: result.map((row) => row.length),
   };
 
