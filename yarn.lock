@@ -8766,6 +8766,7 @@ __metadata:
     redux-logger: "npm:^3.0.6"
     styled-components: "npm:6.1.8"
   peerDependencies:
+    "@openassistant/common": "*"
     "@openassistant/core": "*"
     react: ">=18"
     react-dom: ">=18"

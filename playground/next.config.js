@@ -13,7 +13,6 @@ module.exports = {
       '@components': './components',
       '@app': './app',
       'styled-components': path.resolve(__dirname, 'node_modules/styled-components'),
-      '@openassistant/keplergl': path.resolve(__dirname, '../packages/keplergl/src/index.ts'),
       // react: path.resolve(__dirname, 'node_modules/react'),
       // 'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
     };

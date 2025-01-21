@@ -13,6 +13,9 @@
     "emitDeclarationOnly": true,
     "skipLibCheck": true
   },
+  "paths": {
+    "@openassistant/common": ["../common/src"]
+  },
   "references": [{ "path": "../core" }, { "path": "../common" }],
   "include": ["src/**/*"],
   "exclude": [
