@@ -41,6 +41,19 @@ Can you create a map using the data myVenues?
 
 ### Step 1: Setup the OpenAssistant in your application
 
+Install the OpenAssistant package in your application.
+
+```bash
+yarn add @openassistant/core @openassistant/keplergl @openassistant/ui
+```
+
+For @openassistant/keplergl, you need to install the `kepler.gl` package in your application.
+
+```bash
+yarn add @kepler.gl/actions @kepler.gl/components @kepler.gl/constants @kepler.gl/layers @kepler.gl/reducers @kepler.gl/styles @kepler.gl/utils @kepler.gl/processors @kepler.gl/localization
+```
+
+
 ```js title="App.tsx"
 import { AiAssistant } from '@openassistant/ui';
 // only for React app without tailwindcss
@@ -92,9 +105,9 @@ const dataContext = useMemo(() => {
   ];
 }, []);
 
-// you can simply append the context to the `systemMessage` of the assistant props
-assistantProps.systemMessage =
-  assistantProps.systemMessage + '\n' + JSON.stringify(dataContext);
+// you can simply append the context to the `instructions` of the assistant props
+assistantProps.instructions =
+  assistantProps.instructions + '\n' + JSON.stringify(dataContext);
 ```
 
 To get up to date with your data context, e.g. when dataset been added or removed, you can use the `useAssistant` hook to add the context to the assistant props.

@@ -1,5 +1,8 @@
 # OpenAssistant
 
+[Documentation](https://openassistant-doc.vercel.app) | 
+[Playground](https://openassistant-playground.vercel.app)
+
 Looking to supercharge your React applications with AI capabilities? Meet OpenAssistant - your new favorite tool for seamlessly integrating AI power into existing React apps without the hassle.
 
 Unlike general-purpose chatbots such as ChatGPT or Google Gemini, OpenAssistant takes a different approach. It's specifically engineered to be the bridge between Large Language Models (LLMs) and your application's functionality. Think of it as your application's AI co-pilot that can not only chat with users but also execute complex tasks by leveraging your app's features and external AI plugins.

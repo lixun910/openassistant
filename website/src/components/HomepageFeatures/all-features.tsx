@@ -86,7 +86,7 @@ function Feature({ title, icon, description }: FeatureItem) {
 
 export function AllFeatures() {
   return (
-    <div className="w-full mt-10 flex flex-col p-4 gap-4">
+    <div className="w-10/12 mt-10 flex flex-col p-4 gap-4">
       <div className=" text-gray-600 font-bold leading-[1.2] tracking-tighter sm:text-[36px]">
         <div className="bg-hero-section-title bg-clip-text">All Features</div>
       </div>
