@@ -1,5 +1,6 @@
 import { createBaseConfig, buildFormat } from '../../esbuild.config.mjs';
 import { dtsPlugin } from 'esbuild-plugin-d.ts';
+import { polyfillNode } from 'esbuild-plugin-polyfill-node';
 
 const baseConfig = createBaseConfig({
   entryPoints: ['src/index.ts'],
@@ -13,7 +14,7 @@ const baseConfig = createBaseConfig({
   },
   jsx: 'automatic',
   minify: false,
-  plugins: [dtsPlugin()],
+  plugins: [dtsPlugin(), polyfillNode()],
   external: [
     'react',
     'react-dom',
@@ -22,6 +23,7 @@ const baseConfig = createBaseConfig({
     'redux',
     'styled-components',
     'use-sync-external-store',
+    'hoist-non-react-statics',
     '@openassistant/core',
     '@openassistant/common',
     '@kepler.gl/actions',
@@ -32,6 +34,7 @@ const baseConfig = createBaseConfig({
     '@kepler.gl/processors',
     '@kepler.gl/styles',
     '@kepler.gl/utils',
+    '@kepler.gl/localization',
   ],
   treeShaking: true,
 });

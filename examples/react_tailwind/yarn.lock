@@ -1959,9 +1959,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openassistant/core@file:/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.1.tgz::locator=react-tailwind-example%40workspace%3A.":
-  version: 0.0.1
-  resolution: "@openassistant/core@file:/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.1.tgz#/Users/xun/github/openassistant/packages/core/openassistant-core-0.0.1.tgz::hash=aed2c3&locator=react-tailwind-example%40workspace%3A."
+"@openassistant/core@npm:latest":
+  version: 0.0.5
+  resolution: "@openassistant/core@npm:0.0.5"
   dependencies:
     "@langchain/core": "npm:^0.3.26"
     "@langchain/google-genai": "npm:^0.1.6"
@@ -1969,28 +1969,27 @@ __metadata:
     "@langchain/openai": "npm:^0.3.16"
     axios: "npm:^1.7.9"
   peerDependencies:
-    "@langchain/core": ^0.3.26
-    "@langchain/google-genai": ^0.1.6
-    "@langchain/ollama": ^0.1.4
-    "@langchain/openai": ^0.3.16
-    react: ^18.2.0
-  checksum: 69ec384578e77ffe3b06ba53b884b5ef149240ea274cd49bd2950aa7c800bd8edcf4910691df92defd1e2707775c4560c9be8e64b15a2cb3302d309d347bf575
+    react: ">=18.2"
+  checksum: d6ec60ac6a86fbef55c1347d710a96b21b889da5a2516fbcbfac407d0f7f0819a68ea1a4fd397f98ca04de07d0daf11b2f2d8770d8332e85211daef544a0c424
   languageName: node
   linkType: hard
 
-"@openassistant/ui@file:/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.1.tgz::locator=react-tailwind-example%40workspace%3A.":
-  version: 0.0.1
-  resolution: "@openassistant/ui@file:/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.1.tgz#/Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.1.tgz::hash=a707a1&locator=react-tailwind-example%40workspace%3A."
+"@openassistant/ui@npm:latest":
+  version: 0.0.5
+  resolution: "@openassistant/ui@npm:0.0.5"
   dependencies:
     "@iconify/react": "npm:^5.1.0"
     "@nextui-org/react": "npm:^2.6.10"
     framer-motion: "npm:^11.15.0"
     html2canvas: "npm:^1.4.1"
     next-themes: "npm:^0.4.4"
-    react: "npm:^18.2.0"
     react-audio-voice-recorder: "npm:^2.2.0"
-    react-dom: "npm:^18.2.0"
-  checksum: 705c02eb4b0d67bfc9fcc82d9d2bc74f4c0ea5210eadd6059e4a1300d7a085a041de38c9a8641ef83e2c5ae0a59c5e481f888db8cdb8426ab5a861119d50bd2d
+    tailwindcss: "npm:^3.4.17"
+  peerDependencies:
+    "@openassistant/core": "*"
+    react: ">=18.2"
+    react-dom: ">=18.2"
+  checksum: 82653c351b78441d3e762ce6c08527d6e2328dd5db7b62858df4c08c5937fb0df175c9991eb6756dcb171f7f2e23c12fef70828b0f0bf8c6c8a5db652297e7b1
   languageName: node
   linkType: hard
 
@@ -6724,8 +6723,8 @@ __metadata:
   resolution: "react-tailwind-example@workspace:."
   dependencies:
     "@nextui-org/react": "npm:^2.6.10"
-    "@openassistant/core": /Users/xun/github/openassistant/packages/core/openassistant-core-0.0.1.tgz
-    "@openassistant/ui": /Users/xun/github/openassistant/packages/ui/openassistant-ui-0.0.1.tgz
+    "@openassistant/core": "npm:latest"
+    "@openassistant/ui": "npm:latest"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
     autoprefixer: "npm:^10.4.20"
@@ -7471,7 +7470,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:^3.2.4":
+"tailwindcss@npm:^3.2.4, tailwindcss@npm:^3.4.17":
   version: 3.4.17
   resolution: "tailwindcss@npm:3.4.17"
   dependencies:

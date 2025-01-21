@@ -17,3 +17,23 @@ hola:
   label: Hola
   permalink: /hola
   description: Hola tag description
+
+tutorial:
+  label: Tutorial
+  permalink: /tutorial
+  description: Tutorial-related content and guides
+
+openassistant:
+  label: OpenAssistant
+  permalink: /openassistant
+  description: Content related to OpenAssistant AI
+
+keplergl:
+  label: Kepler.gl
+  permalink: /keplergl
+  description: Posts about Kepler.gl mapping visualization
+
+mapping:
+  label: Mapping
+  permalink: /mapping
+  description: Geographic mapping and visualization content

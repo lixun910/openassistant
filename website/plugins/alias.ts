@@ -1,4 +1,4 @@
-import path from "path";
+import path from 'path';
 
 export default function aliasPlugin() {
   return {
@@ -25,10 +25,6 @@ export default function aliasPlugin() {
             '@openassistant/common': path.resolve(
               __dirname,
               '../../packages/common/src/index.ts'
-            ),
-            '@openassistant/keplergl': path.resolve(
-              __dirname,
-              '../../packages/keplergl/src/index.ts'
             ),
           },
         },

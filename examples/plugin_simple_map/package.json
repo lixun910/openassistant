@@ -17,7 +17,7 @@
     "@kepler.gl/styles": "^3.0.0",
     "@kepler.gl/utils": "^3.0.0",
     "@openassistant/core": "0.0.5",
-    "@openassistant/keplergl": "/Users/xun/github/openassistant/packages/keplergl/openassistant-keplergl-0.0.5.tgz",
+    "@openassistant/keplergl": "0.0.5",
     "@openassistant/ui": "0.0.5",
     "assert": "^2.1.0",
     "d3-request": "^1.0.6",
