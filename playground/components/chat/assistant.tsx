@@ -4,9 +4,9 @@ import {
   createMapFunctionDefinition,
   GetDatasetForCreateMapFunctionArgs,
 } from '@openassistant/keplergl';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { MessageModel } from '@openassistant/core';
-import { AiAssistant } from '@openassistant/ui';
+import { AiAssistant, AiAssistantConfig, ConfigPanel } from '@openassistant/ui';
 
 export default function Assistant({
   screenCaptured,
@@ -71,19 +71,19 @@ export default function Assistant({
     }),
   ];
 
-  // const [aiConfig, setAiConfig] = useState({
-  //   isReady: false,
-  //   provider: 'openai',
-  //   model: 'gpt-4o',
-  //   apiKey: '',
-  //   baseUrl: 'http://127.0.0.1:11434',
-  //   temperature: 0.8,
-  //   topP: 1.0,
-  // });
+  const [aiConfig, setAiConfig] = useState<AiAssistantConfig>({
+    isReady: false,
+    provider: 'openai',
+    model: 'gpt-4o',
+    apiKey: '',
+    baseUrl: 'http://127.0.0.1:11434',
+    temperature: 0.8,
+    topP: 1.0,
+  });
 
-  // const onAiConfigChange = (config) => {
-  //   setAiConfig(config);
-  // };
+  const onAiConfigChange = (config: AiAssistantConfig) => {
+    setAiConfig(config);
+  };
 
   const historyMessages: MessageModel[] = [
     {
@@ -112,10 +112,10 @@ Please select your prefered LLM model and use your API key to start the chat.
       position: 'single',
       payload: (
         <div className="mt-4">
-          {/* <ConfigPanel
+          <ConfigPanel
             initialConfig={aiConfig}
             onConfigChange={onAiConfigChange}
-          /> */}
+          />
         </div>
       ),
     },

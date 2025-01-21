@@ -1,9 +1,11 @@
 {
   "name": "@openassistant/common",
-  "version": "0.0.6",
-  "private": true,
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "version": "0.0.5",
+  "description": "Common utilities for OpenAssistant",
+  "author": "Xun Li<lixun910@gmail.com>",
+  "license": "MIT",
+  "main": "./dist/index.esm.js",
+  "types": "./dist/index.d.ts",
   "dependencies": {
     "@iconify/react": "^5.1.0",
     "@nextui-org/react": "^2.6.10",
@@ -13,5 +15,18 @@
   "peerDependencies": {
     "react": ">=18.2",
     "react-dom": ">=18.2"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "prepublishOnly": "yarn build"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "package.json"
+  ]
 }
