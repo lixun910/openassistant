@@ -4033,6 +4033,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jspm/core@npm:^2.0.1":
+  version: 2.1.0
+  resolution: "@jspm/core@npm:2.1.0"
+  checksum: 10/0beee551f2b900b9f829b91e69c3f867c8483133b904dadec9bbe4b89e5b02b9556c782e4d282fcc0d0b0928abb4ee9131454d7acec81751610d2b78b7f56f67
+  languageName: node
+  linkType: hard
+
 "@kepler.gl/actions@npm:3.0.0, @kepler.gl/actions@npm:^3.0.0":
   version: 3.0.0
   resolution: "@kepler.gl/actions@npm:3.0.0"
@@ -4282,7 +4289,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kepler.gl/localization@npm:3.0.0":
+"@kepler.gl/localization@npm:3.0.0, @kepler.gl/localization@npm:^3.0.0":
   version: 3.0.0
   resolution: "@kepler.gl/localization@npm:3.0.0"
   dependencies:
@@ -8691,7 +8698,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@openassistant/keplergl@workspace:packages/keplergl":
+"@openassistant/keplergl@npm:0.0.5, @openassistant/keplergl@workspace:packages/keplergl":
   version: 0.0.0-use.local
   resolution: "@openassistant/keplergl@workspace:packages/keplergl"
   dependencies:
@@ -8699,6 +8706,7 @@ __metadata:
     "@kepler.gl/components": "npm:^3.0.0"
     "@kepler.gl/constants": "npm:^3.0.0"
     "@kepler.gl/layers": "npm:^3.0.0"
+    "@kepler.gl/localization": "npm:^3.0.0"
     "@kepler.gl/processors": "npm:^3.0.0"
     "@kepler.gl/reducers": "npm:^3.0.0"
     "@kepler.gl/styles": "npm:^3.0.0"
@@ -8706,9 +8714,12 @@ __metadata:
     "@loaders.gl/core": "npm:^4.3.3"
     "@loaders.gl/schema": "npm:^4.3.3"
     "@types/redux-logger": "npm:^3"
+    esbuild-plugin-polyfill-node: "npm:^0.3.0"
+    react-intl: "npm:^6.3.0"
     react-palm: "npm:^3.3.8"
     react-redux: "npm:^9.2.0"
     react-virtualized-auto-sizer: "npm:^1.0.25"
+    redux: "npm:^4.2.1"
     redux-logger: "npm:^3.0.6"
     styled-components: "npm:6.1.8"
   peerDependencies:
@@ -8754,9 +8765,12 @@ __metadata:
     "@kepler.gl/reducers": "npm:^3.0.0"
     "@kepler.gl/styles": "npm:^3.0.0"
     "@kepler.gl/utils": "npm:^3.0.0"
+    "@loaders.gl/core": "npm:^4.3.3"
+    "@loaders.gl/schema": "npm:^4.3.3"
     "@mdx-js/react": "npm:^3.0.0"
     "@nextui-org/react": "npm:^2.6.11"
     "@openassistant/core": "npm:0.0.5"
+    "@openassistant/keplergl": "npm:0.0.5"
     "@openassistant/ui": "npm:0.0.5"
     "@types/react": "npm:^18.3.1"
     assert: "npm:^2.1.0"
@@ -8770,10 +8784,12 @@ __metadata:
     react: "npm:^18.3.1"
     react-code-blocks: "npm:^0.1.6"
     react-dom: "npm:^18.3.1"
+    react-intl: "npm:^6.3.0"
     react-palm: "npm:^3.3.8"
     react-redux: "npm:^9.2.0"
     tailwindcss: "npm:^3.4.17"
     typescript: "npm:~5.6.2"
+    webpack: "npm:^5.97.1"
   languageName: unknown
   linkType: soft
 
@@ -16933,6 +16949,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"esbuild-plugin-polyfill-node@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "esbuild-plugin-polyfill-node@npm:0.3.0"
+  dependencies:
+    "@jspm/core": "npm:^2.0.1"
+    import-meta-resolve: "npm:^3.0.0"
+  peerDependencies:
+    esbuild: "*"
+  checksum: 10/3a6f41b965004d225997b1bc0228ced160d94c5c917f8cb519c462aa2ec5e73e87e370d93443b8c3784e3d4501436a780ad81947e9c00a38630755e2e639c411
+  languageName: node
+  linkType: hard
+
 "esbuild-plugin-tailwindcss@npm:^1.2.1":
   version: 1.2.1
   resolution: "esbuild-plugin-tailwindcss@npm:1.2.1"
@@ -19724,6 +19752,13 @@ __metadata:
   bin:
     import-local-fixture: fixtures/cli.js
   checksum: 10/0b0b0b412b2521739fbb85eeed834a3c34de9bc67e670b3d0b86248fc460d990a7b116ad056c084b87a693ef73d1f17268d6a5be626bb43c998a8b1c8a230004
+  languageName: node
+  linkType: hard
+
+"import-meta-resolve@npm:^3.0.0":
+  version: 3.1.1
+  resolution: "import-meta-resolve@npm:3.1.1"
+  checksum: 10/ae1bd4910eba2a6e15d373a934b5200e8145d63eb7f83639dde1dc1da0c9ad9d960a17c0f09d45118df5c8f63b64492d3bf7039bc3da81544700fb2dad78b84b
   languageName: node
   linkType: hard
 
@@ -31305,7 +31340,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.88.1, webpack@npm:^5.95.0":
+"webpack@npm:^5.88.1, webpack@npm:^5.95.0, webpack@npm:^5.97.1":
   version: 5.97.1
   resolution: "webpack@npm:5.97.1"
   dependencies:

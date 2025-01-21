@@ -7,6 +7,8 @@ tags: [tutorial, openassistant, keplergl, mapping]
 
 Are you looking to create stunning maps from your data without writing complex visualization code? We're excited to introduce the KeplerGL plugin for OpenAssistant, which lets you generate beautiful maps through simple conversations with your AI assistant!
 
+<!--truncate-->
+
 ## What's OpenAssistant?
 
 OpenAssistant is an open-source platform for building AI assistants. It provides a set of tools and libraries to help you build your own AI assistant.

@@ -137,21 +137,21 @@ column names:
 - price (float)
 - population (int)`;
 
-  const myDatasets = {
-    samples: JSON.parse(testData),
-  };
+  // const myDatasets = {
+  //   samples: JSON.parse(testData),
+  // };
 
-  const functions = [
-    createMapFunctionDefinition({
-      getDataset: ({ datasetName }: GetDatasetForCreateMapFunctionArgs) => {
-        // check if the dataset exists
-        if (!myDatasets[datasetName]) {
-          throw new Error('The dataset does not exist.');
-        }
-        return myDatasets[datasetName];
-      },
-    }),
-  ];
+  // const functions = [
+  //   createMapFunctionDefinition({
+  //     getDataset: ({ datasetName }: GetDatasetForCreateMapFunctionArgs) => {
+  //       // check if the dataset exists
+  //       if (!myDatasets[datasetName]) {
+  //         throw new Error('The dataset does not exist.');
+  //       }
+  //       return myDatasets[datasetName];
+  //     },
+  //   }),
+  // ];
 
   return (
     <div>
@@ -190,7 +190,7 @@ column names:
                     screenCapturedBase64={screenCaptured}
                     onScreenshotClick={() => setStartScreenCapture(true)}
                     onRemoveScreenshot={() => setScreenCaptured('')}
-                    functions={functions}
+                    functions={[]}
                     theme={colorMode}
                     historyMessages={historyMessages}
                     githubIssueLink="https://github.com/geodacenter/openassistant/issues"

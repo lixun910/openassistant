@@ -9,7 +9,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addDataToMap } from '@kepler.gl/actions';
 import { KeplerMiniMap } from './keplergl-mini-map';
 import { theme as keplerTheme } from '@kepler.gl/styles';
+import { messages } from '@kepler.gl/localization';
 import { ThemeProvider } from 'styled-components';
+import { IntlProvider } from 'react-intl';
 
 export function KeplerGlComponentWithProvider(props: CreateMapOutputData) {
   const rootNode = useRef<HTMLDivElement>(null);
@@ -35,6 +37,8 @@ export function KeplerGlComponent(
   const dispatch = useDispatch();
 
   const { datasetForKepler } = props;
+
+  const keplerMessages = messages['en'];
 
   useEffect(() => {
     dispatch(
@@ -65,12 +69,14 @@ export function KeplerGlComponent(
     <>
       {keplerState?.visState?.layers?.length > 0 && (
         <div style={{ width: `${props.width}px`, height: `${props.height}px` }}>
-          <KeplerMiniMap
-            keplerTheme={keplerTheme}
-            layerId={keplerState?.visState?.layers[0]?.id}
-            mapWidth={props.width}
-            mapHeight={props.height}
-          />
+          <IntlProvider locale="en" messages={keplerMessages}>
+            <KeplerMiniMap
+              keplerTheme={keplerTheme}
+              layerId={keplerState?.visState?.layers[0]?.id}
+              mapWidth={props.width}
+              mapHeight={props.height}
+            />
+          </IntlProvider>
         </div>
       )}
     </>

@@ -1113,7 +1113,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kepler.gl/localization@npm:3.0.0":
+"@kepler.gl/localization@npm:3.0.0, @kepler.gl/localization@npm:^3.0.0":
   version: 3.0.0
   resolution: "@kepler.gl/localization@npm:3.0.0"
   dependencies:
@@ -3683,28 +3683,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openassistant/keplergl@file:/Users/xun/github/openassistant/packages/keplergl/openassistant-keplergl-0.0.5.tgz::locator=plugin-simple-map%40workspace%3A.":
+"@openassistant/keplergl@npm:0.0.5":
   version: 0.0.5
-  resolution: "@openassistant/keplergl@file:/Users/xun/github/openassistant/packages/keplergl/openassistant-keplergl-0.0.5.tgz#/Users/xun/github/openassistant/packages/keplergl/openassistant-keplergl-0.0.5.tgz::hash=4a30cf&locator=plugin-simple-map%40workspace%3A."
+  resolution: "@openassistant/keplergl@npm:0.0.5"
   dependencies:
     "@kepler.gl/actions": "npm:^3.0.0"
     "@kepler.gl/components": "npm:^3.0.0"
     "@kepler.gl/constants": "npm:^3.0.0"
     "@kepler.gl/layers": "npm:^3.0.0"
+    "@kepler.gl/localization": "npm:^3.0.0"
     "@kepler.gl/processors": "npm:^3.0.0"
     "@kepler.gl/reducers": "npm:^3.0.0"
     "@kepler.gl/styles": "npm:^3.0.0"
     "@kepler.gl/utils": "npm:^3.0.0"
     "@loaders.gl/core": "npm:^4.3.3"
     "@loaders.gl/schema": "npm:^4.3.3"
+    react-intl: "npm:^6.3.0"
     react-palm: "npm:^3.3.8"
     react-redux: "npm:^9.2.0"
     react-virtualized-auto-sizer: "npm:^1.0.25"
+    redux: "npm:^4.2.1"
   peerDependencies:
     "@openassistant/core": "*"
     react: ">=18.2"
     react-dom: ">=18.2"
-  checksum: 10/2197724f2a5e9cba6ad18ac343998761d6b1e79d871245583dc8905c22828d040df82a93f19d8bbfffa00bec517c6723832ce0924b04f56e85eae6a4cb4e58e9
+  checksum: 10/35c046b88c8efcb062af324af32b8d7d44842ef775ae03724df1f0eab8476ccfb54e961edf9b3e58d483e2437c4ca28e5dfaf927a0ffa78c34e4ee565d3264bd
   languageName: node
   linkType: hard
 
@@ -12272,7 +12275,7 @@ __metadata:
     "@kepler.gl/utils": "npm:^3.0.0"
     "@nextui-org/react": "npm:^2.6.10"
     "@openassistant/core": "npm:0.0.5"
-    "@openassistant/keplergl": /Users/xun/github/openassistant/packages/keplergl/openassistant-keplergl-0.0.5.tgz
+    "@openassistant/keplergl": "npm:0.0.5"
     "@openassistant/ui": "npm:0.0.5"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
