@@ -13,4 +13,5 @@ meta.json
 storybook-static
 packages/.DS_Store
 packages/.DS_Store
-examples/plugin_simple_map/.env
+.env
+.next/

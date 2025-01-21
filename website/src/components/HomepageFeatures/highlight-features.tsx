@@ -205,7 +205,7 @@ export function HighlightFeatureComponent({
   };
 
   return (
-    <div className="w-full mt-10 flex flex-col p-4 gap-4">
+    <div className="w-10/12 mt-10 flex flex-col p-4 gap-4">
       <div className=" text-gray-600 dark:text-gray-100 font-bold leading-[1.2] tracking-tighter sm:text-[36px]">
         <div className="bg-hero-section-title bg-clip-text">{title}</div>
       </div>
@@ -228,7 +228,7 @@ export function HighlightFeatureComponent({
           </div>
         ))}
       </div>
-      <div className="flex flex-col xl:flex-row gap-8">
+      <div className="flex flex-col md:flex-row gap-8">
         <div className="w-[340px] min-w-[340px] sm:w-[500px] sm:min-w-[500px]">
           <Card>
             <CardBody className="p-4 flex justify-center items-center">
@@ -248,7 +248,7 @@ export function HighlightFeatureComponent({
             </CardBody>
           </Card>
         </div>
-        <div className="w-[340px] min-w-[340px] sm:w-[calc(100%-982px)] sm:min-w-[500px] bg-gray-900 rounded-lg shadow-lg max-h-[400px] pb-2">
+        <div className="w-[340px] min-w-[340px] sm:w-[calc(100%-500px)] sm:min-w-[500px] bg-gray-900 rounded-lg shadow-lg max-h-[400px] pb-2">
           <CodeBlock code={items[selectedIndex].code} />
         </div>
       </div>

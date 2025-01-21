@@ -42,3 +42,7 @@ a svg{
 .features {
   padding: 0;
 }
+
+input {
+  border: 0px;
+}
