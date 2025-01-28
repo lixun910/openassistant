@@ -9,13 +9,26 @@ export type GetDatasetForCreateMapFunctionArgs = {
   datasetName: string;
 };
 
+/**
+ * The context for the createMap function.
+ * @param getDataset - The function to get the dataset.
+ * @param config - The configuration of the map.
+ * @param config.isDraggable - Whether the map is draggable.
+ * @param config.theme - The theme of the map.
+ */
 export type MapLayerFunctionContext = {
   getDataset: ({ datasetName }: GetDatasetForCreateMapFunctionArgs) => unknown;
+  config?: { isDraggable?: boolean; theme?: string };
 };
 
 type ValueOf<T> = T[keyof T];
 export type MapLayerFunctionContextValues = ValueOf<MapLayerFunctionContext>;
 
+/**
+ * createMapFunctionDefinition is a function that creates a map function definition.
+ * @param context - The context for the function. See {@link CustomFunctionContext} for more information.
+ * @returns The map function definition.
+ */
 export function createMapFunctionDefinition(
   context: CustomFunctionContext<MapLayerFunctionContextValues>
 ): RegisterFunctionCallingProps {

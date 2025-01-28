@@ -71,6 +71,7 @@ export type ScatterplotOutputData = {
   showLoess?: boolean;
   showRegressionLine?: boolean;
   isExpanded?: boolean;
+  isDraggable?: boolean;
 };
 
 /**
@@ -148,7 +149,7 @@ export async function ScatterplotCallbackFunction({
     };
   }
 
-  const { getValues, filteredIndex, onSelected, theme } = functionContext;
+  const { getValues, filteredIndex, onSelected, config } = functionContext;
 
   let values: { x: number[]; y: number[] };
 
@@ -195,9 +196,10 @@ export async function ScatterplotCallbackFunction({
         onSelected,
         filteredIndex,
         regressionResults,
-        theme,
+        theme: config?.theme || 'dark',
         showLoess: false,
         showRegressionLine: true,
+        isDraggable: Boolean(config?.isDraggable),
       },
     };
   } catch (error) {
