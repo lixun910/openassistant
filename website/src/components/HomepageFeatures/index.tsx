@@ -8,6 +8,7 @@ import {
   HighlightFeatureComponent,
 } from './highlight-features';
 import { AiAssistantConfig } from '@openassistant/ui';
+import { QuickStart } from './quick-start';
 
 export type HomepageFeaturesProps = {
   aiConfig: AiAssistantConfig;
@@ -29,6 +30,7 @@ export default function HomepageFeatures({
         />
       ))}
       <AllFeatures />
+      <QuickStart />
     </section>
   );
 }
