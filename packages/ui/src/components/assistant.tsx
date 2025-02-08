@@ -34,6 +34,7 @@ import {
  * @param fontSize - The font size of the assistant.
  */
 export type AiAssistantProps = UseAssistantProps & {
+  chatEndpoint?: string;
   theme?: 'dark' | 'light';
   welcomeMessage: string;
   historyMessages?: MessageModel[];
@@ -98,6 +99,7 @@ export function AiAssistant(props: AiAssistantProps) {
     sendImageMessage,
     audioToText,
   } = useAssistant({
+    chatEndpoint: props.chatEndpoint,
     modelProvider: props.modelProvider,
     model: props.model,
     apiKey: props.apiKey,

@@ -6,11 +6,11 @@ import {
   RegisterFunctionCallingProps,
 } from '../types';
 
-export class AbstractAssistant {
+export abstract class AbstractAssistant {
   /**
    * Get instance using singleton pattern
    */
-  public async getInstance(): Promise<AbstractAssistant> {
+  public static async getInstance(): Promise<AbstractAssistant> {
     throw new Error('Method not implemented.');
   }
 
@@ -84,6 +84,13 @@ export class AbstractAssistant {
    * Add additional context to the conversation, so LLM can understand the context better
    */
   public async addAdditionalContext(props: { context: string, callback?: () => void }) {
+    throw new Error('Method not implemented.');
+  }
+
+  /**
+   * Test connection
+   */
+  public static async testConnection(apiKey: string, model: string): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
 }
