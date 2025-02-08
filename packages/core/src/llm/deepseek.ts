@@ -1,41 +1,53 @@
-import { ChatOpenAI, OpenAIClient } from '@langchain/openai';
-import { LangChainAssistant } from './langchain';
-import { SystemMessage } from '@langchain/core/messages';
+import {
+  createDeepSeek,
+  DeepSeekProviderSettings,
+  DeepSeekProvider,
+} from '@ai-sdk/deepseek';
+import {
+  VercelAiClient,
+  VercelAiClientConfigureProps,
+} from './vercelai-client';
+import { testConnection } from '../utils/connection-test';
 
-export class DeepSeekAssistant extends LangChainAssistant {
-  protected aiModel: ChatOpenAI;
+/**
+ * DeepSeek Assistant LLM for Client only
+ */
+export class DeepSeekAssistant extends VercelAiClient {
+  protected static baseURL = 'https://api.deepseek.com/v1';
 
-  protected openAIClient: OpenAIClient;
+  protected providerInstance: DeepSeekProvider | null = null;
 
   protected static instance: DeepSeekAssistant | null = null;
+
+  public static override configure(config: VercelAiClientConfigureProps) {
+    // call parent configure
+    super.configure(config);
+  }
+
+  public static async testConnection(
+    apiKey: string,
+    model: string
+  ): Promise<boolean> {
+    const ds = createDeepSeek({ apiKey });
+    return await testConnection(ds(model));
+  }
 
   private constructor() {
     super();
 
-    // Initialize openai instance
-    this.aiModel = new ChatOpenAI({
-      model: DeepSeekAssistant.model,
-      apiKey: DeepSeekAssistant.apiKey,
-      configuration: {
-        baseURL: 'https://api.deepseek.com/v1',
-        defaultHeaders: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${DeepSeekAssistant.apiKey}`,
-        },
-      },
-    });
+    if (DeepSeekAssistant.apiKey) {
+      // only apiKey is provided, so we can create the openai LLM instance in the client
+      const options: DeepSeekProviderSettings = {
+        apiKey: DeepSeekAssistant.apiKey,
+        baseURL: DeepSeekAssistant.baseURL,
+      };
 
-    // add system message from instructions
-    this.messages.push(new SystemMessage(DeepSeekAssistant.instructions));
+      // Initialize openai instance
+      this.providerInstance = createDeepSeek(options);
 
-    // bind tools, NOTE: can't use bind() here, it will cause error
-    this.llm = this.aiModel.bindTools(DeepSeekAssistant.tools);
-
-    // initialize openAI client
-    this.openAIClient = new OpenAIClient({
-      apiKey: DeepSeekAssistant.apiKey,
-      dangerouslyAllowBrowser: true,
-    });
+      // create a language model from the provider instance
+      this.llm = this.providerInstance(DeepSeekAssistant.model);
+    }
   }
 
   public static async getInstance(): Promise<DeepSeekAssistant> {
@@ -48,10 +60,7 @@ export class DeepSeekAssistant extends LangChainAssistant {
   public override restart() {
     super.restart();
     // need to reset the instance so getInstance doesn't return the same instance
+    this.providerInstance = null;
     DeepSeekAssistant.instance = null;
-  }
-
-  public override async audioToText(): Promise<string> {
-    throw new Error('DeepSeekClient audioToText is not implemented');
   }
 }

@@ -211,6 +211,7 @@ Please select your prefered LLM model and use your API key to start the chat.
   return (
     <AiAssistant
       {...assistantProps}
+      chatEndpoint='/api/chat'
       historyMessages={historyMessages}
       isMessageDraggable={true}
       enableVoice={true}
