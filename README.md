@@ -30,7 +30,8 @@ Check out the following examples using OpenAssistant in action:
   - Anthropic Claude*
   - AWS Bedrock*
   - Azure OpenAI*
-> * via server API only
+  
+* via server API only, see [how-to documentation here](https://openassistant-doc.vercel.app/blog/server-support)
 
 - 🎯 **Advanced Capabilities**
   - Take screenshot to ask [[Demo]](https://geoda.ai/img/highlight-screenshot.mp4)
