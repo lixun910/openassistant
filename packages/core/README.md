@@ -1,4 +1,4 @@
-# React AI Assist Core using Vercel AI SDK
+# @openassistant/core 
 
 A powerful and flexible React library for integrating multiple AI assistants (OpenAI, Google Gemini, and Ollama) into your applications.
 

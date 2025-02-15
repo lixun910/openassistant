@@ -97,7 +97,7 @@ export const Default: Story = {
     docs: {
       description: {
         story:
-          'This is a basic example of the histogram component with sample data.',
+          'This is a basic example of the boxplot component with sample data.',
       },
     },
   },
