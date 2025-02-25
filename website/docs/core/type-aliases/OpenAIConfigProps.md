@@ -2,7 +2,7 @@
 
 > **OpenAIConfigProps**: `object`
 
-Defined in: [types.ts:296](https://github.com/GeoDaCenter/openassistant/blob/f1f258826ab8e671a18170ebc60cc2939607e736/packages/core/src/types.ts#L296)
+Defined in: [types.ts:303](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/core/src/types.ts#L303)
 
 Type of OpenAIConfigProps
 

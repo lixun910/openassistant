@@ -2,7 +2,7 @@
 
 > **ScatterplotFunctionContext**: `object`
 
-Defined in: [scatterplot/definition.ts:41](https://github.com/GeoDaCenter/openassistant/blob/f1f258826ab8e671a18170ebc60cc2939607e736/packages/echarts/src/scatterplot/definition.ts#L41)
+Defined in: [scatterplot/definition.ts:43](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/echarts/src/scatterplot/definition.ts#L43)
 
 The context of the scatterplot function. The context will be used by the function calling to create the scatterplot.
 
@@ -34,7 +34,7 @@ The context of the scatterplot function. The context will be used by the functio
 
 ## Param
 
-Get the values of two variables from the dataset. See GetValues for more details.
+Get the values of two variables from the dataset. See [GetValues](GetValues.md) for more details.
 
 ## Param
 

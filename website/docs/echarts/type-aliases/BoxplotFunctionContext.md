@@ -2,7 +2,7 @@
 
 > **BoxplotFunctionContext**: `object`
 
-Defined in: [boxplot/definition.ts:37](https://github.com/GeoDaCenter/openassistant/blob/f1f258826ab8e671a18170ebc60cc2939607e736/packages/echarts/src/boxplot/definition.ts#L37)
+Defined in: [boxplot/definition.ts:37](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/echarts/src/boxplot/definition.ts#L37)
 
 The context of the boxplot function.
 
@@ -30,7 +30,7 @@ The context of the boxplot function.
 
 ## Param
 
-Get the values of a variable from the dataset. See GetValues for more details.
+Get the values of a variable from the dataset. See [GetValues](GetValues.md) for more details.
 
 ## Param
 
