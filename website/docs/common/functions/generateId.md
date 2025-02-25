@@ -2,7 +2,7 @@
 
 > **generateId**(): `string`
 
-Defined in: [utils.ts:17](https://github.com/GeoDaCenter/openassistant/blob/f1f258826ab8e671a18170ebc60cc2939607e736/packages/common/src/utils.ts#L17)
+Defined in: [utils.ts:17](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/common/src/utils.ts#L17)
 
 Generates a random ID, which is a string of 13 characters
 

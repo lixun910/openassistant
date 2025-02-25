@@ -29,3 +29,14 @@ export * from './pcp/callback-component';
 export * from './pcp/component/pcp-component';
 export * from './pcp/component/pcp-option';
 export * from './pcp/component/utils';
+
+export * from './bubble-chart/definition';
+export * from './bubble-chart/callback-function';
+export * from './bubble-chart/callback-component';
+export * from './bubble-chart/component/bubble-chart';
+export * from './bubble-chart/component/bubble-chart-component';
+export * from './bubble-chart/component/bubble-chart-option';
+
+export * from './math/linear-regression';
+export * from './echarts-updater';
+export * from './echarts-theme';

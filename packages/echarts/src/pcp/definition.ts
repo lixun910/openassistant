@@ -4,20 +4,7 @@ import {
 } from '@openassistant/core';
 import { ParallelCoordinateCallbackMessage } from './callback-component';
 import { parallelCoordinateCallbackFunction } from './callback-function';
-
-/**
- * Function signature for retrieving variable values from a dataset.
- *
- * @note Users should implement this function to retrieve the values of a variable from their own dataset e.g. database.
- *
- * @param datasetName - Name of the target dataset
- * @param variableName - Name of the variable to retrieve
- * @returns Promise containing an array of numeric values
- */
-type GetValues = (
-  datasetName: string,
-  variableName: string
-) => Promise<number[]>;
+import { GetValues } from '../histogram/definition';
 
 /**
  * Configuration context for the parallel coordinate visualization
@@ -75,7 +62,7 @@ type ParallelCoordinateFunctionContextValues =
  * the LLM will confirm with you to create a parallel coordinate chart to examine the relationship among the variables.
  * :::
  *
- * @param context - The context object used by the parallel coordinate function. See [ParallelCoordinateFunctionContext](../type-aliases/ParallelCoordinateFunctionContext) for more details.
+ * @param context - The context object used by the parallel coordinate function. See ParallelCoordinateFunctionContext for more details.
  * 
  * :::note
  * You are responsible to provide the context object, which are `getValues` and `config` as shown in the example above, to the parallel coordinate function.

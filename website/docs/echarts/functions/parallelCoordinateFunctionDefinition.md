@@ -2,7 +2,7 @@
 
 > **parallelCoordinateFunctionDefinition**(`context`): `RegisterFunctionCallingProps`
 
-Defined in: [pcp/definition.ts:86](https://github.com/GeoDaCenter/openassistant/blob/f1f258826ab8e671a18170ebc60cc2939607e736/packages/echarts/src/pcp/definition.ts#L86)
+Defined in: [pcp/definition.ts:73](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/echarts/src/pcp/definition.ts#L73)
 
 ## Summary
 
@@ -48,7 +48,7 @@ the LLM will confirm with you to create a parallel coordinate chart to examine t
 
 `CustomFunctionContext`\<`ParallelCoordinateFunctionContextValues`\>
 
-The context object used by the parallel coordinate function. See [ParallelCoordinateFunctionContext](../type-aliases/ParallelCoordinateFunctionContext) for more details.
+The context object used by the parallel coordinate function. See ParallelCoordinateFunctionContext for more details.
 
 :::note
 You are responsible to provide the context object, which are `getValues` and `config` as shown in the example above, to the parallel coordinate function.

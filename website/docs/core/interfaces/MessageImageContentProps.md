@@ -1,6 +1,6 @@
 # Interface: MessageImageContentProps
 
-Defined in: [types.ts:6](https://github.com/GeoDaCenter/openassistant/blob/f1f258826ab8e671a18170ebc60cc2939607e736/packages/core/src/types.ts#L6)
+Defined in: [types.ts:9](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/core/src/types.ts#L9)
 
 Type of image message content
 
@@ -10,7 +10,7 @@ Type of image message content
 
 > `optional` **alt**: `string`
 
-Defined in: [types.ts:10](https://github.com/GeoDaCenter/openassistant/blob/f1f258826ab8e671a18170ebc60cc2939607e736/packages/core/src/types.ts#L10)
+Defined in: [types.ts:13](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/core/src/types.ts#L13)
 
 ***
 
@@ -18,7 +18,7 @@ Defined in: [types.ts:10](https://github.com/GeoDaCenter/openassistant/blob/f1f2
 
 > `optional` **height**: `string` \| `number`
 
-Defined in: [types.ts:9](https://github.com/GeoDaCenter/openassistant/blob/f1f258826ab8e671a18170ebc60cc2939607e736/packages/core/src/types.ts#L9)
+Defined in: [types.ts:12](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/core/src/types.ts#L12)
 
 ***
 
@@ -26,7 +26,7 @@ Defined in: [types.ts:9](https://github.com/GeoDaCenter/openassistant/blob/f1f25
 
 > `optional` **src**: `string`
 
-Defined in: [types.ts:7](https://github.com/GeoDaCenter/openassistant/blob/f1f258826ab8e671a18170ebc60cc2939607e736/packages/core/src/types.ts#L7)
+Defined in: [types.ts:10](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/core/src/types.ts#L10)
 
 ***
 
@@ -34,4 +34,4 @@ Defined in: [types.ts:7](https://github.com/GeoDaCenter/openassistant/blob/f1f25
 
 > `optional` **width**: `string` \| `number`
 
-Defined in: [types.ts:8](https://github.com/GeoDaCenter/openassistant/blob/f1f258826ab8e671a18170ebc60cc2939607e736/packages/core/src/types.ts#L8)
+Defined in: [types.ts:11](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/core/src/types.ts#L11)
