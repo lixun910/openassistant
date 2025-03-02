@@ -1,17 +1,42 @@
 # Function: createBoxplot()
 
-> **createBoxplot**(`__namedParameters`): [`BoxplotDataProps`](../type-aliases/BoxplotDataProps.md)
+> **createBoxplot**(`props`): [`BoxplotDataProps`](../type-aliases/BoxplotDataProps.md)
 
-Defined in: [boxplot/component/utils.ts:37](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/echarts/src/boxplot/component/utils.ts#L37)
+Defined in: [boxplot/component/utils.ts:90](https://github.com/GeoDaCenter/openassistant/blob/65e761aafcb8b3d759c0e5ae9c1cbe8e024f7128/packages/echarts/src/boxplot/component/utils.ts#L90)
 
 Create a boxplot from a list of numbers and option boundIQR (1.5 or 3.0)
 
 ## Parameters
 
-### \_\_namedParameters
+### props
 
 [`CreateBoxplotProps`](../type-aliases/CreateBoxplotProps.md)
+
+The properties object containing:
 
 ## Returns
 
 [`BoxplotDataProps`](../type-aliases/BoxplotDataProps.md)
+
+The boxplot data containing statistical properties and mean points
+
+### Example: single boxplot
+
+```ts
+const data = {
+  'samples': [1, 2, 3, 4, 5],
+};
+const boundIQR = 1.5;
+const boxplotData = createBoxplot({data, boundIQR});
+```
+
+### Example: multiple boxplots
+
+```ts
+const data = {
+  'samples': [1, 2, 3, 4, 5],
+  'samples2': [6, 7, 8, 9, 10],
+};
+const boundIQR = 1.5;
+const boxplotData = createBoxplot({data, boundIQR});
+```

@@ -2,7 +2,7 @@
 
 > **ExpandableContainer**(`__namedParameters`): `Element`
 
-Defined in: [expandable-container.tsx:12](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/common/src/expandable-container.tsx#L12)
+Defined in: [expandable-container.tsx:13](https://github.com/GeoDaCenter/openassistant/blob/65e761aafcb8b3d759c0e5ae9c1cbe8e024f7128/packages/common/src/expandable-container.tsx#L13)
 
 ## Parameters
 
@@ -14,11 +14,11 @@ Defined in: [expandable-container.tsx:12](https://github.com/GeoDaCenter/openass
 
 #### defaultHeight?
 
-`number` = `800`
+`number`
 
 #### defaultWidth?
 
-`number` = `600`
+`number`
 
 #### draggable?
 

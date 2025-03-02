@@ -2,7 +2,7 @@
 
 > **ResizablePlotContainer**(`__namedParameters`): `Element`
 
-Defined in: [resizable-container.tsx:3](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/common/src/resizable-container.tsx#L3)
+Defined in: [resizable-container.tsx:3](https://github.com/GeoDaCenter/openassistant/blob/65e761aafcb8b3d759c0e5ae9c1cbe8e024f7128/packages/common/src/resizable-container.tsx#L3)
 
 ## Parameters
 
@@ -14,7 +14,7 @@ Defined in: [resizable-container.tsx:3](https://github.com/GeoDaCenter/openassis
 
 #### defaultHeight?
 
-`number` = `380`
+`number`
 
 #### defaultWidth?
 

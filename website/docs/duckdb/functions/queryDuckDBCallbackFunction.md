@@ -1,20 +1,22 @@
 # Function: queryDuckDBCallbackFunction()
 
-> **queryDuckDBCallbackFunction**(`__namedParameters`): `Promise`\<`CustomFunctionOutputProps`\<`QueryDuckDBOutputResult`, [`QueryDuckDBOutputData`](../type-aliases/QueryDuckDBOutputData.md)\>\>
+> **queryDuckDBCallbackFunction**(`props`): `Promise`\<`CustomFunctionOutputProps`\<`QueryDuckDBOutputResult`, [`QueryDuckDBOutputData`](../type-aliases/QueryDuckDBOutputData.md)\>\>
 
-Defined in: [query.tsx:212](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/duckdb/src/query.tsx#L212)
+Defined in: [query.tsx:213](https://github.com/GeoDaCenter/openassistant/blob/65e761aafcb8b3d759c0e5ae9c1cbe8e024f7128/packages/duckdb/src/query.tsx#L213)
 
 The callback function for the queryDuckDB function. When LLM calls the queryDuckDB function, it will be executed.
-The result will be returned as a reponse of the function call to the LLM.
+The result will be returned as a response of the function call to the LLM.
 
 ## Parameters
 
-### \_\_namedParameters
+### props
 
 `CallbackFunctionProps`
+
+The callback function properties
 
 ## Returns
 
 `Promise`\<`CustomFunctionOutputProps`\<`QueryDuckDBOutputResult`, [`QueryDuckDBOutputData`](../type-aliases/QueryDuckDBOutputData.md)\>\>
 
-The result of the function.
+The result of the function
