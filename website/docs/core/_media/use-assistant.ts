@@ -1,36 +1,31 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  OpenAIFunctionTool,
-  StreamMessageCallback,
-  VercelToolSet,
-} from '../types';
+import { OpenAIFunctionTool, StreamMessageCallback, ToolCallMessage } from '../types';
 import { VercelAi } from '../llm/vercelai';
-import { createAssistant } from '../utils/create-assistant';
-import { ToolChoice } from 'ai';
+import { createAssistant, ExtendedTool } from '../utils/create-assistant';
+import { StepResult, ToolChoice } from 'ai';
 import { ToolSet } from 'ai';
 /**
- * Props for the Assistant UI and useAssistant hook.
- *
- * @param name - The name of the assistant.
- * @param chatEndpoint - The chat endpoint that handles the chat requests, e.g. '/api/chat'. This is required for server-side support. If not provided, the chat will be handled by the client.
- * @param modelProvider - The model provider.
- * @param model - The model.
- * @param apiKey - The API key.
- * @param version - The version.
- * @param description - The description.
- * @param temperature - The temperature.
- * @param topP - The topP.
- * @param instructions - The instructions.
- * @param functions - The functions.
- * @param functions.name - The name of the function.
- * @param functions.description - The description of the function.
- * @param functions.properties - The properties of the function.
- * @param functions.required - The required properties of the function.
- * @param functions.callbackFunction - The callback function of the function. See {@link CallbackFunction} for more details.
- * @param functions.callbackFunctionContext - The context of the callback function. See {@link CustomFunctionContext} for more details.
- * @param functions.callbackMessage - The message of the callback function. See {@link CustomMessageCallback} for more details.
+ * Props for configuring the AI Assistant and useAssistant hook.
+ * 
+ * @param chatEndpoint - The server endpoint for handling chat requests (e.g. '/api/chat'). Required for server-side support.
+ * @param voiceEndpoint - The server endpoint for handling voice/audio requests.
+ * @param name - The display name of the assistant.
+ * @param modelProvider - The AI model provider service (e.g. 'openai', 'anthropic').
+ * @param model - The specific model identifier to use.
+ * @param apiKey - Authentication key for the model provider's API.
+ * @param version - API version to use.
+ * @param baseUrl - Optional base URL for API requests.
+ * @param description - Optional description of the assistant's purpose.
+ * @param temperature - Controls randomness in responses (0-1).
+ * @param topP - Controls diversity of responses via nucleus sampling (0-1).
+ * @param instructions - System instructions/prompt for the assistant.
+ * @param functions - Custom functions/tools the assistant can use, either as an array or record object.
+ * @param toolChoice - Controls how the assistant selects tools to use.
+ * @param maxSteps - Maximum number of steps/iterations in a conversation.
+ * @param abortController - Optional AbortController to cancel requests.
+ * @param historyMessages - Optional array of previous messages to provide conversation context.
  */
 export type UseAssistantProps = {
   chatEndpoint?: string;
@@ -45,30 +40,37 @@ export type UseAssistantProps = {
   temperature?: number;
   topP?: number;
   instructions: string;
-  functions?: Array<OpenAIFunctionTool> | VercelToolSet;
-  vercelFunctions?: VercelToolSet;
+  functions?:
+    | Array<OpenAIFunctionTool>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    | Record<string, ExtendedTool<any>>;
   toolChoice?: ToolChoice<ToolSet>;
   maxSteps?: number;
   abortController?: AbortController;
 };
 
 /**
- * Type of SendTextMessageProps
- *
- * @param message - The message to be sent.
- * @param streamMessageCallback - The stream message callback to stream the message back to the UI. See {@link StreamMessageCallback} for more details.
+ * Parameters for sending a text message to the assistant.
+ * 
+ * @param message - The text message to send to the assistant.
+ * @param streamMessageCallback - Callback function to handle streaming response chunks.
+ * @param onStepFinish - Optional callback triggered when a conversation step completes.
  */
 export type SendTextMessageProps = {
   message: string;
   streamMessageCallback: StreamMessageCallback;
+  onStepFinish?: (
+    event: StepResult<ToolSet>,
+    toolCallMessages: ToolCallMessage[]
+  ) => Promise<void> | void;
 };
 
 /**
- * Type of SendImageMessageProps
- *
- * @param imageBase64String - The image base64 string to be sent.
- * @param message - The message to be sent.
- * @param streamMessageCallback - The stream message callback to stream the message back to the UI. See {@link StreamMessageCallback} for more details.
+ * Parameters for sending an image with optional text to the assistant.
+ * 
+ * @param imageBase64String - Base64-encoded image data.
+ * @param message - Optional text message to accompany the image.
+ * @param streamMessageCallback - Callback function to handle streaming response chunks.
  */
 export type SendImageMessageProps = {
   imageBase64String: string;
@@ -154,11 +156,13 @@ export function useAssistant(props: UseAssistantProps) {
   const sendTextMessage = async ({
     message,
     streamMessageCallback,
+    onStepFinish,
   }: SendTextMessageProps) => {
     await checkLLMInstance();
     await assistant?.processTextMessage({
       textMessage: message,
       streamMessageCallback,
+      onStepFinish
     });
   };
 

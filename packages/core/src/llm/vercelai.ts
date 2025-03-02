@@ -6,11 +6,19 @@ import {
   ProcessImageMessageProps,
   ProcessMessageProps,
   RegisterFunctionCallingProps,
+  StreamMessage,
   StreamMessageCallback,
   ToolCallMessage,
 } from '../types';
 import { ReactNode } from 'react';
-import { LanguageModelUsage, StepResult, Tool, ToolCall, ToolChoice, ToolSet } from 'ai';
+import {
+  LanguageModelUsage,
+  StepResult,
+  Tool,
+  ToolCall,
+  ToolChoice,
+  ToolSet,
+} from 'ai';
 import {
   Message,
   UIMessage,
@@ -109,12 +117,22 @@ export class VercelAi extends AbstractAssistant {
 
   protected toolSteps = 0;
 
+  /**
+   * The messages array, which is used to send to the LLM.
+   *
+   * To persist the messages, you can call the {@link setMessages} method, and  the {@link getMessages} method.
+   */
   protected messages: Message[] = [];
   protected static customFunctions: CustomFunctions = {};
   protected static tools: ToolSet = {};
   protected abortController: AbortController | null = null;
 
   protected static instance: VercelAi | null = null;
+
+  protected streamMessage: StreamMessage = {
+    toolCallMessages: [],
+    text: '',
+  };
 
   protected constructor() {
     super();
@@ -155,7 +173,7 @@ export class VercelAi extends AbstractAssistant {
   }: RegisterFunctionCallingProps) {
     // register custom function, if already registed then rewrite it
     VercelAi.customFunctions[name] = {
-      func: callbackFunction,
+      func: callbackFunction || (() => Promise.resolve({ name, result: {} })),
       context: callbackFunctionContext,
       callbackMessage,
     };
@@ -172,6 +190,14 @@ export class VercelAi extends AbstractAssistant {
     };
 
     VercelAi.tools[name] = tool;
+  }
+
+  public getMessages() {
+    return this.messages;
+  }
+
+  public setMessages(messages: Message[]) {
+    this.messages = messages;
   }
 
   public override async addAdditionalContext({ context }: { context: string }) {
@@ -212,6 +238,16 @@ export class VercelAi extends AbstractAssistant {
     });
   }
 
+  /**
+   * Process the text message by sending it to the LLM.
+   * 
+   * @param params - The parameters object containing:
+   * @param params.textMessage - The text message to send to the LLM
+   * @param params.streamMessageCallback - The callback function to handle the stream message
+   * @param params.imageMessage - Optional image message to process
+   * @param params.onStepFinish - Optional callback function to handle step completion
+   * @returns Promise containing the last message
+   */
   public override async processTextMessage({
     textMessage,
     streamMessageCallback,
@@ -234,21 +270,28 @@ export class VercelAi extends AbstractAssistant {
     // reset tool steps
     this.toolSteps = 0;
 
-    const { customMessage, outputToolResults, outputToolCalls } =
-      await this.triggerRequest({
-        streamMessageCallback,
-        imageMessage,
-        onStepFinish,
-      });
+    // reset stream message
+    this.streamMessage = {
+      reasoning: '',
+      toolCallMessages: [],
+      text: '',
+    };
+
+    const { customMessage } = await this.triggerRequest({
+      streamMessageCallback,
+      imageMessage,
+      onStepFinish,
+    });
 
     const lastMessage = this.messages[this.messages.length - 1];
     streamMessageCallback({
       deltaMessage: lastMessage.content,
       customMessage,
       isCompleted: true,
+      message: this.streamMessage,
     });
 
-    return { messages: [lastMessage], outputToolResults, outputToolCalls };
+    return { messages: [lastMessage] };
   }
 
   protected async triggerRequest({
@@ -308,10 +351,11 @@ export class VercelAi extends AbstractAssistant {
       }: {
         toolCall: ToolCall<string, unknown>;
       }) => {
-        const output: CustomFunctionOutputProps<unknown, unknown> = await proceedToolCall({
-          toolCall,
-          customFunctions: VercelAi.customFunctions,
-        });
+        const output: CustomFunctionOutputProps<unknown, unknown> =
+          await proceedToolCall({
+            toolCall,
+            customFunctions: VercelAi.customFunctions,
+          });
         if (output.customMessageCallback) {
           try {
             customMessage = output.customMessageCallback({

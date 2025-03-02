@@ -2,7 +2,7 @@
 
 > **isOpenAIFunctionTool**(`tool`): `tool is OpenAIFunctionTool`
 
-Defined in: [utils/create-assistant.ts:16](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/core/src/utils/create-assistant.ts#L16)
+Defined in: [utils/create-assistant.ts:146](https://github.com/GeoDaCenter/openassistant/blob/65e761aafcb8b3d759c0e5ae9c1cbe8e024f7128/packages/core/src/utils/create-assistant.ts#L146)
 
 Type guard to check if a tool is an OpenAI function tool
 
@@ -12,7 +12,7 @@ Type guard to check if a tool is an OpenAI function tool
 
 The tool to check
 
-[`OpenAIFunctionTool`](../type-aliases/OpenAIFunctionTool.md) | [`VercelFunctionTool`](../type-aliases/VercelFunctionTool.md)
+[`OpenAIFunctionTool`](../type-aliases/OpenAIFunctionTool.md) | `Tool`
 
 ## Returns
 

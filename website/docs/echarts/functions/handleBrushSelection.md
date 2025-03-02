@@ -2,7 +2,7 @@
 
 > **handleBrushSelection**(`eChart`, `brushed`, `datasetName`, `onSelected`?): `void`
 
-Defined in: [echarts-updater.tsx:33](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/echarts/src/echarts-updater.tsx#L33)
+Defined in: [echarts-updater.tsx:33](https://github.com/GeoDaCenter/openassistant/blob/65e761aafcb8b3d759c0e5ae9c1cbe8e024f7128/packages/echarts/src/echarts-updater.tsx#L33)
 
 Handles brush selection events from ECharts components.
 Manages highlighting and callback execution for brushed data points.

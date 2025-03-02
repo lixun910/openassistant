@@ -2,15 +2,15 @@
 
 > **CustomFunctionCall**: `object`
 
-Defined in: [types.ts:170](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/core/src/types.ts#L170)
+Defined in: [types.ts:209](https://github.com/GeoDaCenter/openassistant/blob/65e761aafcb8b3d759c0e5ae9c1cbe8e024f7128/packages/core/src/types.ts#L209)
 
 Type of CustomFunctionCall
 
 ## Type declaration
 
-### functionArgs
+### functionArgs?
 
-> **functionArgs**: `Record`\<`string`, `unknown`\>
+> `optional` **functionArgs**: `Record`\<`string`, `unknown`\>
 
 the arguments of the function
 

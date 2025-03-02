@@ -2,7 +2,7 @@
 
 > **calculateLoessRegression**(`xData`, `yData`, `bandwidth`, `steps`, `confidenceLevel`): [`LoessResult`](../type-aliases/LoessResult.md)
 
-Defined in: [math/linear-regression.ts:211](https://github.com/GeoDaCenter/openassistant/blob/a1f850931f3d8289e0a4c297ef4b317a2f84235b/packages/echarts/src/math/linear-regression.ts#L211)
+Defined in: [math/linear-regression.ts:211](https://github.com/GeoDaCenter/openassistant/blob/65e761aafcb8b3d759c0e5ae9c1cbe8e024f7128/packages/echarts/src/math/linear-regression.ts#L211)
 
 Calculate the loess regression.
 
