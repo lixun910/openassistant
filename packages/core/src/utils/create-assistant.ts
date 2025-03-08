@@ -6,13 +6,11 @@ import { GetAssistantModelByProvider } from '../lib/model-utils';
 import { UseAssistantProps } from '../hooks/use-assistant';
 import {
   CallbackFunctionProps,
-  CustomFunctionCall,
   CustomFunctionContext,
   CustomFunctionContextCallback,
-  OpenAIFunctionTool,
+  RegisterFunctionCallingProps,
 } from '../types';
 import { Tool, ToolExecutionOptions } from 'ai';
-import { getCustomMessage } from './tool-message';
 
 type Parameters = z.ZodTypeAny | Schema<unknown>;
 
@@ -29,14 +27,14 @@ export type inferParameters<PARAMETERS extends Parameters> =
 type ExecuteFunctionResult = {
   /**
    * The formatted result string that will be sent back to the LLM
-   * @type {string}
+   * @type {object}
    */
-  llmResult: string;
+  llmResult: object;
   /**
    * Additional data returned by the function that can be used by the UI
-   * @type {unknown}
+   * @type {object}
    */
-  output: unknown;
+  additionalData?: object;
 };
 
 /**
@@ -144,8 +142,8 @@ export function tool<PARAMETERS extends Parameters = never>(
  * @returns True if the tool is an OpenAI function tool
  */
 export function isOpenAIFunctionTool(
-  tool: OpenAIFunctionTool | Tool
-): tool is OpenAIFunctionTool {
+  tool: RegisterFunctionCallingProps | Tool
+): tool is RegisterFunctionCallingProps {
   return 'name' in tool && 'properties' in tool;
 }
 
@@ -155,7 +153,7 @@ export function isOpenAIFunctionTool(
  * @returns True if the tool is a Vercel function tool
  */
 export function isVercelFunctionTool(
-  tool: OpenAIFunctionTool | ExtendedTool
+  tool: RegisterFunctionCallingProps | ExtendedTool
 ): tool is ExtendedTool {
   return 'parameters' in tool && 'execute' in tool && 'description' in tool;
 }
@@ -163,7 +161,7 @@ export function isVercelFunctionTool(
 /**
  * Creates an AI assistant instance with the specified configuration
  *
- * @param props - Configuration properties for the assistant
+ * @param props - Configuration properties for the assistant. See {@link UseAssistantProps} for more details.
  * @returns Promise that resolves to the configured assistant instance
  *
  * @example
@@ -172,9 +170,25 @@ export function isVercelFunctionTool(
  *   modelProvider: 'openai',
  *   model: 'gpt-4',
  *   apiKey: 'your-api-key',
- *   instructions: 'You are a helpful assistant'
+ *   instructions: 'You are a helpful assistant',
+ *   functions: [
+ *     tool({
+ *       description: 'Get the weather in a location',
+ *       parameters: z.object({ location: z.string() }),
+ *       execute: async ({ location }, option) => {
+ *         const getStation = options.context?.getStation;
+ *         const station = getStation ? await getStation(location) : null;
+ *         return { llmResult: `Weather in ${location} from station ${station}.` };
+ *       },
+ *       context: {
+ *         getStation: async (location) => {
+ *           return { station: '123' };
+ *         },
+ *       },
+ *       component: WeatherComponent,
+ *     })
+ *   ]
  * });
- * ```
  */
 export async function createAssistant(props: UseAssistantProps) {
   const AssistantModel = GetAssistantModelByProvider({
@@ -195,6 +209,7 @@ export async function createAssistant(props: UseAssistantProps) {
     version: props.version,
     toolChoice: props.toolChoice,
     maxSteps: props.maxSteps,
+    toolCallStreaming: props.toolCallStreaming,
     ...(props.baseUrl ? { baseURL: props.baseUrl } : {}),
   });
 
@@ -242,9 +257,7 @@ export async function createAssistant(props: UseAssistantProps) {
             ? { callbackFunction: createCallbackFunction(func.execute) }
             : {}),
           ...(func.context ? { callbackFunctionContext: func.context } : {}),
-          ...(func.component
-            ? { callbackMessage: createCallbackMessage(func.component) }
-            : {}),
+          ...(func.component ? { component: func.component } : {}),
         });
       }
     });
@@ -254,9 +267,9 @@ export async function createAssistant(props: UseAssistantProps) {
   const assistant = await AssistantModel.getInstance();
 
   // restore the history messages
-  // if (props.hist&& assistant.getMessages().length === 0) {
-  //   assistant.setMessages(props.historyMessages);
-  // }
+  if (props.historyMessages && assistant.getMessages().length === 0) {
+    assistant.setMessages(props.historyMessages);
+  }
 
   // set the abort controller
   if (props.abortController) {
@@ -266,32 +279,10 @@ export async function createAssistant(props: UseAssistantProps) {
   return assistant;
 }
 
-function createCallbackMessage(component: React.ElementType) {
-  const callbackMessage = (customFunctionCall: CustomFunctionCall) => {
-    const { functionName, functionArgs, output } = customFunctionCall;
-    if (functionArgs) {
-      const message = getCustomMessage({
-        functionName,
-        functionArgs,
-        output,
-        CustomMessage: component,
-      });
-      return message;
-    }
-    return null;
-  };
-  return callbackMessage;
-}
-
 function isExecuteFunctionResult(
   result: unknown
 ): result is ExecuteFunctionResult {
-  return (
-    typeof result === 'object' &&
-    result !== null &&
-    'llmResult' in result &&
-    'output' in result
-  );
+  return typeof result === 'object' && result !== null && 'llmResult' in result;
 }
 
 function createCallbackFunction<PARAMETERS extends Parameters>(
@@ -319,11 +310,8 @@ function createCallbackFunction<PARAMETERS extends Parameters>(
 
       return {
         name: functionName,
-        result: {
-          success: true,
-          llmResult: result.llmResult,
-        },
-        data: result.output,
+        result: result.llmResult,
+        data: result.additionalData,
       };
     } catch (error) {
       return {

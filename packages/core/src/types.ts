@@ -1,7 +1,24 @@
-import { ToolSet } from 'ai';
+import { Message, ToolSet } from 'ai';
 import { StepResult } from 'ai';
 import { ReactNode } from 'react';
 import { z } from 'zod';
+
+export type ToolCallComponent = {
+  toolName: string;
+  component?: React.ElementType | ReactNode;
+};
+
+/**
+ * Type of ToolCallComponents
+ *
+ * A dictionary of components, key is the class name of the component, value is the React component itself.
+ * The component will be used to create the tool call message.
+ */
+export type ToolCallComponents = ToolCallComponent[];
+
+export type AIMessage = Message & {
+  id: string;
+};
 
 export type VercelFunctionTool = {
   description: string;
@@ -16,33 +33,51 @@ export type VercelToolSet = Record<string, VercelFunctionTool>;
 /**
  * Type of ToolCallElement. A ToolCallElement is a ReactNode element
  * that can be reconstructed by using the `type` and `config`.
- * 
+ *
  *
  * @param type - The type of the tool call element, which is the name of the functional component
  * @param config - The config of the tool call element, which is the props of the functional component
  */
-type ToolCallElement = {
+export type ToolCallElement = {
   type: string;
   config: Record<string, unknown>;
 };
 
 /**
  * Type of ToolCallMessage
- * 
- * The tool call message is used to store the tool call information for UI display, see {@link StreamMessage}.
- * Note: the ToolCallMessage is not used in the tool call execution.
- * 
+ *
+ * The tool call message is used to store the tool call information.
+ *
  * @param toolCallId - The id of the tool call
- * @param element - The element of the tool call
- * @param text - The text of the tool call
- * @param reason - The reason of the tool call
+ * @param toolName - The name of the tool
+ * @param args - The arguments of the tool
+ * @param llmResult - The result from the execution of the tool, which will be sent back to the LLM as response.
+ * @param additionalData - The additional data of the tool, which can be used to pass the output of the tool to next tool call or the component for rendering.
+ * @param text - The streaming text of the tool
+ * @param isCompleted - The flag indicating if the tool call is completed. Note: there are three stages of the tool call:
+ * 1. The tool call is requested by the LLM with the tool name and arguments.
+ * 2. The tool call is executing and {llmResult, additionalData} will be updated.
+ * 3. The tool call is completed and {llmResult} will be sent back to the LLM as response.
  */
 export type ToolCallMessage = {
+  toolName: string;
   toolCallId: string;
-  element?: ReactNode;
+  args: Record<string, unknown>;
+  isCompleted: boolean;
+  llmResult?: unknown;
+  additionalData?: unknown;
   text?: string;
-  reason?: string;
 };
+
+export const ToolCallMessageSchema = z.object({
+  toolName: z.string(),
+  toolCallId: z.string(),
+  args: z.record(z.unknown()),
+  isCompleted: z.boolean(),
+  llmResult: z.unknown().optional(),
+  additionalData: z.unknown().optional(),
+  text: z.string().optional(),
+});
 
 /**
  * Type of image message content
@@ -84,7 +119,7 @@ export type MessagePayload =
  * @param type The type of the message
  * @param payload The payload of the message, can be string, object, image or custom
  */
-export interface MessageModel {
+export type MessageModel = {
   /**
    * The message to be sent and received from the assistant.
    * @deprecated Use messageContent.text instead
@@ -97,7 +132,7 @@ export interface MessageModel {
   type?: MessageType;
   payload?: MessagePayload;
   messageContent?: StreamMessage;
-}
+};
 
 /**
  * Context object for custom functions. The context object can be used to pass data from your react app to custom functions.
@@ -152,8 +187,10 @@ export type CustomFunctionOutputProps<R, D> = {
   result: R;
   /** Additional data used by customMessageCallback to create UI elements (e.g. plot, map) */
   data?: D;
-  /** Callback function to create custom UI elements like plots or maps */
+  /** @deprecated Callback function to create custom UI elements like plots or maps */
   customMessageCallback?: CustomMessageCallback;
+  /** Component for the tool call */
+  component?: ToolCallComponent;
 };
 
 /**
@@ -208,6 +245,8 @@ export type CustomFunctions = {
     context?:
       | CustomFunctionContext<unknown>
       | CustomFunctionContextCallback<unknown>;
+    component?: React.ComponentType;
+    /** @deprecated Callback function to create custom UI elements like plots or maps */
     callbackMessage?: CustomMessageCallback;
   };
 };
@@ -237,6 +276,18 @@ export type CustomMessageCallback = (
   customFunctionCall: CustomFunctionCall
 ) => ReactNode | null;
 
+export type TextPart = {
+  type: 'text';
+  text: string;
+};
+
+export type ToolPart = {
+  type: 'tool';
+  toolCallMessages: ToolCallMessage[];
+};
+
+export type StreamMessagePart = TextPart | ToolPart;
+
 /**
  * Type of StreamMessage. The structure of the stream message is:
  *
@@ -253,23 +304,43 @@ export type CustomMessageCallback = (
  * ```
  *
  * @param reasoning The reasoning of the assistant
- * @param toolCallMessages The tool call messages
- * @param text The text of the message
+ * @param toolCallMessages The array of tool call messages. See {@link ToolCallMessage} for more details.
+ * @param analysis The analysis of the message. This is the text that happens before the tool calls.
+ * @param text The text of the message. This is the text that happens after the tool calls.
  */
 export type StreamMessage = {
   reasoning?: string;
   toolCallMessages?: ToolCallMessage[];
+  analysis?: string;
   text?: string;
+  parts?: StreamMessagePart[];
 };
+
+export const TextPartSchema = z.object({
+  type: z.literal('text'),
+  text: z.string(),
+});
+
+export const ToolPartSchema = z.object({
+  type: z.literal('tool'),
+  toolCallMessages: z.array(ToolCallMessageSchema),
+});
+
+export const StreamMessageSchema = z.object({
+  reasoning: z.string().optional(),
+  toolCallMessages: z.array(ToolCallMessageSchema).optional(),
+  analysis: z.string().optional(),
+  text: z.string().optional(),
+  parts: z.array(z.union([TextPartSchema, ToolPartSchema])).optional(),
+});
 
 /**
  * Type of StreamMessageCallback
- * 
- * @param props The callback properties
- * @param props.deltaMessage The incremental message update from the assistant
- * @param props.customMessage Optional custom message payload
- * @param props.isCompleted Optional flag indicating if the message stream is complete
- * @param props.message Optional full stream message object
+ *
+ * @param message - Optional full stream message object. See {@link StreamMessage} for more details.
+ * @param isCompleted - Optional flag indicating if the message stream is complete
+ * @param customMessage - Optional custom message payload (e.g. screenshot base64 string)
+ * @param deltaMessage - The incremental message update from the assistant
  */
 export type StreamMessageCallback = (props: {
   deltaMessage: string;
@@ -372,7 +443,10 @@ export type RegisterFunctionCallingProps = {
   callbackFunction: CallbackFunction;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   callbackFunctionContext?: CustomFunctionContext<any>;
+  /** @deprecated Callback function to create custom UI elements like plots or maps */
   callbackMessage?: CustomMessageCallback;
+  /** Component for the tool call */
+  component?: React.ComponentType;
 };
 
 /**
@@ -396,19 +470,4 @@ export type OpenAIConfigProps = {
   description?: string;
   instructions?: string;
   version?: string;
-};
-
-export type OpenAIFunctionTool = {
-  name: string;
-  description: string;
-  properties: {
-    [key: string]: {
-      type: string; // 'string' | 'number' | 'boolean' | 'array';
-      description: string;
-    };
-  };
-  required: string[];
-  callbackFunction: CallbackFunction;
-  callbackFunctionContext?: CustomFunctionContext<unknown>;
-  callbackMessage?: CustomMessageCallback;
 };

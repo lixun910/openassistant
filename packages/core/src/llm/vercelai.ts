@@ -1,5 +1,6 @@
 import { AbstractAssistant } from './assistant';
 import {
+  AIMessage,
   AudioToTextProps,
   CustomFunctionOutputProps,
   CustomFunctions,
@@ -8,6 +9,7 @@ import {
   RegisterFunctionCallingProps,
   StreamMessage,
   StreamMessageCallback,
+  ToolCallComponents,
   ToolCallMessage,
 } from '../types';
 import { ReactNode } from 'react';
@@ -68,7 +70,7 @@ export function shouldTriggerNextRequest(
   const lastMessage = messages[messages.length - 1];
   return Boolean(
     // ensure there is a last message:
-    lastMessage &&
+    Boolean(lastMessage) &&
       // ensure we actually have new messages (to prevent infinite loops in case of errors):
       (messages.length > messageCount ||
         extractMaxToolInvocationStep(lastMessage.toolInvocations) !==
@@ -78,7 +80,8 @@ export function shouldTriggerNextRequest(
       // check that next step is possible:
       isAssistantMessageWithCompletedToolCalls(lastMessage) &&
       // check that assistant has not answered yet:
-      !lastMessage.content && // empty string or undefined
+      // note: analysis text + tool calls + answer text
+      // Boolean(lastMessage.content) && // empty string or undefined
       // limit the number of automatic steps:
       (extractMaxToolInvocationStep(lastMessage.toolInvocations) ?? 0) <
         maxSteps
@@ -97,6 +100,7 @@ type VercelAiConfigureProps = {
   chatEndpoint?: string;
   voiceEndpoint?: string;
   toolChoice?: ToolChoice<ToolSet>;
+  toolCallStreaming?: boolean;
 };
 
 /**
@@ -107,6 +111,7 @@ export class VercelAi extends AbstractAssistant {
   protected static voiceEndpoint = '';
   protected static instructions = '';
   protected static toolChoice: ToolChoice<ToolSet> = 'auto';
+  protected static toolCallStreaming = false;
   protected static maxSteps = 4;
   protected static additionalContext = '';
   protected static temperature = 0.0;
@@ -122,7 +127,23 @@ export class VercelAi extends AbstractAssistant {
    *
    * To persist the messages, you can call the {@link setMessages} method, and  the {@link getMessages} method.
    */
-  protected messages: Message[] = [];
+  protected messages: AIMessage[] = [];
+
+  /**
+   * The message components array, which is used to store the components for the messages.
+   * The key is the name of the component, the value is the functional component.
+   *
+   * For example:
+   *
+   * const Component = this.messageComponents['WeatherStation'];
+   *
+   * if (Component) {
+   *   return <Component {...message.toolCall.args} />;
+   * }
+   */
+  protected messageComponents: Record<string, React.ComponentType<unknown>> =
+    {};
+
   protected static customFunctions: CustomFunctions = {};
   protected static tools: ToolSet = {};
   protected abortController: AbortController | null = null;
@@ -131,6 +152,8 @@ export class VercelAi extends AbstractAssistant {
 
   protected streamMessage: StreamMessage = {
     toolCallMessages: [],
+    parts: [],
+    analysis: '',
     text: '',
   };
 
@@ -160,6 +183,8 @@ export class VercelAi extends AbstractAssistant {
     if (config.topP !== undefined) VercelAi.topP = config.topP;
     if (config.description) VercelAi.description = config.description;
     if (config.maxTokens) VercelAi.maxTokens = config.maxTokens;
+    if (config.toolCallStreaming !== undefined)
+      VercelAi.toolCallStreaming = config.toolCallStreaming;
   }
 
   public static override registerFunctionCalling({
@@ -170,12 +195,14 @@ export class VercelAi extends AbstractAssistant {
     callbackFunction,
     callbackFunctionContext,
     callbackMessage,
+    component,
   }: RegisterFunctionCallingProps) {
     // register custom function, if already registed then rewrite it
     VercelAi.customFunctions[name] = {
       func: callbackFunction || (() => Promise.resolve({ name, result: {} })),
       context: callbackFunctionContext,
       callbackMessage,
+      component,
     };
 
     // add function calling to tools
@@ -198,6 +225,22 @@ export class VercelAi extends AbstractAssistant {
 
   public setMessages(messages: Message[]) {
     this.messages = messages;
+  }
+
+  public getComponents(): ToolCallComponents {
+    const components: ToolCallComponents = [];
+
+    Object.keys(VercelAi.customFunctions).forEach((key) => {
+      const func = VercelAi.customFunctions[key];
+      if (func.component) {
+        components.push({
+          toolName: key,
+          component: func.component,
+        });
+      }
+    });
+
+    return components;
   }
 
   public override async addAdditionalContext({ context }: { context: string }) {
@@ -240,13 +283,13 @@ export class VercelAi extends AbstractAssistant {
 
   /**
    * Process the text message by sending it to the LLM.
-   * 
-   * @param params - The parameters object containing:
-   * @param params.textMessage - The text message to send to the LLM
-   * @param params.streamMessageCallback - The callback function to handle the stream message
-   * @param params.imageMessage - Optional image message to process
-   * @param params.onStepFinish - Optional callback function to handle step completion
-   * @returns Promise containing the last message
+   *
+   * @param textMessage - The text message to send to the LLM
+   * @param streamMessageCallback - The callback function to handle the stream message. See {@link StreamMessage} for more details.
+   * @param imageMessage - Optional image message to process
+   * @param onStepFinish - Optional callback function to handle step completion
+   *
+   * @returns Promise containing the newly added message
    */
   public override async processTextMessage({
     textMessage,
@@ -257,6 +300,9 @@ export class VercelAi extends AbstractAssistant {
     if (!this.abortController) {
       this.abortController = new AbortController();
     }
+
+    // record the length of the messages array
+    const messagesLength = this.messages.length;
 
     if (textMessage) {
       this.messages.push({
@@ -275,6 +321,8 @@ export class VercelAi extends AbstractAssistant {
       reasoning: '',
       toolCallMessages: [],
       text: '',
+      analysis: '',
+      parts: [],
     };
 
     const { customMessage } = await this.triggerRequest({
@@ -291,7 +339,9 @@ export class VercelAi extends AbstractAssistant {
       message: this.streamMessage,
     });
 
-    return { messages: [lastMessage] };
+    // return the newly added message
+    const newMessages = this.messages.slice(messagesLength);
+    return { messages: newMessages };
   }
 
   protected async triggerRequest({

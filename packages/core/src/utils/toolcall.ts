@@ -15,7 +15,8 @@ export async function proceedToolCall({
 
   try {
     // get the registered function, context and callback message
-    const { func, context, callbackMessage } = customFunctions[functionName];
+    const { func, context, callbackMessage, component } =
+      customFunctions[functionName];
 
     // execute the function
     const output = await func({
@@ -25,11 +26,22 @@ export async function proceedToolCall({
       previousOutput,
     });
 
+    const customComponent = {
+      toolName: functionName,
+      component: callbackMessage
+        ? callbackMessage({
+            functionName,
+            functionArgs,
+            output,
+          })
+        : component,
+    };
+
     return {
       ...output,
       name: functionName,
       args: functionArgs,
-      customMessageCallback: callbackMessage,
+      ...(customComponent ? { component: customComponent } : {}),
     };
   } catch (err) {
     // make sure to return something back to openai when the function execution fails
@@ -43,34 +55,4 @@ export async function proceedToolCall({
       },
     };
   }
-}
-
-export function createToolCallCustomMessage(
-  toolCallId: string,
-  output: CustomFunctionOutputProps<unknown, unknown>
-) {
-  if (
-    output &&
-    output.customMessageCallback &&
-    output.result &&
-    typeof output.result === 'object' &&
-    'success' in output.result &&
-    output.result.success === true
-  ) {
-    try {
-      return {
-        toolCallId: toolCallId,
-        element: output.customMessageCallback({
-          functionName: output.name,
-          functionArgs: output.args || {},
-          output: output,
-        }),
-      };
-    } catch (error) {
-      console.error(
-        `Error creating custom message for tool call ${toolCallId}: ${error}`
-      );
-    }
-  }
-  return null;
 }
