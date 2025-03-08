@@ -4,6 +4,7 @@ import {
   useAssistant,
   UseAssistantProps,
 } from '@openassistant/core';
+import { Message } from '@ai-sdk/ui-utils';
 import MessageCard from './message-card';
 import PromptInputWithBottomActions from './prompt-input-with-bottom-actions';
 import { ChatContainer } from './chat-container';
@@ -32,11 +33,14 @@ import {
  * @param onMessagesUpdated - The callback function to handle the messages updated.
  * @param onRestartChat - The callback function to handle the restart chat.
  * @param fontSize - The font size of the assistant.
+ * @param botMessageClassName - The class name of the bot message.
+ * @param userMessageClassName - The class name of the user message.
+ * @param githubIssueLink - The link to the github issue.
+ * @param useMarkdown - The flag to indicate if the markdown is enabled.
  */
 export type AiAssistantProps = UseAssistantProps & {
   theme?: 'dark' | 'light';
   welcomeMessage: string;
-  historyMessages?: MessageModel[];
   ideas?: { title: string; description: string }[];
   userAvatar?: ReactNode | string;
   assistantAvatar?: ReactNode | string;
@@ -55,6 +59,7 @@ export type AiAssistantProps = UseAssistantProps & {
   userMessageClassName?: string;
   githubIssueLink?: string;
   useMarkdown?: boolean;
+  initialMessages?: MessageModel[];
 };
 
 /**
@@ -75,9 +80,60 @@ const createWelcomeMessage = (welcomeMessage: string): MessageModel => ({
   },
 });
 
+function rebuildMessages(historyMessages: MessageModel[]): Message[] {
+  const result: Message[] = [];
+
+  for (const msg of historyMessages) {
+    if (msg.direction === 'outgoing') {
+      // Handle user messages
+      result.push({
+        id: Math.random().toString(36).substring(2), // Generate random ID
+        role: 'user',
+        content: msg.message || '',
+        parts: [
+          {
+            type: 'text',
+            text: msg.message || '',
+          },
+        ],
+      });
+    } else if (msg.direction === 'incoming') {
+      // Handle assistant messages with tool calls
+      if (msg.messageContent?.toolCallMessages?.length) {
+        // Add tool invocations message
+        result.push({
+          id: `msg-${Math.random().toString(36).substring(2)}`,
+          role: 'assistant',
+          content: '',
+          toolInvocations: msg.messageContent.toolCallMessages.map(
+            (tool, index) => ({
+              toolCallId: tool.toolCallId,
+              result: tool.llmResult,
+              state: 'result',
+              toolName: tool.toolName,
+              args: tool.args,
+              step: index + 1,
+            })
+          ),
+        });
+      }
+
+      // Add final response message
+      result.push({
+        id: `msg-${Math.random().toString(36).substring(2)}`,
+        role: 'assistant',
+        content: msg.messageContent?.text || '',
+        toolInvocations: [],
+      });
+    }
+  }
+
+  return result;
+}
+
 /**
  * Main AI Assistant component for React applications
- * 
+ *
  * @param {AiAssistantProps} props - The props of the Assistant component. See {@link AiAssistantProps} for more details.
  * @returns {JSX.Element} The rendered AI Assistant component
  * @example
@@ -91,9 +147,7 @@ const createWelcomeMessage = (welcomeMessage: string): MessageModel => ({
  */
 export function AiAssistant(props: AiAssistantProps) {
   const [messages, setMessages] = useState<MessageModel[]>(
-    props.historyMessages && props.historyMessages.length > 0
-      ? props.historyMessages
-      : [createWelcomeMessage(props.welcomeMessage)]
+    props.initialMessages || [createWelcomeMessage(props.welcomeMessage)]
   );
   const [isPrompting, setIsPrompting] = useState(false);
 
@@ -103,6 +157,7 @@ export function AiAssistant(props: AiAssistantProps) {
     sendTextMessage,
     sendImageMessage,
     audioToText,
+    getComponents,
   } = useAssistant({
     chatEndpoint: props.chatEndpoint,
     voiceEndpoint: props.voiceEndpoint,
@@ -115,6 +170,7 @@ export function AiAssistant(props: AiAssistantProps) {
     description: props.description,
     version: props.version,
     baseUrl: props.baseUrl,
+    historyMessages: rebuildMessages(props.initialMessages || []),
   });
 
   const isScreenshotAvailable =
@@ -234,6 +290,7 @@ export function AiAssistant(props: AiAssistantProps) {
                   avatar={getAvatar(message.direction)}
                   currentAttempt={i === 1 ? 2 : 1}
                   message={messageElement}
+                  components={getComponents()}
                   customMessage={message.payload}
                   messageClassName={
                     message.direction === 'outgoing'
