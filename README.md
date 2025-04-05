@@ -48,7 +48,7 @@ await assistant.processTextMessage({
 });
 ```
 
-See the source code of the example 🔗 [here](https://github.com/openassistant/openassistant/tree/main/examples/cli_example).
+See the source code of the example 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples/cli_example).
 
 If you want to use Google Gemini as the model provider, you can do the following:
 
@@ -112,7 +112,7 @@ function App() {
 <img src="https://openassistant-doc.vercel.app/assets/images/getstart-dark-499fd880728b7978a32aa9e8742a0f38.png" width="300" />
 
 
-See the source code of the example 🔗 [here](https://github.com/openassistant/openassistant/tree/main/examples/simple_react).
+See the source code of the example 🔗 [here](https://github.com/geodacenter/openassistant/tree/main/examples/simple_react).
 
 If you are using TailwindCSS, you need to add the following configurations to your `tailwind.config.js` file:
 
