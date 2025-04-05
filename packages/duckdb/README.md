@@ -1,167 +1,171 @@
-# DuckDB Plugin for OpenAssistant
+# @openassistant/duckdb
 
-This plugin allows you to query your dataset using DuckDB in the OpenAssistant chat interface.
+This package provides several tools for querying your data using DuckDB in browser.
 
-## Installation
+**localQuery**
 
-```bash
-yarn add @openassistant/core @openassistant/ui @openassistant/duckdb
-```
+This tool helps to query any data that has been loaded in your application using user's prompt.
 
-## Usage
+- the data in your application will be loaded into a local duckdb instance temporarily
+- LLM will generate SQL query based on user's prompt against the data
+- the SQL query result will be executed in the local duckdb instance
+- the query result will be displayed in a React table component
 
-### Step 1: Setup the OpenAssistant in your application
+**dbQuery**
 
-If you already have the OpenAssistant setup in your application, you can skip this step.
+If you have a database that you want to query, you can use the `dbQueryTool`.
 
-```tsx
-import { AiAssistant } from '@openassistant/ui';
-// only for React app without tailwindcss
-import '@openassistant/ui/dist/index.css';
+- the database will be connected to the local duckdb instance
+- LLM will generate SQL query based on user's prompt
+- the SQL query result will be executed in your database
+- the query result will be displayed in a React table component
 
-const assistantProps = {
-  name: 'My AI Assistant',
-  description: 'This is my AI assistant',
-  version: '1.0.0',
-  modelProvider: 'openai',
-  model: 'gpt-4',
-  apiKey: 'your-api-key',
-  instructions:
-    'You are a data and map analyst. You can help users to create a map from a dataset. If a function calling can be used to answer the user\'s question, please always confirm the function calling and its arguments with the user.',
-};
-```
+This example project shows how to use the `localQuery` and `dbQuery` tools in a multi-step tool.
 
-If you are using tailwindcss, see [With TailwindCSS](#with-tailwindcss) section below for more details.
+## multiStepTool
 
-### Step 2: Add system prompt to the OpenAssistant
+This example project shows how to use the `localQuery` and `dbQuery` tools in a multi-step tool.
 
-It is always a good practice to add a system prompt to the OpenAssistant. This helps the LLM models to understand what the assistant can do and how the assistant should respond to the user.
+### localQuery Example
 
-For example:
+#### Data
 
-```js
-const instructions = `You are an assistant that can help users to query their dataset using SQL and DuckDB.
+In your application, the data could be loaded from a csv/json/parquet/xml file. For this example, we will use the `SAMPLE_DATASETS` in `dataset.ts` to simulate the data.
 
-When responding to user queries:
-1. Analyze if the task requires one or multiple function calls
-2. For each required function:
-  - Confirm the function call and its arguments with the user
-3. For SQL query
-  - please help to generate select query clause using the content of the dataset:
-  - please only use the columns that are in the dataset context
-  - please don't use * when selecting all columns and always use the column names explicitly
-`;
-```
-
-### Step 3: Share the meta data of your dataset with the AI assistant
-
-Suppose you have a dataset which could be fetched from your data API. The json data could look like this:
-
-```json
-const myDatasets = {
+```ts
+export const SAMPLE_DATASETS = {
   myVenues: [
-    { "location": "New York", "latitude": 40.7128, "longitude": -74.0060, "revenue": 12500000, "population": 8400000 },
-    { "location": "Los Angeles", "latitude": 34.0522, "longitude": -118.2437, "revenue": 9800000, "population": 3900000 },
-    { "location": "Chicago", "latitude": 41.8781, "longitude": -87.6298, "revenue": 7200000, "population": 2700000 },
-    { "location": "Houston", "latitude": 29.7604, "longitude": -95.3698, "revenue": 6800000, "population": 2300000 },
-    { "location": "Phoenix", "latitude": 33.4484, "longitude": -112.0740, "revenue": 5400000, "population": 1600000 },
-    { "location": "Philadelphia", "latitude": 39.9526, "longitude": -75.1652, "revenue": 5900000, "population": 1580000 },
-    { "location": "San Antonio", "latitude": 29.4241, "longitude": -98.4936, "revenue": 4800000, "population": 1540000 },
-    { "location": "San Diego", "latitude": 32.7157, "longitude": -117.1611, "revenue": 5200000, "population": 1420000 }
-  ]
+    {
+      index: 0,
+      location: 'New York',
+      latitude: 40.7128,
+      longitude: -74.006,
+      revenue: 12500000,
+      population: 8400000,
+    },
+    ...
+  ],
 };
 ```
 
-You will need to share the meta data of your dataset, so the assistant can understand which datasets are available to use when creating a map.
+#### Tool
 
-Note: The meta data is good enough for the AI Assistant. Don't put the entire dataset in the context, and there is no need to share your dataset with the AI Assistant or the LLM models. This also helps to keep your dataset private.
+- Import the `localQuery` tool from `@openassistent/duckdb` and use it in your application.
+- Provide the `getValues` function in the `context` to get the values from your data.
 
-The easiest way is to append the meta data to the instructions created above if your dataset is fixed (same data structure).
+```ts
+import { localQuery } from '@openassistent/duckdb';
 
-For example:
-
-```js
-const instructions = `You are an assistant that can help users to query their dataset using SQL and DuckDB.
-...
-Please use the following meta data for function callings:
-${JSON.stringify(myDataContext)}
-`;
-```
-
-#### Dynamically add the meta data of your dataset to the assistant
-
-If your dataset is dynamic, you can create a function to get the meta data from your database. Then, you can update the instructions with the updated meta data to tell the LLM models that what dataset and columns are available to use.
-
-```js
-import {useAssistant} from '@openassistant/core';
-
-const { addAdditionalContext } = useAssistant(assistantProps);
-
-// add the meta data of your dataset to the assistant, you can create a function to get the meta data from your database
-const myDataContext = [
-  {
-    description:
-      'Please use the following meta data for function callings.',
-    metaData: [{
-      datasetName: 'myVenues',
-      fields: ['location', 'latitude', 'longitude', 'revenue', 'population'],
-    }]
+const localQueryTool = {
+  ...localQuery,
+  context: {
+    ...localQuery.context,
+    getValues: (datasetName: string, variableName: string) => {
+      return SAMPLE_DATASETS[datasetName][variableName];
+    },
   },
-];
-
-addAdditionalContext({ context: JSON.stringify(myDataContext) });
+};
 ```
 
-### Step 4: Register the DuckDB function to the OpenAssistant
-
-To use this plugin with LLM models, you just need to import the `queryDuckDBCallbackMessage` predefined function from the plugin and pass the proper function context to it.
+#### Use the tool in your AI assistant UI
 
 ```tsx
-import { AiAssistant } from '@openassistant/core';
-import { queryDuckDBFunctionDefinition } from '@openassistant/duckdb';
-// only for React app without tailwindcss
-import '@openassistant/ui/dist/index.css';
-import '@openassistant/duckdb/dist/index.css';
+<AiAssistant
+  name="My Assistant"
+  apiKey={process.env.OPENAI_TOKEN || ''}
+  version="v1"
+  modelProvider="openai"
+  model="gpt-4o"
+  welcomeMessage="Hello, how can I help you today?"
+  instructions="You are a duckDB expert. You can help users to query their data using duckdb. Explain the steps you are taking to solve the user's problem."
+  functions={{localQuery: localQueryTool}}
+  useMarkdown={true}
+/>
+```
 
-const myFunctions = [
-  ...otherFunctions,
-  queryDuckDBFunctionDefinition({
-    getValues: (datasetName: string, variableName: string) => {
-      // get the values of the variable from the dataset,
-      // the values will be used to create and plot the histogram
-      return [];
-    }
-  }),
-];
+## Type Definitions
 
-const assistantProps = {
-  name: 'My AI Assistant',
-  description: 'This is my AI assistant',
-  version: '1.0.0',
-  modelProvider: 'openai',
-  model: 'gpt-4',
-  apiKey: 'your-api-key',
-  instructions:
-    'You are a data and map analyst. You can help users to create a map from a dataset. If a function calling can be used to answer the user\'s question, please always confirm the function calling and its arguments with the user.',
-  functions: myFunctions,
+For TypeScript users, this package provides comprehensive type definitions:
+
+### LocalQueryTool
+
+The main type for the localQuery tool:
+
+```typescript
+import { LocalQueryTool } from '@openassistant/duckdb';
+
+// Create a type-safe localQuery tool instance
+const typedLocalQueryTool: LocalQueryTool = {
+  ...localQuery,
+  context: {
+    // ...configuration
+  }
 };
 ```
 
-With the above code, users can prompt the AI assistant to query your datasets. For example:
+### LocalQueryParameters
 
+Input parameters for the query:
+
+```typescript
+interface LocalQueryParameters {
+  datasetName: string;       // The name of the original dataset
+  variableNames: string[];   // The names of the variables to include in the query
+  sql: string;               // The SQL query to execute
+  dbTableName: string;       // The name of the table used in the sql string
+}
 ```
-Query and sort the value (revenue / population) from the dataset "myVenues".
+
+### LocalQueryContext
+
+Configuration context for the tool:
+
+```typescript
+interface LocalQueryContext {
+  // Get values from a dataset
+  getValues: (datasetName: string, variableName: string) => unknown[];
+  
+  // Optional callback when values are selected in the result table
+  onSelected?: (datasetName: string, columnName: string, selectedValues: unknown[]) => void;
+  
+  // Optional configuration
+  config?: {
+    isDraggable?: boolean;
+    [key: string]: unknown;
+  };
+  
+  // Optional DuckDB instance
+  duckDB?: AsyncDuckDB | null;
+}
 ```
 
-## With TailwindCSS
+### LocalQueryResponse
 
-If you are using tailwindcss, you can  add the following to your tailwind.config.js file:
+The structure of a query result:
 
-```js
-   content: [
-     ...,
-     './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
-     './node_modules/@openassistant/ui/dist/**/*.{js,ts,jsx,tsx}',
-     './node_modules/@openassistant/duckdb/dist/**/*.{js,ts,jsx,tsx}',
-   ]
+```typescript
+interface LocalQueryResponse {
+  llmResult: {
+    success: boolean;
+    data?: {
+      firstTwoRows: Record<string, unknown>[];
+      [key: string]: unknown;
+    };
+    error?: string;
+    instruction?: string;
+  };
+  additionalData?: {
+    title: string;
+    sql: string;
+    columnData: Record<string, unknown[]>;
+    variableNames: string[];
+    datasetName: string;
+    dbTableName: string;
+    onSelected?: (datasetName: string, columnName: string, selectedValues: unknown[]) => void;
+  };
+}
 ```
+
+## License
+
+MIT

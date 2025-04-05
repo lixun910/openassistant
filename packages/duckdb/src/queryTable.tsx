@@ -18,9 +18,10 @@ import {
   SelectItem,
 } from '@nextui-org/react';
 import './index.css';
+import { getDuckDB } from './query';
 
 export type QueryDuckDBOutputData = {
-  db: duckdb.AsyncDuckDB | null;
+  db?: duckdb.AsyncDuckDB;
   columnData: { [key: string]: unknown[] };
   variableNames: string[];
   datasetName: string;
@@ -101,13 +102,16 @@ export function QueryDuckDBComponent({
       // If a query is already in progress, wait for it to complete
       if (queryInProgress.current) {
         await queryInProgress.current;
-        return;
       }
 
       // Create a new promise for this query
       queryInProgress.current = (async () => {
         try {
-          if (db && columnData && dbTableName && sql) {
+          const duckDB = await getDuckDB(db);
+          if (!duckDB) {
+            throw new Error('DuckDB instance is not initialized');
+          }
+          if (columnData && dbTableName && sql) {
             // use double quotes for the table name
             const safeDbTableName = `${dbTableName}`;
 
@@ -115,13 +119,12 @@ export function QueryDuckDBComponent({
             const arrowTable: ArrowTable = tableFromArrays(columnData);
 
             // connect to the database
-            const conn = await db.connect();
+            const conn = await duckDB.connect();
 
             // drop the table if it exists
             await conn.query(`DROP TABLE IF EXISTS ${safeDbTableName}`);
 
             // insert the arrow table to the database
-            // @ts-expect-error TODO: fix this type error
             await conn.insertArrowTable(arrowTable, { name: safeDbTableName });
 
             // Execute the provided SQL query
@@ -149,7 +152,7 @@ export function QueryDuckDBComponent({
 
     query();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sql]);
 
   const onSyncSelection = (e: ChangeEvent<HTMLInputElement>) => {
     setSyncSelection(e.target.checked);
@@ -202,6 +205,7 @@ export function QueryDuckDBComponent({
     </div>
   ) : queryResult.length > 0 ? (
     <div className="flex flex-col gap-4 max-w-full">
+      <span className="text-tiny font-bold mt-2">Query Result</span>
       <Table
         aria-label="Query Result Table"
         bottomContent={
@@ -255,8 +259,14 @@ export function QueryDuckDBComponent({
         </TableBody>
       </Table>
       {onSelected && (
-        <div className="flex flex-row gap-2">
-          <Checkbox onChange={onSyncSelection}>sync selections by</Checkbox>
+        <div className="flex flex-row gap-2 pl-2 text-tiny">
+          <Checkbox
+            size="sm"
+            classNames={{ label: 'text-tiny' }}
+            onChange={onSyncSelection}
+          >
+            sync selections by
+          </Checkbox>
           <div className="flex-1">
             <Select
               size="sm"
