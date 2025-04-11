@@ -2,7 +2,7 @@
 
 > **ScatterplotFunctionContextValues**: [`ScatterplotFunctionContext`](ScatterplotFunctionContext.md)\[keyof [`ScatterplotFunctionContext`](ScatterplotFunctionContext.md)\]
 
-Defined in: [scatterplot/definition.ts:56](https://github.com/GeoDaCenter/openassistant/blob/a1bcfdf89aac2d64b3bda9cf92b96ead076def28/packages/echarts/src/scatterplot/definition.ts#L56)
+Defined in: [packages/echarts/src/scatterplot/definition.ts:56](https://github.com/GeoDaCenter/openassistant/blob/95db62ddd98ea06cccc7750f9f0e37556d8bf20e/packages/echarts/src/scatterplot/definition.ts#L56)
 
 The definition of the values of the scatterplot function context.
 It is a union of the values of [ScatterplotFunctionContext](ScatterplotFunctionContext.md): getValues | onSelected

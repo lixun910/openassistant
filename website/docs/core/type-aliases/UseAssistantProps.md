@@ -2,7 +2,7 @@
 
 > **UseAssistantProps**: `object`
 
-Defined in: [packages/core/src/hooks/use-assistant.ts:33](https://github.com/GeoDaCenter/openassistant/blob/a1bcfdf89aac2d64b3bda9cf92b96ead076def28/packages/core/src/hooks/use-assistant.ts#L33)
+Defined in: [packages/core/src/hooks/use-assistant.ts:33](https://github.com/GeoDaCenter/openassistant/blob/95db62ddd98ea06cccc7750f9f0e37556d8bf20e/packages/core/src/hooks/use-assistant.ts#L33)
 
 Props for configuring the AI Assistant and useAssistant hook.
 
@@ -72,9 +72,9 @@ Props for configuring the AI Assistant and useAssistant hook.
 
 > `optional` **topP**: `number`
 
-### version
+### version?
 
-> **version**: `string`
+> `optional` **version**: `string`
 
 ### voiceEndpoint?
 
@@ -106,7 +106,7 @@ Authentication key for the model provider's API.
 
 ## Param
 
-API version to use.
+Optional API version to use.
 
 ## Param
 

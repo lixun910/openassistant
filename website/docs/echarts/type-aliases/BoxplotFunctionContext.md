@@ -2,7 +2,7 @@
 
 > **BoxplotFunctionContext**: `object`
 
-Defined in: [boxplot/definition.ts:37](https://github.com/GeoDaCenter/openassistant/blob/a1bcfdf89aac2d64b3bda9cf92b96ead076def28/packages/echarts/src/boxplot/definition.ts#L37)
+Defined in: [packages/echarts/src/boxplot/definition.ts:38](https://github.com/GeoDaCenter/openassistant/blob/95db62ddd98ea06cccc7750f9f0e37556d8bf20e/packages/echarts/src/boxplot/definition.ts#L38)
 
 Configuration and callback context for the boxplot function.
 
@@ -15,6 +15,10 @@ Configuration and callback context for the boxplot function.
 #### config.isDraggable?
 
 > `optional` **isDraggable**: `boolean`
+
+#### config.isExpanded?
+
+> `optional` **isExpanded**: `boolean`
 
 #### config.theme?
 
@@ -47,3 +51,7 @@ Visual theme for the boxplot ('light' or 'dark').
 ## Param
 
 Whether the boxplot can be dragged to other containers.
+
+## Param
+
+Whether the boxplot is expanded.

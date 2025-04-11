@@ -2,7 +2,7 @@
 
 > **CallbackFunctionProps**: `object`
 
-Defined in: [packages/core/src/types.ts:215](https://github.com/GeoDaCenter/openassistant/blob/a1bcfdf89aac2d64b3bda9cf92b96ead076def28/packages/core/src/types.ts#L215)
+Defined in: [packages/core/src/types.ts:228](https://github.com/GeoDaCenter/openassistant/blob/95db62ddd98ea06cccc7750f9f0e37556d8bf20e/packages/core/src/types.ts#L228)
 
 Props of the callback function.
 
