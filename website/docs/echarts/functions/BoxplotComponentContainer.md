@@ -2,7 +2,7 @@
 
 > **BoxplotComponentContainer**(`props`): `null` \| `Element`
 
-Defined in: [boxplot/component/box-plot-component.tsx:28](https://github.com/GeoDaCenter/openassistant/blob/a1bcfdf89aac2d64b3bda9cf92b96ead076def28/packages/echarts/src/boxplot/component/box-plot-component.tsx#L28)
+Defined in: [packages/echarts/src/boxplot/component/box-plot-component.tsx:32](https://github.com/GeoDaCenter/openassistant/blob/95db62ddd98ea06cccc7750f9f0e37556d8bf20e/packages/echarts/src/boxplot/component/box-plot-component.tsx#L32)
 
 BoxplotComponentContainer for rendering box plot visualizations with expandable container.
 With expandable container, the box plot can be:
