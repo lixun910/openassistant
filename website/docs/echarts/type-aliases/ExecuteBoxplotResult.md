@@ -2,7 +2,7 @@
 
 > **ExecuteBoxplotResult**: `object`
 
-Defined in: [packages/echarts/src/boxplot/tool.ts:100](https://github.com/GeoDaCenter/openassistant/blob/95db62ddd98ea06cccc7750f9f0e37556d8bf20e/packages/echarts/src/boxplot/tool.ts#L100)
+Defined in: [packages/echarts/src/boxplot/tool.ts:100](https://github.com/GeoDaCenter/openassistant/blob/ae6e39c15b60e7a98a21d90a5bbeff5dc44c1295/packages/echarts/src/boxplot/tool.ts#L100)
 
 The result of the boxplot tool.
 

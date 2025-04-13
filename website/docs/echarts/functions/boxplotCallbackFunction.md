@@ -1,8 +1,10 @@
-# Function: boxplotCallbackFunction()
+# Function: ~~boxplotCallbackFunction()~~
 
 > **boxplotCallbackFunction**(`__namedParameters`): `Promise`\<`CustomFunctionOutputProps`\<`BoxplotOutputResult`, [`BoxplotOutputData`](../type-aliases/BoxplotOutputData.md)\>\>
 
-Defined in: [packages/echarts/src/boxplot/callback-function.ts:38](https://github.com/GeoDaCenter/openassistant/blob/95db62ddd98ea06cccc7750f9f0e37556d8bf20e/packages/echarts/src/boxplot/callback-function.ts#L38)
+Defined in: [packages/echarts/src/boxplot/callback-function.ts:42](https://github.com/GeoDaCenter/openassistant/blob/ae6e39c15b60e7a98a21d90a5bbeff5dc44c1295/packages/echarts/src/boxplot/callback-function.ts#L42)
+
+**`Internal`**
 
 ## Parameters
 
@@ -13,3 +15,7 @@ Defined in: [packages/echarts/src/boxplot/callback-function.ts:38](https://githu
 ## Returns
 
 `Promise`\<`CustomFunctionOutputProps`\<`BoxplotOutputResult`, [`BoxplotOutputData`](../type-aliases/BoxplotOutputData.md)\>\>
+
+## Deprecated
+
+Use [boxplotCallbackFunction](boxplotCallbackFunction.md) instead
