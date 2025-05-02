@@ -1,6 +1,6 @@
 {
   "name": "@openassistant/common",
-  "version": "0.3.0",
+  "version": "0.3.6",
   "description": "Common utilities for OpenAssistant",
   "author": "Xun Li<lixun910@gmail.com>",
   "license": "MIT",
@@ -36,5 +36,6 @@
     "src",
     "README.md",
     "package.json"
-  ]
+  ],
+  "gitHead": "232930873ca397af1dbaa234a00c5d27dba29a26"
 }

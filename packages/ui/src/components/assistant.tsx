@@ -147,7 +147,9 @@ function rebuildMessages(historyMessages: MessageModel[]): Message[] {
  */
 export function AiAssistant(props: AiAssistantProps) {
   const [messages, setMessages] = useState<MessageModel[]>(
-    props.initialMessages || [createWelcomeMessage(props.welcomeMessage)]
+    props.initialMessages && props.initialMessages.length > 0
+      ? props.initialMessages
+      : [createWelcomeMessage(props.welcomeMessage)]
   );
   const [isPrompting, setIsPrompting] = useState(false);
 
@@ -158,6 +160,7 @@ export function AiAssistant(props: AiAssistantProps) {
     sendImageMessage,
     audioToText,
     getComponents,
+    initializeAssistant,
   } = useAssistant({
     chatEndpoint: props.chatEndpoint,
     voiceEndpoint: props.voiceEndpoint,
@@ -173,6 +176,11 @@ export function AiAssistant(props: AiAssistantProps) {
     baseUrl: props.baseUrl,
     historyMessages: rebuildMessages(props.initialMessages || []),
   });
+
+  // when instructions change, initialize the assistant
+  useEffect(() => {
+    initializeAssistant();
+  }, [initializeAssistant, props.instructions]);
 
   const isScreenshotAvailable =
     props.screenCapturedBase64?.startsWith('data:image');
