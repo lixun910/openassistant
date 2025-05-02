@@ -127,7 +127,7 @@ export function useAssistant(props: UseAssistantProps) {
   useEffect(() => {
     initializeAssistant();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.model, props.apiKey, props.chatEndpoint]);
+  }, [props.model, props.apiKey, props.chatEndpoint, props.instructions]);
 
   /**
    * Initializes the AI assistant with the provided configuration.
@@ -144,7 +144,7 @@ export function useAssistant(props: UseAssistantProps) {
       assistant = await createAssistant(props);
 
       // restore the history messages
-      if (props.historyMessages) {
+      if (props.historyMessages && props.historyMessages.length > 0) {
         assistant.setMessages(props.historyMessages);
       }
 

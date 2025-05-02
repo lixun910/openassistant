@@ -6,6 +6,7 @@ import {
   localG,
   localGStar,
   quantileLisa,
+  LocalMoranResult,
 } from '@geoda/lisa';
 import { GetValues } from '../types';
 import { getWeights } from '../utils';
@@ -34,7 +35,7 @@ export const lisa = tool<
   LisaFunctionContext
 >({
   description:
-    'Apply local indicators of spatial association (LISA) statistics to identify local clusters and spatial outliers',
+    'Apply local indicators of spatial association (LISA) statistics to identify local clusters and spatial outliers.',
   parameters: z.object({
     method: z
       .enum([
@@ -77,6 +78,7 @@ export const lisa = tool<
       .number()
       .optional()
       .describe('The quantile value for quantile LISA'),
+    mapBounds: z.array(z.number()).optional(),
   }),
   execute: executeLisa,
   context: {
@@ -102,6 +104,7 @@ export type ExecuteLisaResult = {
   llmResult: {
     success: boolean;
     result?: {
+      mapBounds?: number[];
       lisaMethod: string;
       datasetId: string;
       significanceThreshold: number;
@@ -115,19 +118,11 @@ export type ExecuteLisaResult = {
       }>;
     };
     error?: string;
+    instructions?: string;
   };
-  additionalData?: {
-    lisaMethod: string;
-    datasetId: string;
+  additionalData?: LocalMoranResult & {
+    datasetName: string;
     significanceThreshold: number;
-    variableName: string;
-    permutations: number;
-    globalMoranI?: number;
-    clusters: Array<{
-      label: string;
-      color: string;
-      numberOfObservations: number;
-    }>;
   };
 };
 
@@ -142,6 +137,7 @@ type LisaArgs = {
   datasetName: string;
   k?: number;
   quantile?: number;
+  mapBounds?: number[];
 };
 
 function isLisaArgs(args: unknown): args is LisaArgs {
@@ -185,6 +181,7 @@ async function executeLisa(args, options): Promise<ExecuteLisaResult> {
       datasetName,
       k,
       quantile,
+      mapBounds,
     } = args;
     const { getValues } = options.context;
 
@@ -200,7 +197,9 @@ async function executeLisa(args, options): Promise<ExecuteLisaResult> {
     let lisaFunction = localMoran;
     let globalMoranI: number | null = null;
 
-    if (method === 'localGeary') {
+    if (method === 'localMoran') {
+      lisaFunction = localMoran;
+    } else if (method === 'localGeary') {
       lisaFunction = localGeary;
     } else if (method === 'localG') {
       lisaFunction = localG;
@@ -211,6 +210,8 @@ async function executeLisa(args, options): Promise<ExecuteLisaResult> {
         throw new Error('k and quantile are required for quantile LISA');
       }
       lisaFunction = (params) => quantileLisa({ ...params, k, quantile });
+    } else {
+      throw new Error('Invalid method for lisa tool');
     }
 
     // run LISA analysis
@@ -249,9 +250,11 @@ async function executeLisa(args, options): Promise<ExecuteLisaResult> {
     return {
       llmResult: {
         success: true,
+        ...(mapBounds ? { mapBounds } : {}),
         result,
+        instructions: `Important: When performing LISA analysis, visualization is handled automatically. Do not ask about visualization - the map will be created automatically after the analysis.`,
       },
-      additionalData: result,
+      additionalData: { ...lm, datasetName, significanceThreshold },
     };
   } catch (error) {
     return {

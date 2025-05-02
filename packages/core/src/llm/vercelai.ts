@@ -7,6 +7,7 @@ import {
   ProcessImageMessageProps,
   ProcessMessageProps,
   RegisterFunctionCallingProps,
+  RegisterToolProps,
   StreamMessage,
   StreamMessageCallback,
   ToolCallComponents,
@@ -14,6 +15,7 @@ import {
 } from '../types';
 import { ReactNode } from 'react';
 import {
+  CoreMessage,
   LanguageModelUsage,
   StepResult,
   Tool,
@@ -62,12 +64,12 @@ export type TriggerRequestOutput = {
  * @returns boolean indicating if another request should be triggered
  */
 export function shouldTriggerNextRequest(
-  messages: Message[],
+  messages: AIMessage[],
   messageCount: number,
   maxSteps: number,
   maxStep: number | undefined
 ): boolean {
-  const lastMessage = messages[messages.length - 1];
+  const lastMessage = messages[messages.length - 1] as Message;
   return Boolean(
     // ensure there is a last message:
     Boolean(lastMessage) &&
@@ -187,6 +189,22 @@ export class VercelAi extends AbstractAssistant {
       VercelAi.toolCallStreaming = config.toolCallStreaming;
   }
 
+  public static override registerTool({
+    name,
+    tool,
+    func,
+    context,
+    component,
+  }: RegisterToolProps) {
+    VercelAi.tools[name] = tool;
+
+    VercelAi.customFunctions[name] = {
+      func,
+      context,
+      component,
+    };
+  }
+
   public static override registerFunctionCalling({
     name,
     description,
@@ -213,6 +231,7 @@ export class VercelAi extends AbstractAssistant {
         type: 'object',
         properties,
         required,
+        additionalProperties: false,
       },
     };
 
@@ -223,7 +242,11 @@ export class VercelAi extends AbstractAssistant {
     return this.messages;
   }
 
-  public setMessages(messages: Message[]) {
+  public addMessage(message: AIMessage) {
+    this.messages.push(message);
+  }
+
+  public setMessages(messages: AIMessage[]) {
     this.messages = messages;
   }
 
@@ -309,13 +332,23 @@ export class VercelAi extends AbstractAssistant {
     // record the length of the messages array
     const messagesLength = this.messages.length;
 
-    if (textMessage) {
-      this.messages.push({
+    if (!imageMessage && textMessage) {
+      const newMessage: Message = {
         id: generateId(),
         role: 'user',
         content: textMessage,
         parts: [{ type: 'text', text: textMessage }],
-      });
+      };
+      this.messages.push(newMessage);
+    } else if (imageMessage && textMessage) {
+      const newMessage: CoreMessage = {
+        role: 'user',
+        content: [
+          { type: 'text', text: textMessage },
+          { type: 'image', image: imageMessage },
+        ],
+      };
+      this.messages.push(newMessage);
     }
 
     // reset tool steps
@@ -338,7 +371,7 @@ export class VercelAi extends AbstractAssistant {
 
     const lastMessage = this.messages[this.messages.length - 1];
     streamMessageCallback({
-      deltaMessage: lastMessage.content,
+      deltaMessage: lastMessage.content as string,
       customMessage,
       isCompleted: true,
       message: this.streamMessage,
@@ -367,12 +400,14 @@ export class VercelAi extends AbstractAssistant {
      */
     const maxSteps = VercelAi.maxSteps;
     const messageCount = this.messages.length;
-    const maxStep = extractMaxToolInvocationStep(
-      this.messages[this.messages.length - 1]?.toolInvocations
-    );
+
+    const lastMessage = this.messages[this.messages.length - 1];
+    const maxStep =
+      'toolInvocations' in lastMessage
+        ? extractMaxToolInvocationStep(lastMessage.toolInvocations)
+        : undefined;
 
     const customMessage: ReactNode | null = null;
-    const lastMessage = this.messages[this.messages.length - 1];
 
     // call the chat api with new message
     await callChatApi({

@@ -145,7 +145,7 @@ export function ToolCallComponent({
 
   const Component = components?.find(
     (component) => component.toolName === toolName
-  )?.component;
+  )?.component as React.ComponentType<Record<string, unknown>> | undefined;
 
   const llmResultTable = llmResult as Record<string, unknown> | undefined;
   const toolSuccess = Boolean(llmResultTable?.success);
@@ -167,7 +167,9 @@ export function ToolCallComponent({
             isCompact={true}
             className="pt-0 text-tiny"
             itemClasses={{
-              title: 'text-tiny',
+              title: `text-tiny ${
+                !toolSuccess ? 'text-orange-500' : 'text-green-500'
+              }`,
               content: 'text-tiny',
             }}
           >
@@ -230,7 +232,7 @@ export function ToolCallComponent({
       </Card>
       {Component && isCompleted && toolSuccess && (
         <ToolCallErrorBoundary>
-          {typeof Component === 'function' ? (
+          {typeof Component === 'function' || typeof Component === 'object' ? (
             <Component {...(additionalData as Record<string, unknown>)} />
           ) : (
             Component
