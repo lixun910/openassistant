@@ -1,27 +1,36 @@
 import { z } from 'zod';
-import { tool } from '@openassistant/core';
+import { tool } from '@openassistant/utils';
 import { generateId } from '@openassistant/common';
 import { ScatterplotComponentContainer } from './component/scatter-plot-component';
 import { computeRegression } from './component/scatter-regression';
-import { GetValues, OnSelected } from '../types';
+import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../types';
 
 /**
  * The scatterplot tool is used to create a scatterplot chart.
  *
  * @example
  * ```typescript
- * import { scatterplot } from '@openassistant/echarts';
+ * import { getVercelAiTool } from '@openassistant/echarts';
+ * import { generateText } from 'ai';
  *
- * const scatterplotTool = {
- *   ...scatterplot,
- *   context: {
- *     ...scatterplot.context,
- *     getValues: (datasetName: string, variableName: string) => {
- *       // get the values of the variable from your dataset, e.g.
- *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
- *     },
+ * const toolContext = {
+ *   getValues: async (datasetName: string, variableName: string) => {
+ *     return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
  *   },
- * }
+ * };
+ *
+ * const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
+ *   console.log('Tool call completed:', toolCallId, additionalData);
+ *   // render the scatterplot using <ScatterplotComponentContainer props={additionalData} />
+ * };
+ *
+ * const scatterplotTool = getVercelAiTool('scatterplot', toolContext, onToolCompleted);
+ *
+ * generateText({
+ *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   prompt: 'What is the relationship between population and income?',
+ *   tools: {scatterplot: scatterplotTool},
+ * });
  * ```
  *
  * :::tip
@@ -33,16 +42,17 @@ import { GetValues, OnSelected } from '../types';
  * See {@link ScatterplotToolContext} for detailed usage.
  *
  * User implements this function to get the values of the variables from dataset.
+ *
+ * For prompts like "_can you show a scatter plot of the population and income for each location in dataset myVenues_", the tool will
+ * call the `getValues()` function twice:
+ * - get the values of **population** from dataset: getValues('myVenues', 'population')
+ * - get the values of **income** from dataset: getValues('myVenues', 'income')
  */
 export const scatterplot = tool<
-  z.ZodObject<{
-    datasetName: z.ZodString;
-    xVariableName: z.ZodString;
-    yVariableName: z.ZodString;
-  }>,
-  ExecuteScatterplotResult['llmResult'],
-  ExecuteScatterplotResult['additionalData'],
-  ScatterplotToolContext
+  ScatterplotFunctionArgs,
+  ScatterplotLlmResult,
+  ScatterplotAdditionalData,
+  EChartsToolContext
 >({
   description: 'create a scatterplot',
   parameters: z.object({
@@ -69,6 +79,57 @@ export const scatterplot = tool<
 
 export type ScatterplotTool = typeof scatterplot;
 
+export type ScatterplotFunctionArgs = z.ZodObject<{
+  datasetName: z.ZodString;
+  xVariableName: z.ZodString;
+  yVariableName: z.ZodString;
+}>;
+
+export type ScatterplotLlmResult = {
+  success: boolean;
+  result?: {
+    id: string;
+    datasetName: string;
+    xVariableName: string;
+    yVariableName: string;
+    details: string;
+  };
+  error?: string;
+  instruction?: string;
+};
+
+export type ScatterplotAdditionalData = {
+  id: string;
+  datasetName: string;
+  xVariableName: string;
+  yVariableName: string;
+  xData: number[];
+  yData: number[];
+  regressionResults?: {
+    regression: {
+      slope: {
+        estimate: number;
+        pValue: number;
+        standardError: number;
+        tStatistic: number;
+      };
+      intercept: {
+        estimate: number;
+        pValue: number;
+        standardError: number;
+        tStatistic: number;
+      };
+      rSquared: number;
+    };
+  };
+  onSelected?: OnSelected;
+  theme?: string;
+  isDraggable?: boolean;
+  isExpanded?: boolean;
+  showLoess?: boolean;
+  showRegressionLine?: boolean;
+};
+
 type ScatterplotToolArgs = {
   datasetName: string;
   xVariableName: string;
@@ -88,69 +149,9 @@ export function isScatterplotToolArgs(
   );
 }
 
-export type ScatterplotToolContext = {
-  getValues: GetValues;
-  onSelected?: OnSelected;
-  filteredIndex?: number[];
-  config?: {
-    isDraggable?: boolean;
-    theme?: string;
-    isExpanded?: boolean;
-    showLoess?: boolean;
-    showRegressionLine?: boolean;
-  };
-};
-
-export function isScatterplotToolContext(
-  data: unknown
-): data is ScatterplotToolContext {
-  return typeof data === 'object' && data !== null && 'getValues' in data;
-}
-
 export type ExecuteScatterplotResult = {
-  llmResult: {
-    success: boolean;
-    result?: {
-      id: string;
-      datasetName: string;
-      xVariableName: string;
-      yVariableName: string;
-      details: string;
-    };
-    error?: string;
-    instruction?: string;
-  };
-  additionalData?: {
-    id: string;
-    datasetName: string;
-    xVariableName: string;
-    yVariableName: string;
-    xData: number[];
-    yData: number[];
-    regressionResults?: {
-      regression: {
-        slope: {
-          estimate: number;
-          pValue: number;
-          standardError: number;
-          tStatistic: number;
-        };
-        intercept: {
-          estimate: number;
-          pValue: number;
-          standardError: number;
-          tStatistic: number;
-        };
-        rSquared: number;
-      };
-    };
-    onSelected?: OnSelected;
-    theme?: string;
-    isDraggable?: boolean;
-    isExpanded?: boolean;
-    showLoess?: boolean;
-    showRegressionLine?: boolean;
-  };
+  llmResult: ScatterplotLlmResult;
+  additionalData?: ScatterplotAdditionalData;
 };
 
 async function executeScatterplot(
@@ -161,7 +162,7 @@ async function executeScatterplot(
     if (!isScatterplotToolArgs(args)) {
       throw new Error('Invalid scatterplot function arguments.');
     }
-    if (!isScatterplotToolContext(options.context)) {
+    if (!isEChartsToolContext(options.context)) {
       throw new Error('Invalid scatterplot function context.');
     }
 

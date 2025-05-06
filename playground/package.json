@@ -33,6 +33,7 @@
     "@openassistant/keplergl": "workspace:*",
     "@openassistant/osm": "workspace:*",
     "@openassistant/ui": "workspace:*",
+    "@openassistant/utils": "workspace:*",
     "github-markdown-css": "^5.8.1",
     "next": "^14.2.21",
     "react": "^18.3.1",
@@ -44,7 +45,7 @@
     "redux": "^4.2.1",
     "remark-gfm": "^4.0.1",
     "retry": "^0.13.1",
-    "zod": "^3.24.1"
+    "zod": "^3.24.4"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^15.1.5",

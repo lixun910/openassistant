@@ -2,7 +2,7 @@
 
 > **StreamMessage**: `object`
 
-Defined in: [packages/core/src/types.ts:326](https://github.com/GeoDaCenter/openassistant/blob/a9f2271d1019f6c25c10dd4b3bdb64fcf16999b2/packages/core/src/types.ts#L326)
+Defined in: [packages/core/src/types.ts:324](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/types.ts#L324)
 
 Type of StreamMessage. The structure of the stream message is:
 

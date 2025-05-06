@@ -2,7 +2,7 @@
 
 > **BoxplotTool**: *typeof* [`boxplot`](../variables/boxplot.md)
 
-Defined in: [packages/echarts/src/boxplot/tool.ts:95](https://github.com/GeoDaCenter/openassistant/blob/a9f2271d1019f6c25c10dd4b3bdb64fcf16999b2/packages/echarts/src/boxplot/tool.ts#L95)
+Defined in: [boxplot/tool.ts:98](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/echarts/src/boxplot/tool.ts#L98)
 
 The type of the boxplot tool, which contains the following properties:
 

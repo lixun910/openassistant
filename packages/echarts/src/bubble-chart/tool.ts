@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { tool } from '@openassistant/core';
+import { tool } from '@openassistant/utils';
 import { generateId } from '@openassistant/common';
 import { BubbleChartComponentContainer } from './component/bubble-chart-component';
-import { GetValues, OnSelected } from '../types';
+import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../types';
 
 /**
  * The bubble chart tool.
@@ -11,17 +11,27 @@ import { GetValues, OnSelected } from '../types';
  *
  * @example
  * ```ts
- * import { bubbleChart } from '@openassistant/echarts';
+ * import { getVercelAiTool } from '@openassistant/echarts';
+ * import { generateText } from 'ai';
  *
- * const bubbleChartTool = {
- *   ...bubbleChart,
- *   context: {
- *     getValues: async (datasetName, variableName) => {
- *       // return the values of the variable from the dataset
- *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
- *     },
+ * const toolContext = {
+ *   getValues: async (datasetName, variableName) => {
+ *     return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
  *   },
  * };
+ *
+ * const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
+ *   console.log('Tool call completed:', toolCallId, additionalData);
+ *   // render the bubble chart using <BubbleChartComponentContainer props={additionalData} />
+ * };
+ *
+ * const bubbleChartTool = getVercelAiTool('bubbleChart', toolContext, onToolCompleted);
+ *
+ * generateText({
+ *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   prompt: 'Can you create a bubble chart of the population and income for each location in dataset myVenues, and use the size of the bubble to represent the revenue?',
+ *   tools: {bubbleChart: bubbleChartTool},
+ * });
  * ```
  *
  * ### getValues()
@@ -30,16 +40,10 @@ import { GetValues, OnSelected } from '../types';
  *
  */
 export const bubbleChart = tool<
-  z.ZodObject<{
-    datasetName: z.ZodString;
-    variableX: z.ZodString;
-    variableY: z.ZodString;
-    variableSize: z.ZodString;
-    variableColor: z.ZodOptional<z.ZodString>;
-  }>,
-  ExecuteBubbleChartResult['llmResult'],
-  ExecuteBubbleChartResult['additionalData'],
-  BubbleChartToolContext
+  BubbleChartToolArgs,
+  BubbleChartLlmResult,
+  BubbleChartAdditionalData,
+  EChartsToolContext
 >({
   description: 'create a bubble chart',
   parameters: z.object({
@@ -67,31 +71,43 @@ export const bubbleChart = tool<
 
 export type BubbleChartTool = typeof bubbleChart;
 
-export type ExecuteBubbleChartResult = {
-  llmResult: {
-    success: boolean;
-    data?: {
-      id: string;
-      datasetName: string;
-      details: string;
-    };
-    error?: string;
-    instruction?: string;
-  };
-  additionalData?: {
+export type BubbleChartToolArgs = z.ZodObject<{
+  datasetName: z.ZodString;
+  variableX: z.ZodString;
+  variableY: z.ZodString;
+  variableSize: z.ZodString;
+  variableColor: z.ZodOptional<z.ZodString>;
+}>;
+
+export type BubbleChartLlmResult = {
+  success: boolean;
+  data?: {
     id: string;
     datasetName: string;
-    data: {
-      variableX: { name: string; values: number[] };
-      variableY: { name: string; values: number[] };
-      variableSize: { name: string; values: number[] };
-      variableColor?: { name: string; values: number[] };
-    };
-    isDraggable?: boolean;
-    isExpanded?: boolean;
-    theme?: string;
-    onSelected?: OnSelected;
+    details: string;
   };
+  error?: string;
+  instruction?: string;
+};
+
+export type BubbleChartAdditionalData = {
+  id: string;
+  datasetName: string;
+  data: {
+    variableX: { name: string; values: number[] };
+    variableY: { name: string; values: number[] };
+    variableSize: { name: string; values: number[] };
+    variableColor?: { name: string; values: number[] };
+  };
+  isDraggable?: boolean;
+  isExpanded?: boolean;
+  theme?: string;
+  onSelected?: OnSelected;
+};
+
+export type ExecuteBubbleChartResult = {
+  llmResult: BubbleChartLlmResult;
+  additionalData?: BubbleChartAdditionalData;
 };
 
 export type BubbleChartFunctionArgs = {
@@ -115,22 +131,6 @@ export function isBubbleChartFunctionArgs(
   );
 }
 
-export type BubbleChartToolContext = {
-  getValues: GetValues;
-  onSelected?: OnSelected;
-  config?: {
-    isDraggable?: boolean;
-    isExpanded?: boolean;
-    theme?: string;
-  };
-};
-
-export function isBubbleChartFunctionContext(
-  data: unknown
-): data is BubbleChartToolContext {
-  return typeof data === 'object' && data !== null && 'getValues' in data;
-}
-
 async function executeBubbleChart(
   args,
   options
@@ -144,7 +144,7 @@ async function executeBubbleChart(
     const { datasetName, variableX, variableY, variableSize, variableColor } =
       args;
 
-    if (!isBubbleChartFunctionContext(options.context)) {
+    if (!isEChartsToolContext(options.context)) {
       throw new Error(
         'Invalid context for bubbleChart tool. Please provide a valid context.'
       );

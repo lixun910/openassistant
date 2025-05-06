@@ -2,7 +2,7 @@
 
 > **SpatialCountComponentProps**: `object`
 
-Defined in: [packages/geoda/src/spatial-count/component/spatial-count-component.tsx:19](https://github.com/GeoDaCenter/openassistant/blob/a9f2271d1019f6c25c10dd4b3bdb64fcf16999b2/packages/geoda/src/spatial-count/component/spatial-count-component.tsx#L19)
+Defined in: [packages/geoda/src/spatial\_join/component/spatial-count-component.tsx:19](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/geoda/src/spatial_join/component/spatial-count-component.tsx#L19)
 
 ## Type declaration
 
