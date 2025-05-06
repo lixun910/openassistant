@@ -2,4 +2,4 @@
 
 > **SpatialWeightsTool**: *typeof* [`spatialWeights`](../variables/spatialWeights.md)
 
-Defined in: [packages/geoda/src/weights/tool.ts:65](https://github.com/GeoDaCenter/openassistant/blob/a9f2271d1019f6c25c10dd4b3bdb64fcf16999b2/packages/geoda/src/weights/tool.ts#L65)
+Defined in: [packages/geoda/src/weights/tool.ts:125](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/geoda/src/weights/tool.ts#L125)

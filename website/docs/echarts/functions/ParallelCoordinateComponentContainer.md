@@ -2,7 +2,7 @@
 
 > **ParallelCoordinateComponentContainer**(`props`): `null` \| `Element`
 
-Defined in: [packages/echarts/src/pcp/component/pcp-component.tsx:32](https://github.com/GeoDaCenter/openassistant/blob/a9f2271d1019f6c25c10dd4b3bdb64fcf16999b2/packages/echarts/src/pcp/component/pcp-component.tsx#L32)
+Defined in: [pcp/component/pcp-component.tsx:32](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/echarts/src/pcp/component/pcp-component.tsx#L32)
 
 ## Parameters
 

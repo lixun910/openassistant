@@ -14,7 +14,7 @@ import {
   ScatterplotTool,
 } from '@openassistant/echarts';
 import { AiAssistant } from '@openassistant/ui';
-import { tool } from '@openassistant/core';
+import { tool } from '@openassistant/utils';
 import { z } from 'zod';
 import { SAMPLE_DATASETS } from './dataset';
 
@@ -171,7 +171,7 @@ variables:
             apiKey={process.env.OPENAI_API_KEY || ''}
             version="1.0.0"
             instructions={instructions}
-            functions={{
+            tools={{
               boxplot: boxplotTool,
               think: thinkTool,
               bubbleChart: bubbleChartTool,

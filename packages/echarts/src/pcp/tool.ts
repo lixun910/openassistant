@@ -1,44 +1,57 @@
 import { z } from 'zod';
-import { tool } from '@openassistant/core';
+import { tool } from '@openassistant/utils';
 import { generateId } from '@openassistant/common';
 import { ParallelCoordinateComponentContainer } from './component/pcp-component';
 import {
   ParallelCoordinateDataProps,
   processParallelCoordinateData,
 } from './component/utils';
-import { GetValues, OnSelected } from '../types';
+import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../types';
 
 /**
  * The PCP tool is used to create a parallel coordinates plot.
  *
  * @example
  * ```typescript
- * import { pcp } from '@openassistant/echarts';
+ * import { getVercelAiTool } from '@openassistant/echarts';
+ * import { generateText } from 'ai';
  *
- * const pcpTool = {
- *   ...pcp,
- *   context: {
- *     getValues: async (datasetName, variableName) => {
- *       // return the values of the variable from the dataset
- *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
- *     },
+ * const toolContext = {
+ *   getValues: async (datasetName, variableName) => {
+ *     return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
  *   },
  * };
+ *
+ * const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
+ *   console.log('Tool call completed:', toolCallId, additionalData);
+ *   // render the PCP using <ParallelCoordinateComponentContainer props={additionalData} />
+ * };
+ *
+ * const pcpTool = getVercelAiTool('pcp', toolContext, onToolCompleted);
+ *
+ * generateText({
+ *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   prompt: 'Can you create a PCP of the population and income?',
+ *   tools: {pcp: pcpTool},
+ * });
  * ```
  *
  * ### getValues()
  *
- * See {@link PCPToolContext} for detailed usage.
+ * See {@link PCPFunctionContext} for detailed usage.
  *
+ * User implements this function to get the values of the variable from dataset.
+ *
+ * For prompts like "_can you show a PCP of the revenue per capita for each location in dataset myVenues_", the tool will
+ * call the `getValues()` function twice:
+ * - get the values of **revenue** from dataset: getValues('myVenues', 'revenue')
+ * - get the values of **population** from dataset: getValues('myVenues', 'population')
  */
 export const pcp = tool<
-  z.ZodObject<{
-    datasetName: z.ZodString;
-    variableNames: z.ZodArray<z.ZodString>;
-  }>,
-  ExecutePCPResult['llmResult'],
-  ExecutePCPResult['additionalData'],
-  PCPToolContext
+  PCPFunctionArgs,
+  PCPLlmResult,
+  PCPAdditionalData,
+  EChartsToolContext
 >({
   description: 'create a parallel coordinates plot',
   parameters: z.object({
@@ -66,40 +79,39 @@ export const pcp = tool<
 
 export type PCPTool = typeof pcp;
 
-export type ExecutePCPResult = {
-  llmResult: {
-    success: boolean;
-    result?: {
-      id: string;
-      datasetName: string;
-      variableNames: string[];
-      details: string;
-      image?: string;
-    };
-    error?: string;
-    instruction?: string;
-  };
-  additionalData?: {
+export type PCPFunctionArgs = z.ZodObject<{
+  datasetName: z.ZodString;
+  variableNames: z.ZodArray<z.ZodString>;
+}>;
+
+export type PCPLlmResult = {
+  success: boolean;
+  result?: {
     id: string;
     datasetName: string;
-    variables: string[];
-    pcp: ParallelCoordinateDataProps;
-    rawData: Record<string, number[]>;
-    theme?: string;
-    isDraggable?: boolean;
-    isExpanded?: boolean;
-    onSelected?: OnSelected;
+    variableNames: string[];
+    details: string;
+    image?: string;
   };
+  error?: string;
+  instruction?: string;
 };
 
-export type PCPToolContext = {
-  getValues: GetValues;
+export type PCPAdditionalData = {
+  id: string;
+  datasetName: string;
+  variables: string[];
+  pcp: ParallelCoordinateDataProps;
+  rawData: Record<string, number[]>;
+  theme?: string;
+  isDraggable?: boolean;
+  isExpanded?: boolean;
   onSelected?: OnSelected;
-  config?: {
-    isDraggable?: boolean;
-    isExpanded?: boolean;
-    theme?: string;
-  };
+};
+
+export type ExecutePCPResult = {
+  llmResult: PCPLlmResult;
+  additionalData?: PCPAdditionalData;
 };
 
 type PCPToolArgs = {
@@ -115,6 +127,11 @@ async function executePCP(args, options): Promise<ExecutePCPResult> {
   try {
     if (!isPCPToolArgs(args)) {
       throw new Error('Invalid PCP function arguments.');
+    }
+    if (!isEChartsToolContext(options.context)) {
+      throw new Error(
+        'Invalid context for PCP tool. Please provide a valid context.'
+      );
     }
     const { getValues, onSelected, config } = options.context;
     const { datasetName, variableNames } = args;

@@ -2,7 +2,7 @@
 
 > **isOpenAIFunctionTool**(`tool`): `tool is RegisterFunctionCallingProps`
 
-Defined in: [packages/core/src/utils/create-assistant.ts:171](https://github.com/GeoDaCenter/openassistant/blob/a9f2271d1019f6c25c10dd4b3bdb64fcf16999b2/packages/core/src/utils/create-assistant.ts#L171)
+Defined in: [packages/core/src/utils/create-assistant.ts:170](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/utils/create-assistant.ts#L170)
 
 Type guard to check if a tool is an OpenAI function tool
 
@@ -12,7 +12,7 @@ Type guard to check if a tool is an OpenAI function tool
 
 The tool to check
 
-[`RegisterFunctionCallingProps`](../type-aliases/RegisterFunctionCallingProps.md) | `Tool`
+`Tool` | [`RegisterFunctionCallingProps`](../type-aliases/RegisterFunctionCallingProps.md)
 
 ## Returns
 

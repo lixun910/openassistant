@@ -2,7 +2,7 @@
 
 > **isVercelFunctionTool**(`tool`): tool is ExtendedTool\<never, never, never, CustomFunctionContext\<unknown\> \| CustomFunctionContextCallback\<unknown\>\>
 
-Defined in: [packages/core/src/utils/create-assistant.ts:182](https://github.com/GeoDaCenter/openassistant/blob/a9f2271d1019f6c25c10dd4b3bdb64fcf16999b2/packages/core/src/utils/create-assistant.ts#L182)
+Defined in: [packages/core/src/utils/create-assistant.ts:181](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/utils/create-assistant.ts#L181)
 
 Type guard to check if a tool is a Vercel function tool
 

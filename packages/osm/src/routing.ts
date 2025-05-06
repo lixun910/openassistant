@@ -1,6 +1,7 @@
-import { tool } from '@openassistant/core';
+import { tool } from '@openassistant/utils';
 import { z } from 'zod';
 import { generateId, cacheData } from './utils';
+import { isOsmToolContext, OsmToolContext } from './register-tools';
 
 type MapboxStep = {
   distance: number;
@@ -39,24 +40,93 @@ type MapboxResponse = {
   message?: string;
 };
 
+export type RoutingFunctionArgs = z.ZodObject<{
+  origin: z.ZodObject<{
+    longitude: z.ZodNumber;
+    latitude: z.ZodNumber;
+  }>;
+  destination: z.ZodObject<{
+    longitude: z.ZodNumber;
+    latitude: z.ZodNumber;
+  }>;
+  mode: z.ZodOptional<z.ZodEnum<['driving', 'walking', 'cycling']>>;
+}>;
+
+export type RoutingLlmResult = {
+  success: boolean;
+  result?: {
+    datasetName: string;
+    distance: number;
+    duration: number;
+    geometry: GeoJSON.LineString;
+    origin: GeoJSON.FeatureCollection;
+    destination: GeoJSON.FeatureCollection;
+    steps?: Array<{
+      distance: number;
+      duration: number;
+      geometry: GeoJSON.LineString;
+      name: string;
+      mode: string;
+      maneuver: {
+        location: [number, number];
+        bearing_before: number;
+        bearing_after: number;
+        type: string;
+        modifier?: string;
+      };
+    }>;
+  };
+  error?: string;
+};
+
+export type RoutingAdditionalData = {
+  origin: {
+    longitude: number;
+    latitude: number;
+  };
+  destination: {
+    longitude: number;
+    latitude: number;
+  };
+  mode: string;
+  route: MapboxRoute;
+  cacheId: string;
+};
+
+export type ExecuteRoutingResult = {
+  llmResult: RoutingLlmResult;
+  additionalData?: RoutingAdditionalData;
+};
+
+/**
+ * Routing Tool
+ * 
+ * This tool calculates routes between two points using Mapbox's Directions API.
+ * It supports different transportation modes (driving, walking, cycling) and returns
+ * detailed route information including distance, duration, and turn-by-turn directions.
+ * 
+ * Example user prompts:
+ * - "Find the driving route from Times Square to Central Park"
+ * - "How do I walk from the Eiffel Tower to the Louvre?"
+ * - "Get cycling directions from my current location to the nearest coffee shop"
+ * 
+ * Example code:
+ * ```typescript
+ * import { routing, RoutingTool } from "@openassistant/osm";
+ * 
+ * const routingTool: RoutingTool = {
+ *   ...routing,
+ *   context: {
+ *     getMapboxToken: () => "your-mapbox-token"
+ *   }
+ * };
+ * ```
+ */
 export const routing = tool<
-  // tool parameters
-  z.ZodObject<{
-    origin: z.ZodObject<{
-      longitude: z.ZodNumber;
-      latitude: z.ZodNumber;
-    }>;
-    destination: z.ZodObject<{
-      longitude: z.ZodNumber;
-      latitude: z.ZodNumber;
-    }>;
-  }>,
-  // llm result
-  ExecuteRoutingResult['llmResult'],
-  // additional data
-  ExecuteRoutingResult['additionalData'],
-  // context
-  RoutingToolContext
+  RoutingFunctionArgs,
+  RoutingLlmResult,
+  RoutingAdditionalData,
+  OsmToolContext
 >({
   description:
     'Get routing directions between two coordinates using Mapbox Directions API',
@@ -71,7 +141,8 @@ export const routing = tool<
     }),
     mode: z
       .enum(['driving', 'walking', 'cycling'])
-      .describe('The mode of the routing'),
+      .describe('The mode of the routing')
+      .optional(),
   }),
   execute: async (args, options): Promise<ExecuteRoutingResult> => {
     const controller = new AbortController();
@@ -83,6 +154,11 @@ export const routing = tool<
 
       // Generate cache key
       const cacheKey = generateId();
+      if (!options?.context || !isOsmToolContext(options.context)) {
+        throw new Error(
+          'Context is required and must implement OsmToolContext'
+        );
+      }
       const mapboxAccessToken = options.context.getMapboxToken();
 
       // Using Mapbox Directions API
@@ -187,6 +263,7 @@ export const routing = tool<
           destination: destination,
           route,
           cacheId: cacheKey,
+          mode,
         },
       };
     } catch (error) {
@@ -213,30 +290,4 @@ export type RoutingTool = typeof routing;
 
 export type RoutingToolContext = {
   getMapboxToken: () => string;
-};
-
-type ExecuteRoutingResult = {
-  llmResult: {
-    success: boolean;
-    result?: {
-      datasetName: string;
-      distance: number;
-      duration: number;
-      geometry: GeoJSON.LineString;
-      origin: GeoJSON.FeatureCollection;
-      destination: GeoJSON.FeatureCollection;
-    };
-    error?: string;
-  };
-  additionalData?: {
-    origin: [number, number];
-    destination: [number, number];
-    route: {
-      distance: number;
-      duration: number;
-      geometry: GeoJSON.LineString;
-      legs: Array<MapboxLeg>;
-    };
-    cacheId: string;
-  };
 };

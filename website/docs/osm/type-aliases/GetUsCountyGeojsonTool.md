@@ -1,0 +1,5 @@
+# Type Alias: GetUsCountyGeojsonTool
+
+> **GetUsCountyGeojsonTool**: *typeof* [`getUsCountyGeojson`](../variables/getUsCountyGeojson.md)
+
+Defined in: [us/county.ts:119](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/osm/src/us/county.ts#L119)

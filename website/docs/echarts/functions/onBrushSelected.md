@@ -1,8 +1,8 @@
 # Function: onBrushSelected()
 
-> **onBrushSelected**(`params`, `id`, `datasetName`, `eChart`?, `onSelected`?): `void`
+> **onBrushSelected**(`params`, `id`, `datasetName`, `eChart`?, `onBrushed`?, `onSelected`?): `void`
 
-Defined in: [packages/echarts/src/echarts-updater.tsx:61](https://github.com/GeoDaCenter/openassistant/blob/a9f2271d1019f6c25c10dd4b3bdb64fcf16999b2/packages/echarts/src/echarts-updater.tsx#L61)
+Defined in: [echarts-updater.tsx:77](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/echarts/src/echarts-updater.tsx#L77)
 
 Handles the brush selection event from ECharts and processes the selected data indices.
 
@@ -36,9 +36,13 @@ Name of the dataset being visualized
 
 Optional ECharts instance reference
 
-### onSelected?
+### onBrushed?
 
 `OnBrushedCallback`
+
+### onSelected?
+
+[`OnSelected`](../type-aliases/OnSelected.md)
 
 Optional callback function to handle brush selection
 
