@@ -5,14 +5,12 @@ import {
   GlobalMoranTool,
   lisa,
   LisaTool,
-  MoranScatterPlotToolComponent,
   spatialJoin,
   SpatialJoinTool,
   spatialRegression,
   SpatialRegressionTool,
   spatialWeights,
   SpatialWeightsTool,
-  SpatialWeightsToolComponent,
   buffer,
   centroid,
   dissolve,
@@ -28,7 +26,6 @@ import {
   geocoding,
   routing,
   isochrone,
-  getCachedData,
 } from '@openassistant/osm';
 import { PointLayerData } from '@geoda/core';
 import { SAMPLE_DATASETS } from './dataset';
@@ -43,13 +40,33 @@ import {
   BoxplotTool,
   BubbleChartTool,
   boxplot,
-} from '@openassistant/echarts';
+} from '@openassistant/plots';
 import { localQuery } from '@openassistant/duckdb';
-import { KeplerglTool } from '@openassistant/keplergl';
-import { keplergl } from '@openassistant/keplergl';
+import { keplergl, KeplerglTool } from '@openassistant/map';
+import { SpatialWeightsComponent } from '@openassistant/tables';
+import { MoranScatterComponent } from '@openassistant/echarts';
+import { KeplerGlComponent } from '@openassistant/keplergl';
 
 const theme = 'light';
 const isDraggable = true;
+
+const datasetCache = new Map<string, unknown>();
+
+// use onToolCompleted to cache datasets from some tools
+const onToolCompleted = (toolCallId: string, additionalData: unknown) => {
+  // find the dataset from the tool results and cache it
+  if (
+    additionalData &&
+    typeof additionalData === 'object' &&
+    'datasetName' in additionalData
+  ) {
+    const datasetName = additionalData.datasetName as string;
+    if (datasetName && datasetName in additionalData) {
+      const dataset = additionalData[datasetName];
+      datasetCache.set(datasetName, dataset);
+    }
+  }
+};
 
 const getValues = async (datasetName: string, variableName: string) => {
   return (SAMPLE_DATASETS[datasetName] as any[]).map(
@@ -70,9 +87,9 @@ const getGeometries = async (datasetName: string) => {
     return points;
   } catch (error) {
     // try to get the geometries from cached data
-    let geojson = getCachedData(datasetName);
-    if (geojson && 'features' in geojson && geojson.features.length > 0) {
-      return geojson.features;
+    let geojson = datasetCache.get(datasetName);
+    if (geojson && typeof geojson === 'object' && 'features' in geojson) {
+      return geojson.features as GeoJSON.Feature[];
     } else {
       throw new Error('No geometries found');
     }
@@ -161,7 +178,7 @@ const weightsTool: SpatialWeightsTool = {
     ...spatialWeights.context,
     getGeometries,
   },
-  component: SpatialWeightsToolComponent,
+  component: SpatialWeightsComponent,
 };
 
 const globalMoranTool: GlobalMoranTool = {
@@ -169,13 +186,8 @@ const globalMoranTool: GlobalMoranTool = {
   context: {
     ...globalMoran.context,
     getValues,
-    config: {
-      ...globalMoran.context?.config,
-      theme,
-      isDraggable,
-    },
   },
-  component: MoranScatterPlotToolComponent,
+  component: MoranScatterComponent,
 };
 
 const regressionTool: SpatialRegressionTool = {
@@ -184,6 +196,7 @@ const regressionTool: SpatialRegressionTool = {
     ...spatialRegression.context,
     getValues,
   },
+  onToolCompleted,
 };
 
 const lisaTool: LisaTool = {
@@ -192,6 +205,7 @@ const lisaTool: LisaTool = {
     ...lisa.context,
     getValues,
   },
+  onToolCompleted,
 };
 
 const spatialJoinTool: SpatialJoinTool = {
@@ -201,6 +215,7 @@ const spatialJoinTool: SpatialJoinTool = {
     getValues,
     getGeometries,
   },
+  onToolCompleted,
 };
 
 const localQueryTool = {
@@ -209,6 +224,7 @@ const localQueryTool = {
     ...localQuery.context,
     getValues,
   },
+  onToolCompleted,
 };
 
 const keplerglTool: KeplerglTool = {
@@ -216,11 +232,8 @@ const keplerglTool: KeplerglTool = {
   context: {
     ...keplergl.context,
     getDataset: async (datasetName) => SAMPLE_DATASETS[datasetName],
-    config: {
-      ...keplergl.context?.config,
-      isDraggable,
-    },
   },
+  component: KeplerGlComponent,
 };
 
 export const tools = {

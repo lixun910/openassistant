@@ -2,7 +2,7 @@
 
 > **MoranScatterPlotAdditionalData**: `object`
 
-Defined in: [packages/geoda/src/moran-scatterplot/tool.ts:37](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/geoda/src/moran-scatterplot/tool.ts#L37)
+Defined in: [packages/tools/geoda/src/global-moran/tool.ts:31](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/tools/geoda/src/global-moran/tool.ts#L31)
 
 ## Type declaration
 

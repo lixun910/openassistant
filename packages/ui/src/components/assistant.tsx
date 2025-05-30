@@ -4,11 +4,14 @@ import {
   useAssistant,
   UseAssistantProps,
 } from '@openassistant/core';
+import { generateId } from '@openassistant/utils';
 import { Message } from '@ai-sdk/ui-utils';
+
 import MessageCard from './message-card';
 import PromptInputWithBottomActions from './prompt-input-with-bottom-actions';
 import { ChatContainer } from './chat-container';
 import {
+  createWelcomeMessage,
   sendImageMessageHandler,
   sendTextMessageHandler,
 } from './assistant-utils';
@@ -19,7 +22,7 @@ import {
 export type AiAssistantProps = UseAssistantProps & {
   theme?: 'dark' | 'light';
   /** The welcome message of the assistant. */
-  welcomeMessage: string;
+  welcomeMessage: string | ReactNode;
   /** The ideas of the assistant, which will be shown above the prompt input box. */
   ideas?: { title: string; description: string }[];
   /** The callback function to handle the refresh ideas. */
@@ -46,6 +49,8 @@ export type AiAssistantProps = UseAssistantProps & {
   onFeedback?: (question: string) => void;
   /** The callback function to handle the messages updated. */
   onMessagesUpdated?: (messages: MessageModel[]) => void;
+  /** The callback function to handle the tool finished. */
+  onToolFinished?: (toolCallId: string, additionalData: unknown) => void;
   /** The callback function to handle the restart chat. */
   onRestartChat?: () => void;
   /** The font size of the assistant. */
@@ -64,24 +69,6 @@ export type AiAssistantProps = UseAssistantProps & {
   initialMessages?: MessageModel[];
 };
 
-/**
- * Creates a welcome message.
- * @param welcomeMessage - The welcome message.
- * @returns The welcome message.
- */
-const createWelcomeMessage = (welcomeMessage: string): MessageModel => ({
-  message: welcomeMessage,
-  sentTime: 'just now',
-  sender: 'assistant',
-  direction: 'incoming',
-  position: 'first',
-  messageContent: {
-    reasoning: '',
-    toolCallMessages: [],
-    text: welcomeMessage,
-  },
-});
-
 function rebuildMessages(historyMessages: MessageModel[]): Message[] {
   const result: Message[] = [];
 
@@ -89,44 +76,26 @@ function rebuildMessages(historyMessages: MessageModel[]): Message[] {
     if (msg.direction === 'outgoing') {
       // Handle user messages
       result.push({
-        id: Math.random().toString(36).substring(2), // Generate random ID
+        id: generateId(),
         role: 'user',
-        content: msg.message || '',
-        parts: [
-          {
-            type: 'text',
-            text: msg.message || '',
-          },
-        ],
+        content: '',
+        parts: msg.messageContent?.parts || [],
       });
     } else if (msg.direction === 'incoming') {
       // Handle assistant messages with tool calls
-      if (msg.messageContent?.toolCallMessages?.length) {
+      if (msg.messageContent?.parts?.length) {
         // Add tool invocations message
         result.push({
-          id: `msg-${Math.random().toString(36).substring(2)}`,
+          id: generateId(),
           role: 'assistant',
           content: '',
-          toolInvocations: msg.messageContent.toolCallMessages.map(
-            (tool, index) => ({
-              toolCallId: tool.toolCallId,
-              result: tool.llmResult,
-              state: 'result',
-              toolName: tool.toolName,
-              args: tool.args,
-              step: index + 1,
-            })
-          ),
+          // return parts without property "additionalData"
+          parts: msg.messageContent.parts.map((part) => ({
+            ...part,
+            additionalData: undefined,
+          })),
         });
       }
-
-      // Add final response message
-      result.push({
-        id: `msg-${Math.random().toString(36).substring(2)}`,
-        role: 'assistant',
-        content: msg.messageContent?.text || '',
-        toolInvocations: [],
-      });
     }
   }
 
@@ -151,7 +120,7 @@ export function AiAssistant(props: AiAssistantProps) {
   const [messages, setMessages] = useState<MessageModel[]>(
     props.initialMessages && props.initialMessages.length > 0
       ? props.initialMessages
-      : [createWelcomeMessage(props.welcomeMessage)]
+      : []
   );
   const [isPrompting, setIsPrompting] = useState(false);
 
@@ -170,7 +139,6 @@ export function AiAssistant(props: AiAssistantProps) {
     model: props.model,
     apiKey: props.apiKey,
     instructions: props.instructions,
-    functions: props.functions,
     tools: props.tools,
     name: props.name,
     description: props.description,
@@ -198,6 +166,7 @@ export function AiAssistant(props: AiAssistantProps) {
       setMessages,
       setTypingIndicator: setIsPrompting,
       onMessagesUpdated: props.onMessagesUpdated,
+      onToolFinished: props.onToolFinished ?? (() => {}),
     };
 
     if (isScreenshotAvailable) {
@@ -241,7 +210,7 @@ export function AiAssistant(props: AiAssistantProps) {
 
   const reportQuestion = (messageIndex: number) => {
     // report the message
-    const question = messages[messageIndex].message;
+    const question = `${messages[messageIndex]}`;
     if (props.onFeedback) {
       props.onFeedback(question || '');
     }
@@ -255,7 +224,7 @@ export function AiAssistant(props: AiAssistantProps) {
     setIsPrompting(false);
 
     // reset the messages
-    setMessages([createWelcomeMessage(props.welcomeMessage)]);
+    setMessages([]);
 
     // restart the assistant
     await restartChat();
@@ -291,6 +260,17 @@ export function AiAssistant(props: AiAssistantProps) {
           id="chat-message-list"
         >
           <div className="overscroll-behavior-y-auto overflow-anchor-auto touch-action-none absolute bottom-0 left-0 right-0 top-0 flex h-full flex-col gap-4 px-1">
+            {props.welcomeMessage && (
+              <MessageCard
+                key={-1}
+                index={-1}
+                data-testid="message-card"
+                avatar={getAvatar('incoming')}
+                currentAttempt={1}
+                message={createWelcomeMessage(props.welcomeMessage)}
+                customMessage={props.welcomeMessage}
+              />
+            )}
             {messages.map((message, i) => {
               const messageElement = message.messageContent;
               return (

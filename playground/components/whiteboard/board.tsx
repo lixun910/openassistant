@@ -11,7 +11,7 @@ import {
   BoxplotOutputData,
 } from '@openassistant/echarts';
 import { CreateMapOutputData } from '@openassistant/keplergl';
-import { QueryDuckDBOutputData } from '@openassistant/duckdb';
+import { QueryDuckDBOutputData } from '@openassistant/tables';
 
 const ReactGridLayout = WidthProvider(RGL) as any;
 

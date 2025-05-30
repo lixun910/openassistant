@@ -6,31 +6,42 @@ import {
 } from '../../esbuild.config.mjs';
 import { tailwindPlugin } from 'esbuild-plugin-tailwindcss';
 import { dtsPlugin } from 'esbuild-plugin-d.ts';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const baseConfig = createBaseConfig({
   entryPoints: ['src/index.ts'],
   jsx: 'automatic',
-  plugins: [dtsPlugin()],
+  plugins: [
+    tailwindPlugin({
+      config: './tailwind.config.js',
+    }),
+    dtsPlugin(),
+  ],
   external: [
-    'react',
-    'react-dom',
-    '@ai-sdk',
-    'html2canvas',
+    '@ai-sdk/ui-utils',
+    '@heroui/react',
+    '@heroui/use-clipboard',
+    '@iconify/react',
     '@openassistant/core',
-    '@nextui-org',
+    '@openassistant/utils',
+    'ai',
+    'framer-motion',
+    'html2canvas',
+    'next-themes',
+    'react-audio-voice-recorder',
     'react-markdown',
     'remark-gfm',
+    'tailwindcss',
+    'react',
+    'react-dom',
   ],
 });
 
 const fullBundleConfig = {
   ...baseConfig,
   entryPoints: ['src/main.tsx'],
+  external: baseConfig.external.filter(
+    (dep) => dep !== 'react' && dep !== 'react-dom'
+  ),
   loader: {
     '.js': 'jsx',
     '.ts': 'tsx',
@@ -39,24 +50,24 @@ const fullBundleConfig = {
     '.svg': 'file',
     '.css': 'css',
   },
-  plugins: [
-    tailwindPlugin({
-      tailwindConfig: path.join(__dirname, 'tailwind.config.js'),
-    }),
-    dtsPlugin(),
-  ],
-  external: [
-    'react',
-    'react-dom',
-    '@ai-sdk',
-    'html2canvas',
-    '@openassistant/core',
-  ],
 };
 
 const serverConfig = {
-  ...baseConfig,
   entryPoints: ['src/main.tsx'],
+  bundle: true,
+  minify: false,
+  sourcemap: true,
+  metafile: true,
+  target: ['esnext'],
+  format: 'esm',
+  platform: 'browser',
+  jsx: 'automatic',
+  jsxImportSource: 'react',
+  mainFields: ['browser', 'module', 'main'],
+  conditions: ['browser', 'import', 'module'],
+  define: {
+    'process.env.NODE_ENV': '"development"',
+  },
   loader: {
     '.js': 'jsx',
     '.ts': 'tsx',
@@ -66,13 +77,9 @@ const serverConfig = {
     '.css': 'css',
     '.wasm': 'file',
   },
-  alias: {
-    react: '../../node_modules/react',
-    'react-dom': '../../node_modules/react-dom',
-  },
   plugins: [
     tailwindPlugin({
-      tailwindConfig: path.join(__dirname, 'tailwind.config.js'),
+      config: './tailwind.config.js',
     }),
     dtsPlugin(),
   ],

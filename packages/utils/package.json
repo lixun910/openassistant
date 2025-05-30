@@ -1,6 +1,6 @@
 {
   "name": "@openassistant/utils",
-  "version": "0.4.4",
+  "version": "0.5.3",
   "description": "Utility functions for OpenAssistant tools",
   "author": "Xun Li<lixun910@gmail.com>",
   "license": "MIT",
@@ -16,9 +16,6 @@
   },
   "dependencies": {
     "zod": "^3.24.4"
-  },
-  "peerDependencies": {
-    "react": ">=18.2"
   },
   "publishConfig": {
     "access": "public"

@@ -2,18 +2,18 @@
 
 > **GetUsStateGeojsonAdditionalData**: `object`
 
-Defined in: [us/state.ts:16](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/osm/src/us/state.ts#L16)
+Defined in: [packages/tools/osm/src/us/state.ts:21](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/tools/osm/src/us/state.ts#L21)
 
 ## Type declaration
 
-### datasetId
+## Index Signature
 
-> **datasetId**: `string`
+\[`datasetName`: `string`\]: `unknown`
 
-### geojson
+### datasetName
 
-> **geojson**: `GeoJSON.FeatureCollection`
+> **datasetName**: `string`
 
-### states
+### stateNames
 
-> **states**: `string`[]
+> **stateNames**: `string`[]

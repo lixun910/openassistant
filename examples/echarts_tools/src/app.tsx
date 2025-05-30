@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {
-  boxplot,
-  BoxplotComponentContainer,
+  BoxplotComponent,
   BoxplotOutputData,
+  BubbleChartComponent,
+  HistogramPlotComponent,
+  ParallelCoordinateComponent,
+  ScatterplotComponent,
+} from '@openassistant/echarts';
+import {
+  boxplot,
   BoxplotTool,
   bubbleChart,
   BubbleChartTool,
@@ -12,10 +18,11 @@ import {
   PCPTool,
   scatterplot,
   ScatterplotTool,
-} from '@openassistant/echarts';
+} from '@openassistant/plots';
 import { AiAssistant } from '@openassistant/ui';
-import { tool } from '@openassistant/utils';
 import { z } from 'zod';
+import { tool } from 'ai';
+
 import { SAMPLE_DATASETS } from './dataset';
 
 export default function App() {
@@ -25,7 +32,7 @@ export default function App() {
     );
   };
 
-  // Extends from BoxplotComponentContainer with custom props
+  // Example of extending BoxplotComponent with custom props
   const BoxplotComponentContainerWithCustomProps = (
     props: BoxplotOutputData
   ) => {
@@ -49,7 +56,7 @@ export default function App() {
       fetchData();
     }, [props.datasetName, props.variables]);
 
-    return <BoxplotComponentContainer {...props} data={rawData} />;
+    return <BoxplotComponent {...props} data={rawData} />;
   };
 
   const theme = 'light';
@@ -65,6 +72,7 @@ export default function App() {
         theme,
       },
     },
+    component: BoxplotComponent,
   };
 
   // Create the bubble chart tool with the getValues implementation
@@ -78,6 +86,7 @@ export default function App() {
         theme,
       },
     },
+    component: BubbleChartComponent,
   };
 
   const histogramTool: HistogramTool = {
@@ -90,6 +99,7 @@ export default function App() {
         theme,
       },
     },
+    component: HistogramPlotComponent,
   };
 
   const pcpTool: PCPTool = {
@@ -98,6 +108,7 @@ export default function App() {
       ...pcp.context,
       getValues: getValues,
     },
+    component: ParallelCoordinateComponent,
   };
 
   const scatterplotTool: ScatterplotTool = {
@@ -106,22 +117,22 @@ export default function App() {
       ...scatterplot.context,
       getValues: getValues,
     },
+    component: ScatterplotComponent,
   };
 
-  const thinkTool = tool({
+  // Example of a thinking tool using extendedTool()
+  const think = tool({
     description: 'Think about the question and provide a plan',
     parameters: z.object({
       question: z.string().describe('The question to think about'),
     }),
     execute: async ({ question }) => {
       return {
-        llmResult: {
-          success: true,
-          result: {
-            question,
-            instruction:
-              'Please think about the question and provide a plan. Then, execute the plan for using the tools. Before executing the plan, please summarize the plan for using the tools.',
-          },
+        success: true,
+        result: {
+          question,
+          instruction:
+            'Please think about the question and provide a plan. Then, execute the plan for using the tools. Before executing the plan, please summarize the plan for using the tools.',
         },
       };
     },
@@ -173,7 +184,7 @@ variables:
             instructions={instructions}
             tools={{
               boxplot: boxplotTool,
-              think: thinkTool,
+              think: think,
               bubbleChart: bubbleChartTool,
               histogram: histogramTool,
               pcp: pcpTool,
@@ -182,7 +193,6 @@ variables:
             welcomeMessage={welcomeMessage}
             theme={theme}
             useMarkdown={true}
-            // botMessageClassName="bg-content2"
           />
         </div>
       </div>

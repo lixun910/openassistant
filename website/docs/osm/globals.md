@@ -1,5 +1,9 @@
 # @openassistant/osm
 
+## Enumerations
+
+- [OsmToolNames](enumerations/OsmToolNames.md)
+
 ## Type Aliases
 
 - [ExecuteGeocodingResult](type-aliases/ExecuteGeocodingResult.md)
@@ -8,6 +12,7 @@
 - [ExecuteGetUsZipcodeGeojsonResult](type-aliases/ExecuteGetUsZipcodeGeojsonResult.md)
 - [ExecuteIsochroneResult](type-aliases/ExecuteIsochroneResult.md)
 - [ExecuteQueryUSZipcodesResult](type-aliases/ExecuteQueryUSZipcodesResult.md)
+- [ExecuteRoadsResult](type-aliases/ExecuteRoadsResult.md)
 - [ExecuteRoutingResult](type-aliases/ExecuteRoutingResult.md)
 - [GeocodingAdditionalData](type-aliases/GeocodingAdditionalData.md)
 - [GeocodingFunctionArgs](type-aliases/GeocodingFunctionArgs.md)
@@ -31,10 +36,16 @@
 - [IsochroneLlmResult](type-aliases/IsochroneLlmResult.md)
 - [IsochroneTool](type-aliases/IsochroneTool.md)
 - [IsochroneToolContext](type-aliases/IsochroneToolContext.md)
+- [MapboxToolContext](type-aliases/MapboxToolContext.md)
+- [OsmToolContext](type-aliases/OsmToolContext.md)
 - [QueryUSZipcodesTool](type-aliases/QueryUSZipcodesTool.md)
 - [QueryZipcodeAdditionalData](type-aliases/QueryZipcodeAdditionalData.md)
 - [QueryZipcodeFunctionArgs](type-aliases/QueryZipcodeFunctionArgs.md)
 - [QueryZipcodeLlmResult](type-aliases/QueryZipcodeLlmResult.md)
+- [RoadsAdditionalData](type-aliases/RoadsAdditionalData.md)
+- [RoadsFunctionArgs](type-aliases/RoadsFunctionArgs.md)
+- [RoadsLlmResult](type-aliases/RoadsLlmResult.md)
+- [RoadsTool](type-aliases/RoadsTool.md)
 - [RoutingAdditionalData](type-aliases/RoutingAdditionalData.md)
 - [RoutingFunctionArgs](type-aliases/RoutingFunctionArgs.md)
 - [RoutingLlmResult](type-aliases/RoutingLlmResult.md)
@@ -49,11 +60,13 @@
 - [getUsZipcodeGeojson](variables/getUsZipcodeGeojson.md)
 - [isochrone](variables/isochrone.md)
 - [queryUSZipcodes](variables/queryUSZipcodes.md)
+- [roads](variables/roads.md)
 - [routing](variables/routing.md)
 
 ## Functions
 
-- [cacheData](functions/cacheData.md)
-- [generateId](functions/generateId.md)
-- [getCachedData](functions/getCachedData.md)
-- [removeCachedData](functions/removeCachedData.md)
+- [getOsmTool](functions/getOsmTool.md)
+- [getOsmTools](functions/getOsmTools.md)
+- [isMapboxToolContext](functions/isMapboxToolContext.md)
+- [isOsmToolContext](functions/isOsmToolContext.md)
+- [registerTools](functions/registerTools.md)

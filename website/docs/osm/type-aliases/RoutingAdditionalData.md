@@ -2,13 +2,17 @@
 
 > **RoutingAdditionalData**: `object`
 
-Defined in: [routing.ts:82](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/osm/src/routing.ts#L82)
+Defined in: [packages/tools/osm/src/routing.ts:74](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/tools/osm/src/routing.ts#L74)
 
 ## Type declaration
 
-### cacheId
+## Index Signature
 
-> **cacheId**: `string`
+\[`datasetName`: `string`\]: `unknown`
+
+### datasetName
+
+> **datasetName**: `string`
 
 ### destination
 
@@ -37,7 +41,3 @@ Defined in: [routing.ts:82](https://github.com/GeoDaCenter/openassistant/blob/2c
 #### origin.longitude
 
 > **longitude**: `number`
-
-### route
-
-> **route**: `MapboxRoute`

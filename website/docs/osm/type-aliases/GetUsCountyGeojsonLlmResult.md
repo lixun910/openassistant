@@ -2,13 +2,13 @@
 
 > **GetUsCountyGeojsonLlmResult**: `object`
 
-Defined in: [us/county.ts:9](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/osm/src/us/county.ts#L9)
+Defined in: [packages/tools/osm/src/us/county.ts:14](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/tools/osm/src/us/county.ts#L14)
 
 ## Type declaration
 
-### datasetId?
+### datasetName?
 
-> `optional` **datasetId**: `string`
+> `optional` **datasetName**: `string`
 
 ### error?
 
