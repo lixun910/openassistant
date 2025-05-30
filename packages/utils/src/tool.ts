@@ -1,9 +1,21 @@
 import { z } from 'zod';
 
+export type ToolExecutionOptions = {
+  toolCallId: string;
+  abortSignal?: AbortSignal;
+};
+
+export type OnToolCompleted = (
+  toolCallId: string,
+  additionalData?: unknown
+) => void;
+
 export type Parameters = z.ZodTypeAny;
 
 export type inferParameters<PARAMETERS extends Parameters> =
-  PARAMETERS extends z.ZodTypeAny ? z.infer<PARAMETERS> : never;
+  PARAMETERS extends z.ZodTypeAny
+    ? z.infer<PARAMETERS>
+    : Record<string, unknown>;
 
 export type ExecuteFunctionResult<
   RETURN_TYPE = never,
@@ -20,9 +32,8 @@ export type ExecuteFunction<
   CONTEXT = never,
 > = (
   args: inferParameters<PARAMETERS>,
-  options?: {
-    context?: CONTEXT extends never ? CONTEXT : unknown;
-    previousExecutionOutput?: unknown;
+  options?: ToolExecutionOptions & {
+    context?: CONTEXT;
   }
 ) => PromiseLike<ExecuteFunctionResult<RETURN_TYPE, ADDITIONAL_DATA>>;
 
@@ -37,10 +48,10 @@ export type ExtendedTool<
   execute: ExecuteFunction<PARAMETERS, RETURN_TYPE, ADDITIONAL_DATA, CONTEXT>;
   context?: CONTEXT;
   component?: React.ElementType;
-  priority?: number;
+  onToolCompleted?: OnToolCompleted;
 };
 
-export function tool<
+export function extendedTool<
   PARAMETERS extends Parameters = never,
   RETURN_TYPE = never,
   ADDITIONAL_DATA = never,

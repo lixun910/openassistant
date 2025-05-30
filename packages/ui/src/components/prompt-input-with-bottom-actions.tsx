@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Tooltip, ScrollShadow, Badge } from '@nextui-org/react';
+import { Button, Tooltip, ScrollShadow, Badge } from '@heroui/react';
 import { Icon } from '@iconify/react';
+
 import PromptInput from './prompt-input';
 import VoiceChatButton from './voice-chat-button';
 
@@ -130,11 +131,11 @@ export default function Component({
                       className={`${context} ? 'animate-ping':''`}
                     />
                   )}
-                  <p>{title}</p>
+                  <span>{title}</span>
                 </div>
-                <p className="text-gray-500 dark:text-gray-400">
+                <span className="text-gray-500 dark:text-gray-400">
                   {description}
-                </p>
+                </span>
               </Button>
             </Tooltip>
           ))}

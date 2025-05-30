@@ -5,17 +5,18 @@ import { CustomLexicalEditor } from '../lexical/lexical-editor';
 import {
   ScatterplotOutputData,
   ScatterplotComponent,
-  HistogramComponent,
+  HistogramPlotComponent,
   HistogramOutputData,
 } from '@openassistant/echarts';
 import {
-  KeplerGlComponentWithProvider,
+  KeplerGlComponent,
   CreateMapOutputData,
 } from '@openassistant/keplergl';
 import {
   QueryDuckDBComponent,
   QueryDuckDBOutputData,
-} from '@openassistant/duckdb';
+} from '@openassistant/tables';
+import { getDuckDB } from '@openassistant/duckdb';
 
 export type BoardItemProps = {
   id: string;
@@ -50,6 +51,9 @@ function BoardItem({ item }: { item: BoardItemProps }) {
       return (
         <QueryDuckDBComponent
           {...(content as QueryDuckDBOutputData)}
+          getDuckDB={getDuckDB}
+          // @ts-expect-error TODO: fix this
+          getValues={getValues}
         />
       );
     case 'scatterplot':
@@ -61,14 +65,14 @@ function BoardItem({ item }: { item: BoardItemProps }) {
       );
     case 'histogram':
       return (
-        <HistogramComponent
+        <HistogramPlotComponent
           {...(content as HistogramOutputData)}
           theme="light"
         />
       );
     case 'map':
       return (
-        <KeplerGlComponentWithProvider
+        <KeplerGlComponent
           {...(content as CreateMapOutputData)}
           theme="light"
         />

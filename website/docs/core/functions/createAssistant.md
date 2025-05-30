@@ -1,8 +1,8 @@
 # Function: createAssistant()
 
-> **createAssistant**(`props`): `Promise`\<[`VercelAi`](../classes/VercelAi.md)\>
+> **createAssistant**(`props`): `Promise`\<[`VercelAi`](../classes/VercelAi.md) \| [`OpenAIAssistant`](../classes/OpenAIAssistant.md) \| [`DeepSeekAssistant`](../classes/DeepSeekAssistant.md) \| [`GoogleAIAssistant`](../classes/GoogleAIAssistant.md) \| [`XaiAssistant`](../classes/XaiAssistant.md) \| [`OllamaAssistant`](../classes/OllamaAssistant.md) \| `AnthropicAssistant`\>
 
-Defined in: [packages/core/src/utils/create-assistant.ts:219](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/utils/create-assistant.ts#L219)
+Defined in: [packages/core/src/utils/create-assistant.ts:42](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/utils/create-assistant.ts#L42)
 
 Creates an AI assistant instance with the specified configuration
 
@@ -16,7 +16,7 @@ Configuration properties for the assistant. See [UseAssistantProps](../type-alia
 
 ## Returns
 
-`Promise`\<[`VercelAi`](../classes/VercelAi.md)\>
+`Promise`\<[`VercelAi`](../classes/VercelAi.md) \| [`OpenAIAssistant`](../classes/OpenAIAssistant.md) \| [`DeepSeekAssistant`](../classes/DeepSeekAssistant.md) \| [`GoogleAIAssistant`](../classes/GoogleAIAssistant.md) \| [`XaiAssistant`](../classes/XaiAssistant.md) \| [`OllamaAssistant`](../classes/OllamaAssistant.md) \| `AnthropicAssistant`\>
 
 Promise that resolves to the configured assistant instance
 

@@ -1,5 +1,11 @@
 import { GetAssistantModelByProvider } from '../lib/model-utils';
 import { UseAssistantProps } from '../hooks/use-assistant';
+import { Tool, convertToCoreMessages } from 'ai';
+import { ExtendedTool } from '@openassistant/utils';
+
+function isExtendedTool(tool: Tool | ExtendedTool): tool is ExtendedTool {
+  return 'context' in tool || 'onToolCompleted' in tool || 'component' in tool;
+}
 
 /**
  * Creates an AI assistant instance with the specified configuration
@@ -61,16 +67,49 @@ export async function createAssistant(props: UseAssistantProps) {
 
   if (tools) {
     Object.keys(tools).forEach((functionName) => {
-      const func = tools![functionName];
-      const { execute, context, component, ...rest } = func;
+      const toolObject = tools![functionName];
+      if (isExtendedTool(toolObject)) {
+        const { execute, context, component, onToolCompleted, ...rest } =
+          toolObject;
 
-      AssistantModel.registerTool({
-        name: functionName,
-        tool: rest,
-        func: createCallbackFunction(execute),
-        context,
-        component: component as React.ComponentType,
-      });
+        const vercelTool: Tool = {
+          ...rest,
+          execute: async (args, options) => {
+            const { toolCallId } = options;
+            try {
+              const result = await execute(args as never, { ...options, context });
+
+              const { additionalData, llmResult } = result;
+
+              if (additionalData && toolCallId) {
+                AssistantModel.addToolResult(toolCallId, additionalData);
+                if (onToolCompleted) {
+                  onToolCompleted(toolCallId, additionalData);
+                }
+              }
+
+              return llmResult;
+            } catch (error) {
+              console.error(error);
+              return {
+                success: false,
+                error: `Execute tool ${functionName} failed: ${error}`,
+              };
+            }
+          },
+        };
+
+        AssistantModel.registerTool({
+          name: functionName,
+          tool: vercelTool,
+          component: component,
+        });
+      } else {
+       AssistantModel.registerTool({
+         name: functionName,
+         tool: toolObject,
+       }); 
+      }
     });
   }
 
@@ -83,7 +122,7 @@ export async function createAssistant(props: UseAssistantProps) {
     props.historyMessages.length > 0 &&
     assistant.getMessages().length === 0
   ) {
-    assistant.setMessages(props.historyMessages);
+    assistant.setMessages(convertToCoreMessages(props.historyMessages));
   }
 
   // set the abort controller
@@ -92,54 +131,4 @@ export async function createAssistant(props: UseAssistantProps) {
   }
 
   return assistant;
-}
-
-function isExecuteFunctionResult(result: unknown) {
-  return typeof result === 'object' && result !== null && 'llmResult' in result;
-}
-
-function createCallbackFunction(execute) {
-  const callbackFunction = async (props) => {
-    const { functionArgs, functionContext, functionName, previousOutput } =
-      props;
-    const args = functionArgs;
-    const context = functionContext;
-
-    try {
-      const result = await execute?.(args, {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        context: context as any,
-        previousExecutionOutput: previousOutput,
-      });
-
-      // check result type: {llmResult, outputData}
-      if (!isExecuteFunctionResult(result)) {
-        return {
-          name: functionName,
-          result: {
-            success: false,
-            details:
-              'Failed to execute function. Executaion results are not valid.',
-          },
-        };
-      }
-
-      return {
-        name: functionName,
-        result: result.llmResult,
-        data: 'additionalData' in result ? result.additionalData : undefined,
-      };
-    } catch (error) {
-      return {
-        type: 'error',
-        name: functionName,
-        result: {
-          success: false,
-          details: `Failed to execute function. ${error}`,
-        },
-      };
-    }
-  };
-
-  return callbackFunction;
 }

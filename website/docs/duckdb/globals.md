@@ -1,30 +1,26 @@
 # @openassistant/duckdb
 
-## Interfaces
+## Enumerations
 
-- [LocalQueryAdditionalData](interfaces/LocalQueryAdditionalData.md)
-- [LocalQueryContext](interfaces/LocalQueryContext.md)
-- [LocalQueryErrorResult](interfaces/LocalQueryErrorResult.md)
-- [LocalQueryParameters](interfaces/LocalQueryParameters.md)
-- [LocalQueryResponse](interfaces/LocalQueryResponse.md)
-- [LocalQuerySuccessResult](interfaces/LocalQuerySuccessResult.md)
+- [DuckDBToolNames](enumerations/DuckDBToolNames.md)
 
 ## Type Aliases
 
-- [LocalQueryExecuteFunction](type-aliases/LocalQueryExecuteFunction.md)
+- [LocalQueryAdditionalData](type-aliases/LocalQueryAdditionalData.md)
+- [LocalQueryArgs](type-aliases/LocalQueryArgs.md)
+- [LocalQueryContext](type-aliases/LocalQueryContext.md)
 - [LocalQueryResult](type-aliases/LocalQueryResult.md)
 - [LocalQueryTool](type-aliases/LocalQueryTool.md)
 - [QueryDuckDBFunctionContext](type-aliases/QueryDuckDBFunctionContext.md)
-- [QueryDuckDBOutputData](type-aliases/QueryDuckDBOutputData.md)
 
 ## Variables
 
-- [db](variables/db.md)
 - [localQuery](variables/localQuery.md)
 
 ## Functions
 
 - [getDuckDB](functions/getDuckDB.md)
+- [getDuckDBTool](functions/getDuckDBTool.md)
+- [getDuckDBTools](functions/getDuckDBTools.md)
 - [initDuckDB](functions/initDuckDB.md)
-- [QueryDuckDBComponent](functions/QueryDuckDBComponent.md)
 - [registerTools](functions/registerTools.md)

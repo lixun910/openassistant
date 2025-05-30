@@ -1,39 +1,121 @@
 # Variable: localQuery
 
-> `const` **localQuery**: `ExtendedTool`\<`ZodObject`\<\{ `datasetName`: `ZodString`; `dbTableName`: `ZodString`; `sql`: `ZodString`; `variableNames`: `ZodArray`\<`ZodString`, `"many"`\>; \}, `"strip"`, `ZodTypeAny`, \{ `datasetName`: `string`; `dbTableName`: `string`; `sql`: `string`; `variableNames`: `string`[]; \}, \{ `datasetName`: `string`; `dbTableName`: `string`; `sql`: `string`; `variableNames`: `string`[]; \}\>, \{ `data`: \{ `firstTwoRows`: `any`[]; \}; `error`: `undefined`; `instruction`: `undefined`; `success`: `boolean`; \}, \{ `columnData`: `any`; `config`: \{ `isDraggable`: `boolean`; \}; `datasetName`: `any`; `dbTableName`: `any`; `sql`: `any`; `title`: `string`; `variableNames`: `any`; \}, \{ `config`: \{ `isDraggable`: `boolean`; \}; `duckDB`: `null`; `getValues`: () => `never`; `onSelected`: () => `never`; \}\>
+> `const` **localQuery**: `ExtendedTool`\<[`LocalQueryArgs`](../type-aliases/LocalQueryArgs.md), [`LocalQueryResult`](../type-aliases/LocalQueryResult.md), [`LocalQueryAdditionalData`](../type-aliases/LocalQueryAdditionalData.md), [`LocalQueryContext`](../type-aliases/LocalQueryContext.md)\>
 
-Defined in: [packages/duckdb/src/tool.ts:42](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/duckdb/src/tool.ts#L42)
+Defined in: [packages/tools/duckdb/src/tool.ts:129](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/tools/duckdb/src/tool.ts#L129)
 
-The localQuery tool is used to execute a query against a local dataset.
+The `localQuery` tool is used to execute a query against a local dataset.
 
-## Example
+:::note
+This tool can not be executed on the server side.
+:::
 
+### Example
 ```typescript
 import { localQuery } from '@openassistant/duckdb';
+import { convertToVercelAiTool } from '@openassistent/utils';
+import { generateText } from 'ai';
 
-const localQueryTool = {
+const myQueryTool: LocalQueryTool = {
   ...localQuery,
   context: {
     ...localQuery.context,
-    getValues: (datasetName: string, variableName: string) => {
+    getValues: async (datasetName: string, variableName: string) => {
       // get the values of the variable from your dataset, e.g.
       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
     },
   },
+};
+
+const localQueryTool = convertToVercelAiTool(myQueryTool);
+
+generateText({
+  model: 'gpt-4o-mini',
+  prompt: 'What are the venues in San Francisco?',
+  tools: {localQuery: localQueryTool},
+});
+```
+
+### Example with useChat
+
+`app/api/chat/route.ts`
+```typescript
+import { localQuery } from '@openassistant/duckdb';
+import { convertToVercelAiTool } from '@openassistent/utils';
+import { streamText } from 'ai';
+
+// localQuery tool will be running on the client side
+const localQueryTool = convertToVercelAiTool(localQuery, {isExecutable: false}); 
+
+export async function POST(req: Request) {
+  // ...
+  const result = streamText({
+    model: openai('gpt-4o-mini'),
+    messages: messages,
+    tools: {localQuery: localQueryTool},
+  });
 }
 ```
 
-### getValues()
+`app/page.tsx`
+```typescript
+import { useChat } from 'ai/react';
+import { localQuery } from '@openassistant/duckdb';
+import { convertToVercelAiTool } from '@openassistent/utils';
 
-User implements this function to get the values of the variable from dataset.
+const myLocalQuery: LocalQueryTool = {
+  ...localQuery,
+  context: {
+    ...localQuery.context,
+    getValues: async (datasetName: string, variableName: string) => {
+      // get the values of the variable from your dataset, e.g.
+      return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+    },
+  },
+};
 
-For prompts like "_Show me the revenue per capita for each location in dataset myVenues_", the tool will
-call the `getValues()` function twice:
-- get the values of **revenue** from dataset: getValues('myVenues', 'revenue')
-- get the values of **population** from dataset: getValues('myVenues', 'population')
+const localQueryTool = convertToVercelAiTool(myLocalQuery);
 
-A duckdb table will be created using the values returned from `getValues()`, and LLM will generate a sql query to query the table to answer the user's prompt.
+const { messages, input, handleInputChange, handleSubmit } = useChat({
+  maxSteps: 20,
+  onToolCall: async (toolCall) => {
+     if (toolCall.name === 'localQuery') {
+       const result = await localQueryTool.execute(toolCall.args, toolCall.options);
+       return result;
+     }
+  }
+});
+```
 
-### onSelected()
+### Example with `@openassistant/ui`
 
-User implements this function to sync the selections of the query result table with the original dataset.
+```typescript
+import { localQuery } from '@openassistant/duckdb';
+import { convertToVercelAiTool } from '@openassistent/utils';
+
+const localQueryTool: LocalQueryTool = {
+  ...localQuery,
+  context: {
+    ...localQuery.context,
+    getValues: async (datasetName: string, variableName: string) => {
+      // get the values of the variable from your dataset, e.g.
+      return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+    },
+  },
+}; 
+
+ export function App() {
+   return (
+     <AiAssistant
+       apiKey={process.env.OPENAI_API_KEY || ''}
+       modelProvider="openai"
+       model="gpt-4o"
+       welcomeMessage="Hello! I'm your assistant."
+       instructions={instructions}
+       tools={{localQuery: localQueryTool}}
+       useMarkdown={true}
+       theme="dark"
+     />  
+   );
+ }
+```

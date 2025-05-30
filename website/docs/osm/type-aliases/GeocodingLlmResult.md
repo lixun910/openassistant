@@ -2,17 +2,25 @@
 
 > **GeocodingLlmResult**: `object`
 
-Defined in: [geocoding.ts:8](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/osm/src/geocoding.ts#L8)
+Defined in: [packages/tools/osm/src/geocoding.ts:12](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/tools/osm/src/geocoding.ts#L12)
 
 ## Type declaration
+
+### datasetName?
+
+> `optional` **datasetName**: `string`
 
 ### error?
 
 > `optional` **error**: `string`
 
+### geojson?
+
+> `optional` **geojson**: `GeoJSON.FeatureCollection`
+
 ### result?
 
-> `optional` **result**: `GeoJSON.FeatureCollection`
+> `optional` **result**: `string`
 
 ### success
 

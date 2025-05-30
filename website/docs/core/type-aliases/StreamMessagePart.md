@@ -1,5 +1,15 @@
 # Type Alias: StreamMessagePart
 
-> **StreamMessagePart**: [`TextPart`](TextPart.md) \| [`ToolPart`](ToolPart.md)
+> **StreamMessagePart**: [`Part`](Part.md) & `object`
 
-Defined in: [packages/core/src/types.ts:301](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/types.ts#L301)
+Defined in: [packages/core/src/types.ts:116](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/types.ts#L116)
+
+## Type declaration
+
+### additionalData?
+
+> `optional` **additionalData**: `unknown`
+
+### isCompleted?
+
+> `optional` **isCompleted**: `boolean`

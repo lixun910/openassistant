@@ -1,8 +1,8 @@
 # Function: shouldTriggerNextRequest()
 
-> **shouldTriggerNextRequest**(`messages`, `messageCount`, `maxSteps`, `maxStep`): `boolean`
+> **shouldTriggerNextRequest**(`messages`, `messageCount`, `maxSteps`, `currentStep`): `boolean`
 
-Defined in: [packages/core/src/llm/vercelai.ts:66](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L66)
+Defined in: [packages/core/src/llm/vercelai.ts:60](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L60)
 
 Checks if another request should be triggered based on the current message state
 
@@ -10,7 +10,7 @@ Checks if another request should be triggered based on the current message state
 
 ### messages
 
-[`AIMessage`](../type-aliases/AIMessage.md)[]
+`CoreMessage`[]
 
 Current message array
 
@@ -26,11 +26,11 @@ Previous message count before last request
 
 Maximum number of allowed steps
 
-### maxStep
+### currentStep
+
+`number`
 
 Current maximum tool invocation step
-
-`undefined` | `number`
 
 ## Returns
 

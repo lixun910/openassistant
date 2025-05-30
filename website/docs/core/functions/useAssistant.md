@@ -2,7 +2,7 @@
 
 > **useAssistant**(`props`): `object`
 
-Defined in: [packages/core/src/hooks/use-assistant.ts:117](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/hooks/use-assistant.ts#L117)
+Defined in: [packages/core/src/hooks/use-assistant.ts:103](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/hooks/use-assistant.ts#L103)
 
 A custom hook for managing an AI assistant.
 This hook provides functionality to initialize, send messages to, and control an AI assistant.
@@ -16,34 +16,6 @@ This hook provides functionality to initialize, send messages to, and control an
 ## Returns
 
 `object`
-
-### addAdditionalContext()
-
-> **addAdditionalContext**: (`params`) => `Promise`\<`void`\>
-
-Adds additional context to the ongoing conversation with the assistant.
-
-Adds additional context to the assistant's conversation.
-
-#### Parameters
-
-##### params
-
-The context and optional callback.
-
-###### context
-
-`string`
-
-#### Returns
-
-`Promise`\<`void`\>
-
-#### Param
-
-Object containing the context to add
-
-#### Returns
 
 ### apiKeyStatus
 
@@ -187,3 +159,39 @@ Stops the current chat processing.
 `void`
 
 #### Returns
+
+### temporaryPrompt()
+
+> **temporaryPrompt**: (`params`) => `Promise`\<`undefined` \| `string`\>
+
+Sends a one-time prompt to the assistant and returns the response. The prompt and response will not be saved.
+
+Sends a one-time prompt to the assistant and returns the response. The prompt and response will not be saved.
+
+#### Parameters
+
+##### params
+
+The text message to send to the assistant.
+
+###### prompt
+
+`string`
+
+###### temperature?
+
+`number`
+
+#### Returns
+
+`Promise`\<`undefined` \| `string`\>
+
+The response from the assistant.
+
+#### Param
+
+The text message to send to the assistant.
+
+#### Returns
+
+The response from the assistant.

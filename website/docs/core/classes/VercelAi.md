@@ -1,6 +1,6 @@
 # Class: VercelAi
 
-Defined in: [packages/core/src/llm/vercelai.ts:111](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L111)
+Defined in: [packages/core/src/llm/vercelai.ts:103](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L103)
 
 Vercel AI Assistant for Server only.
 
@@ -14,47 +14,17 @@ Vercel AI Assistant for Server only.
 
 ## Methods
 
-### addAdditionalContext()
-
-> **addAdditionalContext**(`props`): `Promise`\<`void`\>
-
-Defined in: [packages/core/src/llm/assistant.ts:90](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/assistant.ts#L90)
-
-Add additional context to the conversation, so LLM can understand the context better
-
-#### Parameters
-
-##### props
-
-###### callback?
-
-() => `void`
-
-###### context
-
-`string`
-
-#### Returns
-
-`Promise`\<`void`\>
-
-#### Inherited from
-
-`AbstractAssistant.addAdditionalContext`
-
-***
-
 ### addMessage()
 
 > **addMessage**(`message`): `void`
 
-Defined in: [packages/core/src/llm/vercelai.ts:245](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L245)
+Defined in: [packages/core/src/llm/vercelai.ts:193](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L193)
 
 #### Parameters
 
 ##### message
 
-[`AIMessage`](../type-aliases/AIMessage.md)
+`CoreMessage`
 
 #### Returns
 
@@ -66,7 +36,7 @@ Defined in: [packages/core/src/llm/vercelai.ts:245](https://github.com/GeoDaCent
 
 > **audioToText**(`audioBlob`): `Promise`\<`string`\>
 
-Defined in: [packages/core/src/llm/vercelai.ts:495](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L495)
+Defined in: [packages/core/src/llm/vercelai.ts:403](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L403)
 
 audioToText method to use API endpoint for audio transcription
 
@@ -94,7 +64,7 @@ The transcribed text
 
 > **close**(): `Promise`\<`void`\>
 
-Defined in: [packages/core/src/llm/assistant.ts:28](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/assistant.ts#L28)
+Defined in: [packages/core/src/llm/assistant.ts:27](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/assistant.ts#L27)
 
 Close the LLM instance
 
@@ -112,7 +82,7 @@ Close the LLM instance
 
 > **getComponents**(): [`ToolCallComponents`](../type-aliases/ToolCallComponents.md)
 
-Defined in: [packages/core/src/llm/vercelai.ts:253](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L253)
+Defined in: [packages/core/src/llm/vercelai.ts:201](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L201)
 
 #### Returns
 
@@ -122,13 +92,13 @@ Defined in: [packages/core/src/llm/vercelai.ts:253](https://github.com/GeoDaCent
 
 ### getMessages()
 
-> **getMessages**(): [`AIMessage`](../type-aliases/AIMessage.md)[]
+> **getMessages**(): `CoreMessage`[]
 
-Defined in: [packages/core/src/llm/vercelai.ts:241](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L241)
+Defined in: [packages/core/src/llm/vercelai.ts:189](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L189)
 
 #### Returns
 
-[`AIMessage`](../type-aliases/AIMessage.md)[]
+`CoreMessage`[]
 
 ***
 
@@ -136,7 +106,7 @@ Defined in: [packages/core/src/llm/vercelai.ts:241](https://github.com/GeoDaCent
 
 > **processImageMessage**(`__namedParameters`): `Promise`\<`void`\>
 
-Defined in: [packages/core/src/llm/vercelai.ts:300](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L300)
+Defined in: [packages/core/src/llm/vercelai.ts:239](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L239)
 
 Process image message
 
@@ -158,11 +128,11 @@ Process image message
 
 ### processTextMessage()
 
-> **processTextMessage**(`__namedParameters`): `Promise`\<\{ `messages`: [`AIMessage`](../type-aliases/AIMessage.md)[]; \}\>
+> **processTextMessage**(`__namedParameters`): `Promise`\<\{ `messages`: `CoreMessage`[]; `streamMessage`: [`StreamMessage`](../type-aliases/StreamMessage.md); \}\>
 
-Defined in: [packages/core/src/llm/vercelai.ts:322](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L322)
+Defined in: [packages/core/src/llm/vercelai.ts:251](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L251)
 
-Process the text message by sending it to the LLM.
+Process text message
 
 #### Parameters
 
@@ -172,9 +142,7 @@ Process the text message by sending it to the LLM.
 
 #### Returns
 
-`Promise`\<\{ `messages`: [`AIMessage`](../type-aliases/AIMessage.md)[]; \}\>
-
-Promise containing the newly added message
+`Promise`\<\{ `messages`: `CoreMessage`[]; `streamMessage`: [`StreamMessage`](../type-aliases/StreamMessage.md); \}\>
 
 #### Overrides
 
@@ -186,7 +154,7 @@ Promise containing the newly added message
 
 > **restart**(): `void`
 
-Defined in: [packages/core/src/llm/vercelai.ts:289](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L289)
+Defined in: [packages/core/src/llm/vercelai.ts:228](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L228)
 
 Restart the chat
 
@@ -204,7 +172,7 @@ Restart the chat
 
 > **setAbortController**(`abortController`): `void`
 
-Defined in: [packages/core/src/llm/vercelai.ts:278](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L278)
+Defined in: [packages/core/src/llm/vercelai.ts:217](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L217)
 
 #### Parameters
 
@@ -222,13 +190,13 @@ Defined in: [packages/core/src/llm/vercelai.ts:278](https://github.com/GeoDaCent
 
 > **setMessages**(`messages`): `void`
 
-Defined in: [packages/core/src/llm/vercelai.ts:249](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L249)
+Defined in: [packages/core/src/llm/vercelai.ts:197](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L197)
 
 #### Parameters
 
 ##### messages
 
-[`AIMessage`](../type-aliases/AIMessage.md)[]
+`CoreMessage`[]
 
 #### Returns
 
@@ -240,7 +208,7 @@ Defined in: [packages/core/src/llm/vercelai.ts:249](https://github.com/GeoDaCent
 
 > **stop**(): `void`
 
-Defined in: [packages/core/src/llm/vercelai.ts:282](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L282)
+Defined in: [packages/core/src/llm/vercelai.ts:221](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L221)
 
 Stop processing
 
@@ -254,11 +222,41 @@ Stop processing
 
 ***
 
+### temporaryPrompt()
+
+> **temporaryPrompt**(`props`): `Promise`\<`string`\>
+
+Defined in: [packages/core/src/llm/assistant.ts:92](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/assistant.ts#L92)
+
+One time prompt without saving the conversation
+
+#### Parameters
+
+##### props
+
+###### prompt
+
+`string`
+
+###### temperature?
+
+`number`
+
+#### Returns
+
+`Promise`\<`string`\>
+
+#### Inherited from
+
+`AbstractAssistant.temporaryPrompt`
+
+***
+
 ### translateVoiceToText()
 
 > **translateVoiceToText**(`audioBlob`): `Promise`\<`string`\>
 
-Defined in: [packages/core/src/llm/assistant.ts:56](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/assistant.ts#L56)
+Defined in: [packages/core/src/llm/assistant.ts:55](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/assistant.ts#L55)
 
 Voice to text
 
@@ -278,11 +276,33 @@ Voice to text
 
 ***
 
+### addToolResult()
+
+> `static` **addToolResult**(`toolCallId`, `additionalData`): `void`
+
+Defined in: [packages/core/src/llm/vercelai.ts:181](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L181)
+
+#### Parameters
+
+##### toolCallId
+
+`string`
+
+##### additionalData
+
+`unknown`
+
+#### Returns
+
+`void`
+
+***
+
 ### configure()
 
 > `static` **configure**(`config`): `void`
 
-Defined in: [packages/core/src/llm/vercelai.ts:176](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L176)
+Defined in: [packages/core/src/llm/vercelai.ts:156](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L156)
 
 Configure the LLM instance
 
@@ -306,7 +326,7 @@ Configure the LLM instance
 
 > `static` **getBaseURL**(): `void`
 
-Defined in: [packages/core/src/llm/vercelai.ts:294](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L294)
+Defined in: [packages/core/src/llm/vercelai.ts:233](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L233)
 
 #### Returns
 
@@ -318,7 +338,7 @@ Defined in: [packages/core/src/llm/vercelai.ts:294](https://github.com/GeoDaCent
 
 > `static` **getInstance**(): `Promise`\<[`VercelAi`](VercelAi.md)\>
 
-Defined in: [packages/core/src/llm/vercelai.ts:166](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L166)
+Defined in: [packages/core/src/llm/vercelai.ts:146](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L146)
 
 Get instance using singleton pattern
 
@@ -332,27 +352,37 @@ Get instance using singleton pattern
 
 ***
 
-### registerFunctionCalling()
+### getToolResult()
 
-> `static` **registerFunctionCalling**(`__namedParameters`): `void`
+> `static` **getToolResult**(`toolCallId`): `unknown`
 
-Defined in: [packages/core/src/llm/vercelai.ts:208](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L208)
-
-Register custom function for function calling
+Defined in: [packages/core/src/llm/vercelai.ts:185](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L185)
 
 #### Parameters
 
-##### \_\_namedParameters
+##### toolCallId
 
-[`RegisterFunctionCallingProps`](../type-aliases/RegisterFunctionCallingProps.md)
+`string`
+
+#### Returns
+
+`unknown`
+
+***
+
+### getToolResults()
+
+> `static` **getToolResults**(): `void`
+
+Defined in: [packages/core/src/llm/assistant.ts:99](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/assistant.ts#L99)
 
 #### Returns
 
 `void`
 
-#### Overrides
+#### Inherited from
 
-`AbstractAssistant.registerFunctionCalling`
+`AbstractAssistant.getToolResults`
 
 ***
 
@@ -360,7 +390,7 @@ Register custom function for function calling
 
 > `static` **registerTool**(`__namedParameters`): `void`
 
-Defined in: [packages/core/src/llm/vercelai.ts:192](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/vercelai.ts#L192)
+Defined in: [packages/core/src/llm/vercelai.ts:172](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/vercelai.ts#L172)
 
 #### Parameters
 
@@ -382,7 +412,7 @@ Defined in: [packages/core/src/llm/vercelai.ts:192](https://github.com/GeoDaCent
 
 > `static` **testConnection**(`apiKey`, `model`): `Promise`\<`boolean`\>
 
-Defined in: [packages/core/src/llm/assistant.ts:100](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/llm/assistant.ts#L100)
+Defined in: [packages/core/src/llm/assistant.ts:82](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/llm/assistant.ts#L82)
 
 Test connection
 

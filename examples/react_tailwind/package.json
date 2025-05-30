@@ -10,13 +10,12 @@
   "author": "Xun Li <lixun910@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "@openassistant/echarts": "workspace:*",
+    "@openassistant/plots": "workspace:*",
     "@openassistant/ui": "workspace:*",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "@nextui-org/react": "^2.6.10",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",

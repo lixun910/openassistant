@@ -13,7 +13,7 @@ module.exports = {
     ignoreDuringBuilds: true,
   },
   // transpilePackages: ['@openassistant/ui', '@openassistant/core'],
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.optimization = {
       ...config.optimization,
       minimize: true,
@@ -31,10 +31,18 @@ module.exports = {
       test: /\.wasm$/,
       // type: 'webassembly/async',
       type: 'asset/resource',
-      // generator: {
-      //   filename: 'static/wasm/[name][ext]',
-      // },
+      generator: {
+        filename: 'static/chunks/[name][ext]',
+      },
     });
+
+    // Make problematic packages client-side only during SSR
+    if (isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@kepler.gl/processors': false,
+      };
+    }
 
     // Resolve aliases for different versions of dependencies
     config.resolve.alias = {

@@ -2,7 +2,7 @@
 
 > **RegisterToolProps**: `object`
 
-Defined in: [packages/core/src/types.ts:462](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/core/src/types.ts#L462)
+Defined in: [packages/core/src/types.ts:218](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/core/src/types.ts#L218)
 
 Type of RegisterToolProps
 
@@ -10,15 +10,7 @@ Type of RegisterToolProps
 
 ### component?
 
-> `optional` **component**: `React.ComponentType`
-
-### context?
-
-> `optional` **context**: [`CustomFunctionContext`](CustomFunctionContext.md)\<`unknown`\> \| [`CustomFunctionContextCallback`](CustomFunctionContextCallback.md)\<`unknown`\>
-
-### func
-
-> **func**: [`CallbackFunction`](CallbackFunction.md)
+> `optional` **component**: `unknown`
 
 ### name
 

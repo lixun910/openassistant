@@ -1,4 +1,4 @@
-import { tool } from '@openassistant/utils';
+import { extendedTool } from '@openassistant/utils';
 import { AiAssistant } from '@openassistant/ui';
 import { z } from 'zod';
 
@@ -18,8 +18,8 @@ function WeatherStation({
 }
 
 export function App() {
-  const functions = {
-    weather: tool({
+  const tools = {
+    weather: extendedTool({
       description: 'Get the weather in a city from a weather station',
       parameters: z
         .object({ cityName: z.string() })
@@ -66,8 +66,11 @@ export function App() {
           modelProvider="openai"
           model="gpt-4o"
           welcomeMessage="Hello, how can I help you today?"
-          instructions="You are a helpful assistant."
-          functions={functions}
+          instructions="You are a helpful assistant. 
+- IMPORTANT:
+  - Always provide a text description to the user before calling a tool, explaining what you are going to do.
+  - Always provide a text response to the user after calling a tool, summarizing the results or explaining the next steps."
+          tools={tools}
           useMarkdown={true}
         />
       </div>

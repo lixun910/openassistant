@@ -1,23 +1,41 @@
 import { AiAssistant } from '@openassistant/ui';
-import { localQuery } from '@openassistant/duckdb';
+import { localQuery, LocalQueryTool, getDuckDB } from '@openassistant/duckdb';
+import {
+  QueryDuckDBComponent,
+  QueryDuckDBOutputData,
+} from '@openassistant/tables';
 import { SAMPLE_DATASETS } from './dataset';
 
 import '@openassistant/ui/dist/index.css';
-import '@openassistant/duckdb/dist/index.css';
+import '@openassistant/tables/dist/index.css';
 
-const localQueryTool = {
+import './styles.css';
+
+function getValues(datasetName: string, variableName: string) {
+  return Promise.resolve(
+    SAMPLE_DATASETS[datasetName as keyof typeof SAMPLE_DATASETS].map(
+      (item) => item[variableName as keyof typeof item]
+    )
+  );
+}
+
+function QueryToolComponent(props: QueryDuckDBOutputData) {
+  return (
+    <QueryDuckDBComponent
+      {...props}
+      getDuckDB={getDuckDB}
+      getValues={getValues}
+    />
+  );
+}
+
+const localQueryTool: LocalQueryTool = {
   ...localQuery,
   context: {
     ...localQuery.context,
-    getValues: (
-      datasetName: keyof typeof SAMPLE_DATASETS,
-      variableName: string
-    ) => {
-      return (SAMPLE_DATASETS[datasetName] as any[]).map(
-        (item) => item[variableName]
-      );
-    },
+    getValues,
   },
+  component: QueryToolComponent,
 };
 
 const instructions = `
@@ -33,20 +51,27 @@ Here is dataset available for you to use:
   - revenue: float
   - population: int
 `;
+
 export function App() {
   return (
-    <div className="w-[800px] h-[600px] m-4" style={{ height: '800px' }}>
-      <AiAssistant
-        name="DuckDB Assistant"
-        apiKey={process.env.OPENAI_API_KEY || ''}
-        version="v1"
-        modelProvider="openai"
-        model="gpt-4"
-        welcomeMessage="Hello! I'm your DuckDB expert. I can help you query and analyze the venue data. Try asking questions like 'Show me the revenue per capita for each location' or 'Which city has the highest revenue?'"
-        instructions={instructions}
-        tools={{ localQuery: localQueryTool }}
-        useMarkdown={true}
-      />
+    <div className="app-container">
+      <div className="content-container">
+        <h1 className="title">DuckDB Tools Example</h1>
+        <div className="chat-container">
+          <AiAssistant
+            name="DuckDB Assistant"
+            apiKey={process.env.OPENAI_API_KEY || ''}
+            version="v1"
+            modelProvider="openai"
+            model="gpt-4"
+            welcomeMessage="Hello! I'm your DuckDB expert. I can help you query and analyze the venue data. Try asking questions like 'Show me the revenue per capita for each location' or 'Which city has the highest revenue?'"
+            instructions={instructions}
+            tools={{ localQuery: localQueryTool }}
+            useMarkdown={true}
+            theme="dark"
+          />
+        </div>
+      </div>
     </div>
   );
 }

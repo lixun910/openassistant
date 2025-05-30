@@ -2,7 +2,7 @@
 
 > **IsochroneToolContext**: `object`
 
-Defined in: [isochrone.ts:253](https://github.com/GeoDaCenter/openassistant/blob/2cb8f20a901f3385efeb40778248119c5e49db78/packages/osm/src/isochrone.ts#L253)
+Defined in: [packages/tools/osm/src/isochrone.ts:249](https://github.com/GeoDaCenter/openassistant/blob/bf312b357cb340f1f76fa8b62441fb39bcbce0ce/packages/tools/osm/src/isochrone.ts#L249)
 
 ## Type declaration
 

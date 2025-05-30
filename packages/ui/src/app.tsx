@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { ThemeProvider, useTheme } from 'next-themes';
+
 import { AiAssistant } from './components/assistant';
 import { ScreenshotWrapper } from './components/screenshot-wrapper';
-import { ThemeProvider, useTheme } from 'next-themes';
 
 // Add ThemeToggle component
 function ThemeToggle() {
@@ -40,7 +41,6 @@ export function App() {
               apiKey=""
               welcomeMessage="Hi, I am your assistant. How can I help you today?"
               instructions=""
-              functions={[]}
               enableVoice={true}
               enableScreenCapture={true}
               screenCapturedBase64={screenCaptured}
