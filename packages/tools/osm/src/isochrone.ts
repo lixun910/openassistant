@@ -68,9 +68,7 @@ export type ExecuteIsochroneResult = {
 };
 
 /**
- * Isochrone Tool
- *
- * This tool generates isochrone polygons showing reachable areas within a given time or distance limit
+ * This Isochrone tool generates isochrone polygons showing reachable areas within a given time or distance limit
  * from a starting point using Mapbox's Isochrone API. It supports different transportation modes
  * and can return either polygons or linestrings.
  *
@@ -85,20 +83,28 @@ export type ExecuteIsochroneResult = {
  *
  * @example
  * ```typescript
- * import { getOsmTool, OsmToolNames } from "@openassistant/osm";
+ * import { isochrone, IsochroneTool } from "@openassistant/osm";
+ * import { convertToVercelAiTool, ToolCache } from '@openassistant/utils';
+ * import { generateText } from 'ai';
  *
- * const geocodingTool = getOsmTool(OsmToolNames.geocoding);
- * const isochroneTool = getOsmTool(OsmToolNames.isochrone, {
+ * // you can use ToolCache to save the isochrone dataset for later use
+ * const toolResultCache = ToolCache.getInstance();
+ *
+ * const isochroneTool: IsochroneTool = {
+ *   ...isochrone,
  *   toolContext: {
  *     getMapboxToken: () => process.env.MAPBOX_TOKEN!,
  *   },
- * });
+ *   onToolCompleted: (toolCallId, additionalData) => {
+ *     toolResultCache.addDataset(toolCallId, additionalData);
+ *   },
+ * };
  *
- * streamText({
- *   model: openai('gpt-4o'),
+ * generateText({
+ *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'What areas can I reach within 2km of the Eiffel Tower on foot?',
  *   tools: {
- *     isochrone: isochroneTool,
+ *     isochrone: convertToVercelAiTool(isochroneTool),
  *   },
  * });
  * ```
@@ -224,7 +230,10 @@ export const isochrone = extendedTool<
           ...(timeLimit && { timeLimit }),
           ...(distanceLimit && { distanceLimit }),
           datasetName: outputDatasetName,
-          [outputDatasetName]: isochroneGeojson,
+          [outputDatasetName]: {
+            type: 'geojson',
+            content: isochroneGeojson,
+          },
         },
       };
     } catch (error) {

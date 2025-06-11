@@ -36,8 +36,7 @@ export type ExecuteGetUsStateGeojsonResult = {
  *
  * Example user prompts:
  * - "Get the GeoJSON for California"
- * - "Show me the boundary of New York state"
- * - "What's the geometry of Texas?"
+ * - "Get all states in current map view"
  *
  * :::tip
  * This tool can be mixed with other tools for more complex tasks. For example, if you have a point datasets, you can use this tool
@@ -50,20 +49,28 @@ export type ExecuteGetUsStateGeojsonResult = {
  *
  * @example
  * ```typescript
- * import { getOsmTool, OsmToolNames } from "@openassistant/osm";
+ * import { getUsStateGeojson, GetUsStateGeojsonTool } from "@openassistant/osm";
+ * import { convertToVercelAiTool, ToolCache } from '@openassistant/utils';
+ * import { generateText } from 'ai';
  *
- * const stateTool = getOsmTool(OsmToolNames.getUsStateGeojson);
+ * // you can use ToolCache to save the state geojson dataset for later use
+ * const toolResultCache = ToolCache.getInstance();
  *
- * streamText({
- *   model: openai('gpt-4o'),
+ * const stateTool: GetUsStateGeojsonTool = {
+ *   ...getUsStateGeojson,
+ *   onToolCompleted: (toolCallId, additionalData) => {
+ *     toolResultCache.addDataset(toolCallId, additionalData);
+ *   },
+ * };
+ *
+ * generateText({
+ *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Get the GeoJSON for California',
  *   tools: {
- *     state: stateTool,
+ *     state: convertToVercelAiTool(stateTool),
  *   },
  * });
  * ```
- *
- * For a more complete example, see the [OSM Tools Example using Next.js + Vercel AI SDK](https://github.com/openassistant/openassistant/tree/main/examples/vercel_osm_example).
  */
 export const getUsStateGeojson = extendedTool<
   GetUsStateGeojsonFunctionArgs,
@@ -123,7 +130,10 @@ export const getUsStateGeojson = extendedTool<
         additionalData: {
           stateNames,
           datasetName: outputDatasetName,
-          [outputDatasetName]: finalGeojson
+          [outputDatasetName]: {
+            type: 'geojson',
+            content: finalGeojson,
+          },
         },
       };
     } catch (error) {

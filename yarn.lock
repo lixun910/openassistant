@@ -1538,7 +1538,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@geoda/core@npm:0.0.9, @geoda/core@npm:^0.0.9":
+"@geoda/core@npm:0.0.9":
   version: 0.0.9
   resolution: "@geoda/core@npm:0.0.9"
   dependencies:
@@ -1548,20 +1548,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@geoda/lisa@npm:^0.0.9":
-  version: 0.0.9
-  resolution: "@geoda/lisa@npm:0.0.9"
+"@geoda/core@npm:^0.0.16":
+  version: 0.0.16
+  resolution: "@geoda/core@npm:0.0.16"
   dependencies:
     "@loaders.gl/schema": "npm:^4.1.0-alpha.4"
     geojson: "npm:^0.5.0"
-  checksum: d69877e2ee84c22f532f0039e88d8ca47e1bfc24d6c393224e1613f297bceb97aecf2462046f6449358cecff3851fa0859760634c1daadc0c4afd7597a122407
+  checksum: 1f90b08e8b8b377ad6903893eceed6b894a6693ea638c0abf060f6c007c6b32b81053cade1a97c50a9705aaa7d8ec8225b80d9d77b4a0d1abb23723a162a8a1d
   languageName: node
   linkType: hard
 
-"@geoda/regression@npm:^0.0.9":
-  version: 0.0.9
-  resolution: "@geoda/regression@npm:0.0.9"
-  checksum: 57bc62f02d2f6b143fc57d65c4c3225f78f74e1868764805a72222fea97c486f921cd845260032e7a50024758562daf60911812a1d92a740071044d94a7ec45d
+"@geoda/lisa@npm:^0.0.16":
+  version: 0.0.16
+  resolution: "@geoda/lisa@npm:0.0.16"
+  dependencies:
+    "@loaders.gl/schema": "npm:^4.1.0-alpha.4"
+    geojson: "npm:^0.5.0"
+  checksum: b07fe291680a11a22447f601a036bb33cde09c84a2aba73fc7aa7e37e8d2ba726fd9a15346f12c82c0fe76b947503d7162fe38bf93b01b73d96105cb7857b80f
+  languageName: node
+  linkType: hard
+
+"@geoda/regression@npm:^0.0.16":
+  version: 0.0.16
+  resolution: "@geoda/regression@npm:0.0.16"
+  checksum: 7bed725162f4bc88bf3728403706518919df609ec388e4013e646cbe50955345146871b123c6c4f1dc0a8154e32bf92c521dda99842c7eb4b2e5a2ba4ec54e6c
   languageName: node
   linkType: hard
 
@@ -6460,14 +6470,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openassistant/geoda@workspace:packages/tools/geoda"
   dependencies:
-    "@geoda/core": "npm:^0.0.9"
-    "@geoda/lisa": "npm:^0.0.9"
-    "@geoda/regression": "npm:^0.0.9"
+    "@geoda/core": "npm:^0.0.16"
+    "@geoda/lisa": "npm:^0.0.16"
+    "@geoda/regression": "npm:^0.0.16"
     "@loaders.gl/core": "npm:^4.3.3"
     "@loaders.gl/gis": "npm:^4.3.3"
     "@loaders.gl/schema": "npm:^4.3.3"
     "@openassistant/plots": "workspace:*"
     "@openassistant/utils": "workspace:*"
+    "@turf/bbox": "npm:^7.2.0"
   peerDependencies:
     react: ">=18.2"
     react-dom: ">=18.2"

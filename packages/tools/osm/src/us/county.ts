@@ -40,7 +40,7 @@ export type ExecuteGetUsCountyGeojsonResult = {
  *
  * **Example user prompts:**
  * - "Get all counties in California"
- * - "Show me the county boundaries of New York state"
+ * - "Get all counties in current map view"
  * - "What are the counties in Texas?"
  *
  * :::tip
@@ -50,20 +50,28 @@ export type ExecuteGetUsCountyGeojsonResult = {
  *
  * @example
  * ```typescript
- * import { getOsmTool, OsmToolNames } from "@openassistant/osm";
+ * import { getUsCountyGeojson, GetUsCountyGeojsonTool } from "@openassistant/osm";
+ * import { convertToVercelAiTool, ToolCache } from '@openassistant/utils';
+ * import { generateText } from 'ai';
  *
- * const countyTool = getOsmTool(OsmToolNames.getUsCountyGeojson);
+ * // you can use ToolCache to save the county geojson dataset for later use
+ * const toolResultCache = ToolCache.getInstance();
  *
- * streamText({
- *   model: openai('gpt-4o'),
+ * const countyTool: GetUsCountyGeojsonTool = {
+ *   ...getUsCountyGeojson,
+ *   onToolCompleted: (toolCallId, additionalData) => {
+ *     toolResultCache.addDataset(toolCallId, additionalData);
+ *   },
+ * };
+ *
+ * generateText({
+ *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'What are the counties in Texas?',
  *   tools: {
- *     county: countyTool,
+ *     county: convertToVercelAiTool(countyTool),
  *   },
  * });
  * ```
- *
- * For a more complete example, see the [OSM Tools Example using Next.js + Vercel AI SDK](https://github.com/openassistant/openassistant/tree/main/examples/vercel_osm_example).
  */
 export const getUsCountyGeojson = extendedTool<
   GetUsCountyGeojsonFunctionArgs,
@@ -88,7 +96,7 @@ export const getUsCountyGeojson = extendedTool<
       const features: GeoJSON.Feature[] = [];
 
       for (const fips of fipsCodes) {
-        // get cached county geojson if exists
+        // get cached county geojson if exists in openassistant/utils module
         let geojson = getCachedData(fips);
         if (!geojson) {
           // Use the global rate limiter before making the API call
@@ -125,7 +133,10 @@ export const getUsCountyGeojson = extendedTool<
         additionalData: {
           fipsCodes,
           datasetName: outputDatasetName,
-          [outputDatasetName]: finalGeojson,
+          [outputDatasetName]: {
+            type: 'geojson',
+            content: finalGeojson,
+          },
         },
       };
     } catch (error) {
