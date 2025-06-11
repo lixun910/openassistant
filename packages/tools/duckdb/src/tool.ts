@@ -1,13 +1,14 @@
-import { extendedTool } from '@openassistant/utils';
+import { extendedTool, generateId } from '@openassistant/utils';
 import { Table as ArrowTable, tableFromArrays } from 'apache-arrow';
 import { z } from 'zod';
-import { getDuckDB, QueryDuckDBFunctionContext } from './query';
+import { getDuckDB } from './query';
 import {
   LocalQueryAdditionalData,
   LocalQueryArgs,
   LocalQueryContext,
   LocalQueryResult,
 } from './types';
+import { convertArrowRowToObject } from './merge';
 
 /**
  * The `localQuery` tool is used to execute a query against a local dataset.
@@ -49,8 +50,8 @@ import {
  * import { streamText } from 'ai';
  *
  * // localQuery tool will be running on the client side
- * const localQueryTool = convertToVercelAiTool(localQuery, {isExecutable: false}); 
- * 
+ * const localQueryTool = convertToVercelAiTool(localQuery, {isExecutable: false});
+ *
  * export async function POST(req: Request) {
  *   // ...
  *   const result = streamText({
@@ -90,7 +91,7 @@ import {
  *   }
  * });
  * ```
- * 
+ *
  * ### Example with `@openassistant/ui`
  *
  * ```typescript
@@ -106,7 +107,7 @@ import {
  *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
  *     },
  *   },
- * }; 
+ * };
  *
  *  export function App() {
  *    return (
@@ -119,7 +120,7 @@ import {
  *        tools={{localQuery: localQueryTool}}
  *        useMarkdown={true}
  *        theme="dark"
- *      />  
+ *      />
  *    );
  *  }
  * ```
@@ -133,16 +134,20 @@ export const localQuery = extendedTool<
   description: `You are a SQL (duckdb) expert. You can help to query users datasets using select query clause.`,
   parameters: z.object({
     datasetName: z.string(),
-    variableNames: z.array(z.string()),
+    variableNames: z
+      .array(z.string())
+      .describe(
+        'Only use variable names already exist in the dataset. New columns created via SQL expressions should only be referenced in the SQL query.'
+      ),
     dbTableName: z
       .string()
       .describe(
-        'The name of the table to create and query. Please append a 6-digit random number to the end of the table name to avoid conflicts.'
+        'The alias of the table created from from the dataset specified by datasetName. Please use datasetName plus a 6-digit random number to avoid conflicts.'
       ),
     sql: z
       .string()
       .describe(
-        'The SQL query to execute. Please follow the SQL syntax of duckdb. Please use the dbTableName to query the table.'
+        'IMPORTANT: please use dbTableName instead of the datasetName in SQL query.'
       ),
   }),
   execute: executeLocalQuery,
@@ -158,10 +163,10 @@ export const localQuery = extendedTool<
 async function executeLocalQuery(
   { datasetName, variableNames, sql, dbTableName },
   options
-) {
+): Promise<LocalQueryResult> {
   try {
-    const { getValues, config, duckDB } =
-      options.context as QueryDuckDBFunctionContext;
+    const { getValues, getDuckDB: getUserDuckDB } =
+      options.context as LocalQueryContext;
 
     // get values for each variable
     const columnData = {};
@@ -173,7 +178,8 @@ async function executeLocalQuery(
     const arrowTable: ArrowTable = tableFromArrays(columnData);
 
     // Initialize DuckDB with external instance if provided
-    const db = await getDuckDB(duckDB);
+    const userDuckDB = await getUserDuckDB?.();
+    const db = await getDuckDB(userDuckDB ?? undefined);
     if (!db) {
       throw new Error('DuckDB instance is not initialized');
     }
@@ -195,34 +201,29 @@ async function executeLocalQuery(
 
     await conn.close();
 
+    // convert arrowResult to a JSON object
+    const jsonResult: Record<string, unknown>[] = arrowResult
+      .toArray()
+      .map((row) => convertArrowRowToObject(row));
+
     // Get first 2 rows of the result as a json object to LLM
-    const subResult = arrowResult.toArray().slice(0, 2);
-    const firstTwoRows = subResult.map((row) => {
-      const json = row.toJSON();
-      // Convert any BigInt values to strings
-      return Object.fromEntries(
-        Object.entries(json).map(([key, value]) => [
-          key,
-          typeof value === 'bigint' ? value.toString() : value,
-        ])
-      );
-    });
+    const firstTwoRows = jsonResult.slice(0, 2);
+
+    const queryDatasetName = `query_${generateId()}`;
 
     return {
       llmResult: {
         success: true,
-        dbTableName,
         data: {
           firstTwoRows,
         },
       },
       additionalData: {
-        title: 'Query Result',
         sql,
-        variableNames,
         datasetName,
         dbTableName,
-        config,
+        queryDatasetName,
+        variableNames,
       },
     };
   } catch (error) {

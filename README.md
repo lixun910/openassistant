@@ -1,54 +1,47 @@
 # OpenAssistant
 
-[Documentation](https://openassistant-doc.vercel.app) |
-[Playground](https://openassistant-playground.vercel.app)
+[Documentation](https://openassistant-doc.vercel.app)
 
 OpenAssistant is a javascript library helping your build your AI application with powerful data analysis tools and an interactive React chat component.
 
+See an example using using geotools, spatial join and map tools with LLM to answer a user's question:
+
+```
+Can you map the buffered (100 meters) driving route between "123 Main St, San Francisco, CA" and "450 10th St, San Francisco, CA"?
+```
+
+<img width="600" alt="Screenshot 2025-04-25 at 10 22 08 PM" src="https://github.com/user-attachments/assets/234aeaf3-0a70-486a-92f6-71eff957af49" />
+
+- Check out the example code 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples/geoda_tools).
+- See a tutorial using OpenAssistant in Kepler.gl 🔗 [here](https://github.com/keplergl/kepler.gl/discussions/2843).
+
 OpenAssistant provides the following AI tools which are compatible with [Vercel AI SDK](https://sdk.vercel.ai/docs):
 
-- Plot Tools: interactive data visualization
-  - box plot
-  - bubble chart
-  - histogram
-  - parallel coordinates
-  - scatter plot with regression lines
-- GeoTools
-  - geocoding (using OSM API)
-  - routing (using Mapbox API)
-  - isochrone (using Mapbox API)
-  - U.S. zipcode search and download
-  - U.S. state download
-  - U.S. county download
-- Map Tools
-  - visualize geospatial data in kepler.gl
-- DuckDB Tools
-  - query local data using duckdb
-- Data Analysis Tools (geoda)
-  - data classification: quantile, equal interval, natural breaks, standard deviation, percentile, box etc.
-  - spatial operations
-    - buffer
-    - area
-    - centroid
-    - dissolve
-    - length
-    - perimeter
-  - spatial join
-  - spatial weights: queen/rook contiguity, KNN weights, distance-based weights, kernel weights
-  - spatial analysis
-    - global indicators of spatial association: Global Moran's I
-    - local indicators of spatial association (LISA): local Moran's I, local Getis-Ord Gi\*, local Geary, quantile LISA
-    - spatial regression: OLS, spatial lag, spatial error model
-
-See an example using using geotools, spatial join and map tools with LLM to answer a user's question `Can you map the buffered (100 meters) driving route between "123 Main St, San Francisco, CA" and "450 10th St, San Francisco, CA"?`:
-
-<img width="600" alt="Screenshot 2025-04-25 at 10 22 08 PM" src="https://github.com/user-attachments/assets/234aeaf3-0a70-486a-92f6-71eff957af49" />
-
-Check out the example code 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples/geoda_tools).
+| Category | Tool/Feature | Description |
+|----------|--------------|-------------|
+| **Plot Tools** | Static plots | All plot types using Vega-Lite |
+| | Interactive plots | eCharts: box plot, bubble chart, histogram, parallel coordinates, scatter plot with regression lines |
+| **GeoTools** | Geocoding | Using OSM API |
+| | Routing | Using Mapbox API |
+| | Isochrone | Using Mapbox API |
+| | Geographic boundaries | U.S. state/county/zipcode |
+| **Map Tools** | Kepler.gl | Interactive map visualization |
+| | Leaflet map | Web mapping library |
+| **DuckDB Tools** | Local data querying | Query local data using DuckDB |
+| | Table operations | Merge, filter, sort, group by, aggregate, etc. |
+| **Data Analysis Tools (GeoDa)** | Data classification | Quantile, equal interval, natural breaks, standard deviation, percentile, box, etc. |
+| | Data standardization | Z-score, deviation from mean, MAD, range adjust, range standardization, etc. |
+| | Spatial operations | Buffer, area, centroid, dissolve, length, perimeter, Minimum Spanning Tree, Thiessen polygons (Voronoi diagram) |
+| | Spatial join | Join spatial datasets |
+| | Spatial dissolve/aggregate | Combine spatial features |
+| | Spatial weights | Queen/rook contiguity, KNN weights, distance-based weights, kernel weights |
+| | Global spatial analysis | Global Moran's I |
+| | Local spatial analysis (LISA) | Local Moran's I, local Getis-Ord Gi*, local Geary, quantile LISA |
+| | Spatial regression | OLS, spatial lag, spatial error model |
 
 ### Why use LLM tools?
 
-LLMs are fundamentally statistical language models that predict the next tokens based on the context. While emergent behaviors such as learning, reasoning, and tool use enhance the model’s capabilities, LLMs do not natively perform precise or complex computations and algorithms. For example, when asked to compute the square root of a random decimal number, ChatGPT typically provides an incorrect answer unless its Python tool is explicitly called to perform the calculation. This limitation becomes even more apparent with complex tasks in engineering and scientific domains. Providing computational tools for LLMs offers a solution for overcoming this problem and helps you successfully integrate LLMs with your applications.
+LLMs are fundamentally statistical language models that predict the next tokens based on the context. While emergent behaviors such as learning, reasoning, and tool use enhance the model's capabilities, LLMs do not natively perform precise or complex computations and algorithms. For example, when asked to compute the square root of a random decimal number, ChatGPT typically provides an incorrect answer unless its Python tool is explicitly called to perform the calculation. This limitation becomes even more apparent with complex tasks in engineering and scientific domains. Providing computational tools for LLMs offers a solution for overcoming this problem and helps you successfully integrate LLMs with your applications.
 
 Check out the following examples using OpenAssistant in action:
 
@@ -71,30 +64,31 @@ npm install @openassistant/plots
 Add all echarts tools (histogram, box plot, etc.) to your application:
 
 ```ts
-import { getVercelAiTools } from '@openassistant/plots';
+import { histogram, HistogramTool } from '@openassistant/plots';
+import { convertToVercelAiTool } from '@openassistant/utils';
 import { generateText } from 'ai';
 
-const context = {
-  //
-  getValues: async (datasetName, variableName) => {
-    // your getValues function, e.g.
-    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const histogramTool: HistogramTool = {
+  ...histogram,
+  context: {
+    // get the values of the variable from your dataset, e.g.
+    getValues: async (datasetName, variableName) => {
+      // your getValues from Natregimes dataset and variable HR60, e.g.:
+      return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    },
+  },
+  onToolCompleted: (toolCallId, additionalData) => {
+    // the call back function when the tool is completed
+    console.log('toolCallId: additionalData', toolCallId, additionalData);
   },
 };
-
-const onToolCompleted = (toolCallId, additionalData) => {
-  // the call back function when the tool is completed
-  console.log('toolCallId: additionalData', toolCallId, additionalData);
-};
-
-const echartsTools = getVercelAiTools(context, onToolCompleted);
 
 // use tool with vercel ai sdk
 const result = await generateText({
   model: openai('gpt-4o', { apiKey: key }),
   system: 'You are a helpful assistant',
   prompt: 'create a histogram of HR60 in dataset Natregimes',
-  tools: { ...echartsTools },
+  tools: { histogram: convertToVercelAiTool(histogramTool) },
 });
 ```
 
@@ -171,13 +165,13 @@ See the source code of the example 🔗 [here](https://github.com/geodacenter/op
 If you are using TailwindCSS, you need to add the following configurations to your `tailwind.config.js` file:
 
 ```tsx
-import { nextui } from '@nextui-org/react';
+import { nextui } from '@heroui/react';
 ...
 
 module.exports = {
   content: [
     ...,
-    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
+    './node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}',
     './node_modules/@openassistant/ui/dist/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
@@ -357,10 +351,10 @@ See a more complex example of using OpenAssistant core package to create a multi
   - Ollama (local AI models)
   - XAI Grok
   - Anthropic Claude
-  - AWS Bedrock\*
-  - Azure OpenAI\*
+  - AWS Bedrock*
+  - Azure OpenAI*
 
-\* via server API only, see [how-to documentation here](https://openassistant-doc.vercel.app/blog/server-support)
+* via server API only, see [how-to documentation here](https://openassistant-doc.vercel.app/blog/server-support)
 
 - 🌟 **Easy-to-use Tools to extend your AI assistant**
 
