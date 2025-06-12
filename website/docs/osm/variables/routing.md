@@ -2,7 +2,7 @@
 
 > `const` **routing**: `ExtendedTool`\<[`RoutingFunctionArgs`](../type-aliases/RoutingFunctionArgs.md), [`RoutingLlmResult`](../type-aliases/RoutingLlmResult.md), [`RoutingAdditionalData`](../type-aliases/RoutingAdditionalData.md), [`MapboxToolContext`](../type-aliases/MapboxToolContext.md)\>
 
-Defined in: [packages/tools/osm/src/routing.ts:136](https://github.com/GeoDaCenter/openassistant/blob/28e38a23cf528ccfe10391135d12fba8d3e385da/packages/tools/osm/src/routing.ts#L136)
+Defined in: [packages/tools/osm/src/routing.ts:136](https://github.com/GeoDaCenter/openassistant/blob/dc72d81a35cf8e46295657303846fbb4ad891993/packages/tools/osm/src/routing.ts#L136)
 
 This routing tool calculates routes between two points using Mapbox's Directions API.
 It supports different transportation modes (driving, walking, cycling) and returns

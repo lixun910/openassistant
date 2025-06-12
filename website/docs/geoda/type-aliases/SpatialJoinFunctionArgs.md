@@ -1,5 +1,5 @@
 # Type Alias: SpatialJoinFunctionArgs
 
-> **SpatialJoinFunctionArgs**: `z.ZodObject`\<\{ `joinOperators`: `z.ZodArray`\<`z.ZodEnum`\<\[`"sum"`, `"mean"`, `"min"`, `"max"`, `"median"`, `"count"`\]\>\>; `joinVariableNames`: `z.ZodArray`\<`z.ZodString`\>; `leftDatasetName`: `z.ZodString`; `rightDatasetName`: `z.ZodString`; \}\>
+> **SpatialJoinFunctionArgs**: `z.ZodObject`\<\{ `joinVariables`: `z.ZodOptional`\<`z.ZodArray`\<`z.ZodObject`\<\{ `operator`: `z.ZodEnum`\<\[`"sum"`, `"mean"`, `"min"`, `"max"`, `"median"`, `"count"`, `"unique"`\]\>; `variableName`: `z.ZodString`; \}\>\>\>; `leftDatasetName`: `z.ZodString`; `rightDatasetName`: `z.ZodString`; \}\>
 
-Defined in: [packages/tools/geoda/src/spatial\_join/tool.ts:14](https://github.com/GeoDaCenter/openassistant/blob/28e38a23cf528ccfe10391135d12fba8d3e385da/packages/tools/geoda/src/spatial_join/tool.ts#L14)
+Defined in: [packages/tools/geoda/src/spatial\_join/tool.ts:14](https://github.com/GeoDaCenter/openassistant/blob/dc72d81a35cf8e46295657303846fbb4ad891993/packages/tools/geoda/src/spatial_join/tool.ts#L14)
