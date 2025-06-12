@@ -2,7 +2,7 @@
 
 > `const` **roads**: `ExtendedTool`\<[`RoadsFunctionArgs`](../type-aliases/RoadsFunctionArgs.md), [`RoadsLlmResult`](../type-aliases/RoadsLlmResult.md), [`RoadsAdditionalData`](../type-aliases/RoadsAdditionalData.md), [`OsmToolContext`](../type-aliases/OsmToolContext.md)\>
 
-Defined in: [packages/tools/osm/src/roads.ts:105](https://github.com/GeoDaCenter/openassistant/blob/28e38a23cf528ccfe10391135d12fba8d3e385da/packages/tools/osm/src/roads.ts#L105)
+Defined in: [packages/tools/osm/src/roads.ts:105](https://github.com/GeoDaCenter/openassistant/blob/dc72d81a35cf8e46295657303846fbb4ad891993/packages/tools/osm/src/roads.ts#L105)
 
 Roads Tool
 

@@ -61,7 +61,7 @@ For example, install the echarts tool:
 npm install @openassistant/plots
 ```
 
-Add all echarts tools (histogram, box plot, etc.) to your application:
+Add histogram tool to your application:
 
 ```ts
 import { histogram, HistogramTool } from '@openassistant/plots';
@@ -115,7 +115,7 @@ additionalData {
 }
 ```
 
-See the example code 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples/vercel_example).
+See the example code 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples).
 
 ### 2. Add a React Chat Component to your App
 
@@ -158,7 +158,7 @@ function App() {
 
 <img src="https://openassistant-doc.vercel.app/img/getstart-dark.png" width="300" />
 
-See the source code of the example 🔗 [here](https://github.com/geodacenter/openassistant/tree/main/examples/simple_react).
+See the source code of the example 🔗 [here](https://github.com/geodacenter/openassistant/tree/main/examples).
 
 :::tip
 
@@ -182,7 +182,7 @@ module.exports = {
 };
 ```
 
-See the source code of the example 🔗 [here](https://github.com/geodacenter/openassistant/tree/main/examples/react_tailwind).
+See the source code of the example 🔗 [here](https://github.com/geodacenter/openassistant/tree/main/examples).
 :::
 
 #### Use Tools with chat component
@@ -341,42 +341,6 @@ OpenAssistant also supports the following model providers:
 See an example of using OpenAssistant core package to create your own tools 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples/zod_function_tools).
 
 See a more complex example of using OpenAssistant core package to create a multi-step tool 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples/multisteps_tools).
-
-## 🌟 Features
-
-- 🤖 **One interface for multiple AI providers**
-  - DeepSeek (Chat and Reasoner)
-  - OpenAI (GPT models)
-  - Google Gemini
-  - Ollama (local AI models)
-  - XAI Grok
-  - Anthropic Claude
-  - AWS Bedrock*
-  - Azure OpenAI*
-
-* via server API only, see [how-to documentation here](https://openassistant-doc.vercel.app/blog/server-support)
-
-- 🌟 **Easy-to-use Tools to extend your AI assistant**
-
-  - DuckDB: in-browser query data using duckdb via prompt
-  - ECharts: visualize data using echarts via prompt
-  - KeplerGl: create maps using keplergl via prompt
-  - GeoDa: apply spatial data analysis using geoda wasm via prompt
-
-- 🎯 **Built-in React chat component**
-  - Pre-built chat interface
-  - Pre-built LLM configuration interface
-  - Theme support
-  - Take screenshot to ask [[Demo]](https://geoda.ai/img/highlight-screenshot.mp4)
-  - Talk to ask [[Demo]](https://geoda.ai/img/highlight-ai-talk.mp4)
-  - Function calling support [[Demo]](https://geoda.ai/img/highlight-prompt.mp4)
-
-See the [tutorial](https://openassistant-doc.vercel.app/docs/tutorial-basics/screencapture) for more details.
-
-- 📦 **Easy integration**
-  - CLI tool for adding components
-  - TypeScript support
-  - Tailwind CSS integration
 
 ## 🎯 Examples
 

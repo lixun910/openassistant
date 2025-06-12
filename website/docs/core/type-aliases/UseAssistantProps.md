@@ -2,7 +2,7 @@
 
 > **UseAssistantProps**: `object`
 
-Defined in: [packages/core/src/hooks/use-assistant.ts:13](https://github.com/GeoDaCenter/openassistant/blob/28e38a23cf528ccfe10391135d12fba8d3e385da/packages/core/src/hooks/use-assistant.ts#L13)
+Defined in: [packages/core/src/hooks/use-assistant.ts:13](https://github.com/GeoDaCenter/openassistant/blob/dc72d81a35cf8e46295657303846fbb4ad891993/packages/core/src/hooks/use-assistant.ts#L13)
 
 Props for configuring the AI Assistant and useAssistant hook.
 

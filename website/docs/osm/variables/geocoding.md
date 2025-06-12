@@ -2,7 +2,7 @@
 
 > `const` **geocoding**: `ExtendedTool`\<[`GeocodingFunctionArgs`](../type-aliases/GeocodingFunctionArgs.md), [`GeocodingLlmResult`](../type-aliases/GeocodingLlmResult.md), [`GeocodingAdditionalData`](../type-aliases/GeocodingAdditionalData.md), `object`\>
 
-Defined in: [packages/tools/osm/src/geocoding.ts:51](https://github.com/GeoDaCenter/openassistant/blob/28e38a23cf528ccfe10391135d12fba8d3e385da/packages/tools/osm/src/geocoding.ts#L51)
+Defined in: [packages/tools/osm/src/geocoding.ts:51](https://github.com/GeoDaCenter/openassistant/blob/dc72d81a35cf8e46295657303846fbb4ad891993/packages/tools/osm/src/geocoding.ts#L51)
 
 Geocoding Tool
 

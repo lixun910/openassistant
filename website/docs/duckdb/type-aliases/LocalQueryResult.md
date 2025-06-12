@@ -2,7 +2,7 @@
 
 > **LocalQueryResult**: `object`
 
-Defined in: [packages/tools/duckdb/src/types.ts:39](https://github.com/GeoDaCenter/openassistant/blob/28e38a23cf528ccfe10391135d12fba8d3e385da/packages/tools/duckdb/src/types.ts#L39)
+Defined in: [packages/tools/duckdb/src/types.ts:39](https://github.com/GeoDaCenter/openassistant/blob/dc72d81a35cf8e46295657303846fbb4ad891993/packages/tools/duckdb/src/types.ts#L39)
 
 Combined result type for localQuery
 

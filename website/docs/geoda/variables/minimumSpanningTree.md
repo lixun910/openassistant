@@ -2,7 +2,7 @@
 
 > `const` **minimumSpanningTree**: `ExtendedTool`\<[`MinimumSpanningTreeArgs`](../type-aliases/MinimumSpanningTreeArgs.md), [`MinimumSpanningTreeLlmResult`](../type-aliases/MinimumSpanningTreeLlmResult.md), [`MinimumSpanningTreeAdditionalData`](../type-aliases/MinimumSpanningTreeAdditionalData.md), [`SpatialToolContext`](../type-aliases/SpatialToolContext.md)\>
 
-Defined in: [packages/tools/geoda/src/spatial\_ops/mst.ts:45](https://github.com/GeoDaCenter/openassistant/blob/28e38a23cf528ccfe10391135d12fba8d3e385da/packages/tools/geoda/src/spatial_ops/mst.ts#L45)
+Defined in: [packages/tools/geoda/src/spatial\_ops/mst.ts:45](https://github.com/GeoDaCenter/openassistant/blob/dc72d81a35cf8e46295657303846fbb4ad891993/packages/tools/geoda/src/spatial_ops/mst.ts#L45)
 
 Minimum Spanning Tree Tool
 
