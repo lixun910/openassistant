@@ -7,7 +7,7 @@ import {
 
 /**
  * Properties required to create a boxplot visualization
- * 
+ *
  * @property data - The data to create the boxplot from
  * @property boundIQR - The boundIQR to use for the boxplot
  */
@@ -65,9 +65,9 @@ export type BoxplotDataProps = {
  * @param {Object.<string, number[]>} props.data - Input data object where each key represents a group/category and the value is an array of numbers
  * @param {number} props.boundIQR - Multiplier for the IQR to determine the whisker lengths (commonly 1.5 or 3.0)
  * @returns {BoxplotDataProps} The boxplot data containing statistical properties and mean points
- * 
+ *
  * ### Example: single boxplot
- * 
+ *
  * ```ts
  * const data = {
  *   'samples': [1, 2, 3, 4, 5],
@@ -75,9 +75,9 @@ export type BoxplotDataProps = {
  * const boundIQR = 1.5;
  * const boxplotData = createBoxplot({data, boundIQR});
  * ```
- * 
+ *
  * ### Example: multiple boxplots
- * 
+ *
  * ```ts
  * const data = {
  *   'samples': [1, 2, 3, 4, 5],
@@ -96,7 +96,9 @@ export function createBoxplot({
   // iterate through the data and calculate the boxplot data
   const boxplots: BoxplotProps[] = Object.keys(data).map((key: string) => {
     const values = data[key];
-    const sortedData = values.sort((a, b) => a - b);
+    // make a copy of the values to avoid mutating the original data
+    const sortedData = [...values];
+    sortedData.sort((a, b) => a - b);
     const q1 = d3Quantile(sortedData, 0.25) || 0;
     const q3 = d3Quantile(sortedData, 0.75) || 0;
     const iqr = q3 - q1;
