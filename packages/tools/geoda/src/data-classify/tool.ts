@@ -25,7 +25,7 @@ export type DataClassifyFunctionArgs = z.ZodObject<{
       'unique values',
     ]
   >;
-  k: z.ZodNumber;
+  k: z.ZodOptional<z.ZodNumber>;
   hinge: z.ZodOptional<z.ZodNumber>;
 }>;
 
@@ -35,7 +35,7 @@ export type DataClassifyLlmResult = {
     datasetName: string;
     variableName: string;
     method: string;
-    k: number;
+    k?: number;
     hinge?: number;
     breaks: number[];
   };
@@ -75,7 +75,7 @@ export type DataClassifyFunctionContext = {
  * ```typescript
  * import { dataClassify, DataClassifyTool } from "@openassistant/geoda";
  * import { convertToVercelAiTool } from "@openassistant/utils";
- * 
+ *
  * const classifyTool: DataClassifyTool = {
  *   ...dataClassify,
  *   toolContext: {
@@ -101,7 +101,7 @@ export const dataClassify = extendedTool<
   DataClassifyAdditionalData,
   DataClassifyFunctionContext
 >({
-  description: 'Classify the data into k bins or classes',
+  description: 'Classify the data into k bins or categories.',
   parameters: z.object({
     datasetName: z.string(),
     variableName: z.string(),
@@ -116,11 +116,16 @@ export const dataClassify = extendedTool<
         'unique values',
       ])
       .describe('The classification method.'),
-    k: z.number().describe('The number of bins or classes'),
+    k: z
+      .number()
+      .optional()
+      .describe(
+        'The number of bins or classes. This is only required for quantile, natural breaks, equal interval.'
+      ),
     hinge: z
       .number()
       .optional()
-      .describe('The hinge value when box classification is used'),
+      .describe('The hinge value when box method is used. Default is 1.5.'),
   }),
   execute: executeDataClassify,
   context: {
@@ -149,9 +154,7 @@ function isDataClassifyToolArgs(args: unknown): args is DataClassifyToolArgs {
     'variableName' in args &&
     typeof args.variableName === 'string' &&
     'method' in args &&
-    typeof args.method === 'string' &&
-    'k' in args &&
-    typeof args.k === 'number'
+    typeof args.method === 'string'
   );
 }
 
@@ -213,7 +216,7 @@ export async function runDataClassify({
   variableName,
   method,
   k,
-  hinge,
+  hinge = 1.5,
   getValues,
 }: {
   datasetName: string;
@@ -243,9 +246,9 @@ export async function runDataClassify({
         break;
       case 'box':
         breaks =
-          hinge === 1.5
-            ? await hinge15Breaks(values as number[])
-            : await hinge30Breaks(values as number[]);
+          hinge === 3.0
+            ? await hinge30Breaks(values as number[])
+            : await hinge15Breaks(values as number[]);
         break;
       case 'standard deviation':
         breaks = await standardDeviationBreaks(values as number[]);
