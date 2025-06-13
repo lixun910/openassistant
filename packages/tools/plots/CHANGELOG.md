@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.5.9 (2025-06-13)
+
+### Bug Fixes
+
+* box plot component not linking correct ids ([86b640f](https://github.com/GeoDaCenter/openassistant/commit/86b640f82b93da3ac714753b4a3dff300ca1812a))
+
+## 0.5.8 (2025-06-12)
+
 ## 0.5.8 (2025-06-12)
 
 **Note:** Version bump only for package @openassistant/plots
