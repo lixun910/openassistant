@@ -9,6 +9,7 @@ import {
   LocalQueryResult,
 } from './types';
 import { convertArrowRowToObject } from './merge';
+import { Feature } from 'geojson';
 
 /**
  * The `localQuery` tool is used to execute a query against a local dataset.
@@ -171,7 +172,42 @@ async function executeLocalQuery(
     // get values for each variable
     const columnData = {};
     for (const varName of variableNames) {
-      columnData[varName] = await getValues(datasetName, varName);
+      let values = await getValues(datasetName, varName);
+
+      // for values of Features, we need to normalize the Polygon to MultiPolygon
+      // because when you use tableFromArrays() with a mix of Polygon and MultiPolygon GeoJSON Features,
+      // you’re running into a schema inference limitation: tableFromArrays() infers array nesting based on the first element.
+      const firstValue = values[0];
+      // check if firstValue is a Feature
+      if (
+        firstValue &&
+        typeof firstValue === 'object' &&
+        'type' in firstValue &&
+        firstValue.type === 'Feature'
+      ) {
+        // check if Feature.geometry is a Polygon or MultiPolygon
+        if (
+          (firstValue as Feature).geometry.type === 'Polygon' ||
+          (firstValue as Feature).geometry.type === 'MultiPolygon'
+        ) {
+          // convert values to MultiPolygon
+          values = values.map((f: unknown) => {
+            const feature = f as Feature;
+            return {
+              ...feature,
+              geometry:
+                feature.geometry.type === 'Polygon'
+                  ? {
+                      type: 'MultiPolygon',
+                      coordinates: [feature.geometry.coordinates],
+                    }
+                  : feature.geometry,
+            };
+          });
+        }
+      }
+
+      columnData[varName] = values;
     }
 
     // Create Arrow Table from column data with explicit type
