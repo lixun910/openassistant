@@ -1,6 +1,6 @@
 {
   "name": "@openassistant/geoda",
-  "version": "0.5.10",
+  "version": "0.5.9",
   "author": "Xun Li<lixun910@gmail.com>",
   "description": "The GeoDa spatial analysis tools for OpenAssistant",
   "main": "dist/index.cjs.js",
@@ -28,9 +28,9 @@
     "package.json"
   ],
   "dependencies": {
-    "@geoda/core": "^0.0.18",
-    "@geoda/lisa": "^0.0.18",
-    "@geoda/regression": "^0.0.18",
+    "@geoda/core": "^0.0.19",
+    "@geoda/lisa": "^0.0.19",
+    "@geoda/regression": "^0.0.19",
     "@loaders.gl/core": "^4.3.3",
     "@loaders.gl/gis": "^4.3.3",
     "@loaders.gl/schema": "^4.3.3",
