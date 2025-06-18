@@ -16,9 +16,10 @@ export const cartogram = extendedTool<
   parameters: z.object({
     datasetName: z.string(),
     variableName: z.string(),
+    iterations: z.number().optional(),
   }),
   execute: async (args, options) => {
-    const { datasetName, variableName } = args;
+    const { datasetName, variableName, iterations } = args;
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(
         'Context is required and must implement SpatialToolContext'
@@ -40,11 +41,10 @@ export const cartogram = extendedTool<
       throw new Error('No values found');
     }
 
-    const iterations = 100;
     const cartogram: Feature[] = await getCartogram(
       geometries,
       values,
-      iterations,
+      iterations || 100,
       0.8
     );
 
@@ -86,6 +86,7 @@ export const cartogram = extendedTool<
 export type CartogramFunctionArgs = z.ZodObject<{
   datasetName: z.ZodString;
   variableName: z.ZodString;
+  iterations: z.ZodOptional<z.ZodNumber>;
 }>;
 
 export type CartogramLlmResult = {
