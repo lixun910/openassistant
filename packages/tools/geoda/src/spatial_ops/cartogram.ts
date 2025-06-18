@@ -44,8 +44,7 @@ export const cartogram = extendedTool<
     const cartogram: Feature[] = await getCartogram(
       geometries,
       values,
-      iterations || 100,
-      20
+      iterations || 100
     );
 
     // create a unique id for the cartogram result
