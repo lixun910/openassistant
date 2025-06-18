@@ -45,7 +45,7 @@ export const cartogram = extendedTool<
       geometries,
       values,
       iterations || 100,
-      0.8
+      20
     );
 
     // create a unique id for the cartogram result
