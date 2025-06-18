@@ -22,6 +22,7 @@ export * from './spatial_ops/length';
 export * from './spatial_ops/perimeter';
 export * from './spatial_ops/thiessenPolygons';
 export * from './spatial_ops/mst';
+export * from './spatial_ops/cartogram';
 
 export * from './variable/tool';
 

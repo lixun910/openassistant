@@ -39,11 +39,10 @@ export type LocalQueryContext = {
 export type LocalQueryResult = {
   llmResult: {
     success: boolean;
+    datasetName?: string;
     error?: string;
     instruction?: string;
-    data?: {
-      firstTwoRows: Record<string, unknown>[];
-    };
+    firstRow?: Record<string, unknown>;
   };
   additionalData?: LocalQueryAdditionalData;
 };
