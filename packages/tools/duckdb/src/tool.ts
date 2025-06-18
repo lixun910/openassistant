@@ -242,17 +242,17 @@ async function executeLocalQuery(
       .toArray()
       .map((row) => convertArrowRowToObject(row));
 
-    // Get first 2 rows of the result as a json object to LLM
-    const firstTwoRows = jsonResult.slice(0, 2);
+    // Get first row of the result as a json object to LLM
+    const firstRow = jsonResult[0];
 
     const queryDatasetName = `query_${generateId()}`;
 
     return {
       llmResult: {
         success: true,
-        data: {
-          firstTwoRows,
-        },
+        datasetName: queryDatasetName,
+        firstRow,
+        instruction: `Query successfully. The query result is stored in the dataset ${queryDatasetName}. You can use the first row of the result as a sample to understand the query result.`,
       },
       additionalData: {
         sql,
