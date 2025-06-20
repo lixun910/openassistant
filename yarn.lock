@@ -1548,30 +1548,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@geoda/core@npm:^0.0.21":
-  version: 0.0.21
-  resolution: "@geoda/core@npm:0.0.21"
+"@geoda/core@npm:^0.0.22":
+  version: 0.0.22
+  resolution: "@geoda/core@npm:0.0.22"
   dependencies:
     "@loaders.gl/schema": "npm:^4.1.0-alpha.4"
     geojson: "npm:^0.5.0"
-  checksum: b5858c5993337c666d242086ed55e81154b2a33a8e2afba7f17ce3f8df56ca9e204ba39ed70021d26a85388bf99b1a1089602dcb5ab21c4fe606a8371123a2b9
+  checksum: d932df6e28bff00941822d0358be67a5731f9f0831bfc5a4623e228da670daab25bcfa7df7e601a3b8c4bec6190821ac0e3fe27fd5dc2435895e7a0ae2e7f02b
   languageName: node
   linkType: hard
 
-"@geoda/lisa@npm:^0.0.21":
-  version: 0.0.21
-  resolution: "@geoda/lisa@npm:0.0.21"
+"@geoda/lisa@npm:^0.0.22":
+  version: 0.0.22
+  resolution: "@geoda/lisa@npm:0.0.22"
   dependencies:
     "@loaders.gl/schema": "npm:^4.1.0-alpha.4"
     geojson: "npm:^0.5.0"
-  checksum: 78ce645330abccc8ec415e340f8038c18cdce2beac6e58964f469b5e3f47155d43c7f0417f90cb95a16eda57a821f16f93a04f473b0e3731e425077bb9cd90b8
+  checksum: f8485380816c56aaa18107fea0d98f9523c250c2e1effd048e1012209adccc373184165be68e0af0e18c06e41d96549a7617430c339350c219265a2ecebe3782
   languageName: node
   linkType: hard
 
-"@geoda/regression@npm:^0.0.21":
-  version: 0.0.21
-  resolution: "@geoda/regression@npm:0.0.21"
-  checksum: 63787ef22ab23ca5d4072affe40028c7f7552d776eb15f3d77a3e3a0757bf3ba22ee4f6fc4dc4e7c603496e6697afeb41005b466449f1ac3573e21a18642a16e
+"@geoda/regression@npm:^0.0.22":
+  version: 0.0.22
+  resolution: "@geoda/regression@npm:0.0.22"
+  checksum: 7ea1a11e138727dbca101109b2f0a279ed8ada105c9426acaf70f4190a51523f784d844a80317548062c0dd6a8c72ddc4564475ae2a774dc70f992a20ca36fdc
   languageName: node
   linkType: hard
 
@@ -6470,9 +6470,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openassistant/geoda@workspace:packages/tools/geoda"
   dependencies:
-    "@geoda/core": "npm:^0.0.21"
-    "@geoda/lisa": "npm:^0.0.21"
-    "@geoda/regression": "npm:^0.0.21"
+    "@geoda/core": "npm:^0.0.22"
+    "@geoda/lisa": "npm:^0.0.22"
+    "@geoda/regression": "npm:^0.0.22"
     "@loaders.gl/core": "npm:^4.3.3"
     "@loaders.gl/gis": "npm:^4.3.3"
     "@loaders.gl/schema": "npm:^4.3.3"
