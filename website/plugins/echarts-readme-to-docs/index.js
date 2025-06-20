@@ -5,7 +5,7 @@ async function echartsReadmeToDocsPlugin(context) {
   return {
     name: 'echarts-readme-to-docs',
     async loadContent() {
-      const readmePath = path.join(context.siteDir, '..', 'packages', 'echarts', 'README.md');
+      const readmePath = path.join(context.siteDir, '..', 'packages', 'tools', 'plots', 'README.md');
       const docsPath = path.join(context.siteDir, 'docs', 'tools', 'echarts-plugin.md');
 
       try {
@@ -21,7 +21,7 @@ async function echartsReadmeToDocsPlugin(context) {
         // Add Docusaurus frontmatter
         const docusaurusContent = `---
 sidebar_position: 2
-sidebar_label: eCharts Tools
+sidebar_label: Plot Tools
 ---
 
 ${readmeContent}`;

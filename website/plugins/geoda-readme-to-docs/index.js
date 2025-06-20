@@ -5,7 +5,7 @@ async function geodaReadmeToDocsPlugin(context) {
   return {
     name: 'geoda-readme-to-docs',
     async loadContent() {
-      const readmePath = path.join(context.siteDir, '..', 'packages', 'geoda', 'README.md');
+      const readmePath = path.join(context.siteDir, '..', 'packages', 'tools', 'geoda', 'README.md');
       const docsPath = path.join(context.siteDir, 'docs', 'tools', 'geoda-plugin.md');
 
       try {
@@ -21,7 +21,7 @@ async function geodaReadmeToDocsPlugin(context) {
         // Add Docusaurus frontmatter
         const docusaurusContent = `---
 sidebar_position: 3
-sidebar_label: Geoda Tools
+sidebar_label: Data Analysis Tools
 ---
 
 ${readmeContent}`;

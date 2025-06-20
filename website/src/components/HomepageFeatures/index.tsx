@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 // import Heading from '@theme/Heading';
 import styles from './styles.module.css';
-import { AllFeatures } from './all-features';
 import {
   highlightFeatures,
   HighlightFeatureComponent,
@@ -13,7 +12,6 @@ export default function HomepageFeatures() {
       {highlightFeatures.map((feature, index) => (
         <HighlightFeatureComponent key={index} {...feature} />
       ))}
-      <AllFeatures />
     </section>
   );
 }

@@ -2,7 +2,7 @@
 
 > `const` **standardizeVariable**: `ExtendedTool`\<[`StandardizeVariableToolArgs`](../type-aliases/StandardizeVariableToolArgs.md), [`StandardizeVariableToolLlmResult`](../type-aliases/StandardizeVariableToolLlmResult.md), [`StandardizeVariableToolAdditionalData`](../type-aliases/StandardizeVariableToolAdditionalData.md), [`StandardizeVariableToolContext`](../type-aliases/StandardizeVariableToolContext.md)\>
 
-Defined in: [packages/tools/geoda/src/variable/tool.ts:85](https://github.com/GeoDaCenter/openassistant/blob/dc72d81a35cf8e46295657303846fbb4ad891993/packages/tools/geoda/src/variable/tool.ts#L85)
+Defined in: [packages/tools/geoda/src/variable/tool.ts:85](https://github.com/GeoDaCenter/openassistant/blob/37d127dc7a76d6b5cf9de906c055e4c904e3dfed/packages/tools/geoda/src/variable/tool.ts#L85)
 
 This tool is used to standardize the data of a variable using one of the following methods:
 - deviation from mean

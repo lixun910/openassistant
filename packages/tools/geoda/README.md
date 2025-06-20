@@ -1,8 +1,8 @@
-# GeoDa Tools
+# Data Analysis Tools
 
-The GeoDa tools for OpenAssistant provides spatial analysis capabilities using [GeoDa](https://geodacenter.github.io/documentation.html).
+The GeoDa tools for OpenAssistant provides spatial data analysis capabilities using [GeoDa-lib](https://geodacenter.github.io/geoda-lib/).
 
-<img src="https://openassistant-doc.vercel.app/img/geoda-tools.png" width="500" alt="Geoda Plugin" />
+<img src="https://openassistant-doc.vercel.app/img/geoda-tools.png" alt="Geoda Plugin" />
 
 ## Features
 
@@ -12,6 +12,24 @@ The GeoDa tools for OpenAssistant provides spatial analysis capabilities using [
   - Quantile
   - Standard Deviation
   - Percentile
+- Rate Map
+  - Raw Rate
+  - Excess Risk
+  - Empirical Bayes
+  - Spatial Rates
+  - Spatial Empirical Bayes
+  - EB Rate Standardization
+- Spatial Operations
+  - Spatial Join
+  - Spatial Dissolve
+  - Buffer
+  - Centroid
+  - Length
+  - Area
+  - Perimeter
+  - Minimum Spanning Tree
+  - Thiessen Polygons (Voronoi Diagram)
+  - Cartogram
 - Spatial weights
   - Queen
   - Rook
@@ -27,18 +45,12 @@ The GeoDa tools for OpenAssistant provides spatial analysis capabilities using [
   - OLS
   - Spatial lag
   - Spatial error
-- Spatial Operations
-  - Spatial Join
-  - Spatial Dissolve
-  - Buffer
-  - Centroid
-  - Length
-  - Area
-  - Perimeter
 - Spatial Data
   - Get US State Data e.g. ask "how many venues are there in California and Texas?"
   - Get US Zipcode Data
   - Get US County Data
+
+See the full list of tools [here](https://openassistant-doc.vercel.app/docs/tools/geoda).
 
 ## Installation
 

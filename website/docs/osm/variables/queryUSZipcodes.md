@@ -2,7 +2,7 @@
 
 > `const` **queryUSZipcodes**: `ExtendedTool`\<[`QueryZipcodeFunctionArgs`](../type-aliases/QueryZipcodeFunctionArgs.md), [`QueryZipcodeLlmResult`](../type-aliases/QueryZipcodeLlmResult.md), [`QueryZipcodeAdditionalData`](../type-aliases/QueryZipcodeAdditionalData.md), `object`\>
 
-Defined in: [packages/tools/osm/src/us/queryZipcode.ts:65](https://github.com/GeoDaCenter/openassistant/blob/dc72d81a35cf8e46295657303846fbb4ad891993/packages/tools/osm/src/us/queryZipcode.ts#L65)
+Defined in: [packages/tools/osm/src/us/queryZipcode.ts:65](https://github.com/GeoDaCenter/openassistant/blob/37d127dc7a76d6b5cf9de906c055e4c904e3dfed/packages/tools/osm/src/us/queryZipcode.ts#L65)
 
 Query US Zipcodes Tool
 
