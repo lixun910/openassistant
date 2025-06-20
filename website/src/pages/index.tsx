@@ -20,32 +20,20 @@ function HomepageHeader() {
     >
       <div className="container m-4">
         <div className="flex flex-col gap-2">
-          <div className="text-gray-600 dark:text-gray-100 font-bold text-[46px]">
+          <div className="text-gray-600 dark:text-gray-100 font-bold text-[42px]">
             OpenAssistant
           </div>
           <div className="text-gray-400 text-[32px]">
             A javascript library for building AI assistant
             <br />
-            with powerful <span className="text-warning font-bold">
-              tools
-            </span>{' '}
-            and {' '}
-            <span className="text-purple-400 font-bold">interactive</span> React chat
-            component
+            with <span className="text-warning font-bold">powerful</span> tools
+            and <span className="text-purple-400 font-bold">interactive</span>{' '}
+            chat component
           </div>
           <div className="flex flex-row gap-2 justify-center">
             <div className="mt-8 rounded-lg  w-fit bg-gray-400 dark:bg-gray-800 p-4">
-              <Link size="lg" href="/docs/intro" color="success">
+              <Link size="lg" href="/docs/intro" color="primary">
                 Get Started
-              </Link>
-            </div>
-            <div className="mt-8 rounded-lg  w-fit bg-gray-400 dark:bg-gray-800 p-4">
-              <Link
-                size="lg"
-                href="https://openassistant-playground.vercel.app"
-                color="primary"
-              >
-                Playground
               </Link>
             </div>
           </div>

@@ -33,11 +33,7 @@ type HighlightFeature = {
 
 export const highlightFeatures: HighlightFeature[] = [
   {
-    title: (
-      <>
-        Powerful <span className="text-warning">tools</span> for data analysis
-      </>
-    ),
+    title: <>Powerful tools for data analysis</>,
     items: [
       {
         iconLabel: 'Plots',
@@ -56,7 +52,7 @@ export const highlightFeatures: HighlightFeature[] = [
         ],
       },
       {
-        iconLabel: 'Mapping (Kepler.gl)',
+        iconLabel: 'Maps',
         image: '/img/geoda-light.png',
         icon: 'gravity-ui:geo-polygons',
         iconColor: 'text-blue-400',
@@ -104,7 +100,7 @@ export const highlightFeatures: HighlightFeature[] = [
         ],
       },
       {
-        iconLabel: 'Data Analysis (GeoDa)',
+        iconLabel: 'Data Analysis',
         image: '/img/geoda-tool.png',
         icon: 'carbon:data-vis-1',
         iconColor: 'text-blue-400',
@@ -122,7 +118,7 @@ export const highlightFeatures: HighlightFeature[] = [
     ],
   },
   {
-    title: <>React chat component</>,
+    title: <>Iteractive React chat component</>,
     items: [
       {
         image: '/img/getstart-light.png',
@@ -176,16 +172,6 @@ export const highlightFeatures: HighlightFeature[] = [
           },
         ],
       },
-    ],
-  },
-  {
-    title: (
-      <>
-        Built-in <span className="text-secondary-400">interactive</span> AI
-        features
-      </>
-    ),
-    items: [
       {
         iconLabel: 'Screenshot within App',
         image: '/img/screenshot-dark.png',
@@ -207,22 +193,6 @@ export const highlightFeatures: HighlightFeature[] = [
           {
             title: 'page.tsx',
             content: codeVoiceToText,
-          },
-        ],
-      },
-      {
-        iconLabel: 'Function Calling',
-        image: '/img/geoda-dark.png',
-        icon: 'catppuccin:folder-functions',
-        iconColor: 'text-green-400',
-        code: [
-          {
-            title: 'page.tsx',
-            content: codeFunctionCalling,
-          },
-          {
-            title: 'my-function.ts',
-            content: codeMyFunction,
           },
         ],
       },
@@ -268,20 +238,17 @@ export function HighlightFeatureComponent({ title, items }: HighlightFeature) {
         ))}
       </div>
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-[340px] min-w-[340px] sm:w-[500px] sm:min-w-[500px]">
+        <div className="min-w-[340px]">
           <Card>
             <CardBody className="p-4 flex justify-center items-center">
               <Image
                 src={items[selectedIndex].image}
                 alt="screenshot"
-                className="rounded-none w-full"
+                className="rounded-none max-w-full h-auto object-contain"
               />
             </CardBody>
           </Card>
         </div>
-        {/* <div className="w-[340px] min-w-[340px] sm:w-[calc(100%-500px)] sm:min-w-[500px] bg-gray-900 rounded-lg shadow-lg max-h-[400px] pb-2">
-          <CodeBlock code={items[selectedIndex].code} />
-        </div> */}
       </div>
     </div>
   );

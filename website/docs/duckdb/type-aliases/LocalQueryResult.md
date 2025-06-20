@@ -2,7 +2,7 @@
 
 > **LocalQueryResult**: `object`
 
-Defined in: [packages/tools/duckdb/src/types.ts:39](https://github.com/GeoDaCenter/openassistant/blob/dc72d81a35cf8e46295657303846fbb4ad891993/packages/tools/duckdb/src/types.ts#L39)
+Defined in: [packages/tools/duckdb/src/types.ts:39](https://github.com/GeoDaCenter/openassistant/blob/37d127dc7a76d6b5cf9de906c055e4c904e3dfed/packages/tools/duckdb/src/types.ts#L39)
 
 Combined result type for localQuery
 
@@ -16,17 +16,17 @@ Combined result type for localQuery
 
 > **llmResult**: `object`
 
-#### llmResult.data?
+#### llmResult.datasetName?
 
-> `optional` **data**: `object`
-
-#### llmResult.data.firstTwoRows
-
-> **firstTwoRows**: `Record`\<`string`, `unknown`\>[]
+> `optional` **datasetName**: `string`
 
 #### llmResult.error?
 
 > `optional` **error**: `string`
+
+#### llmResult.firstRow?
+
+> `optional` **firstRow**: `Record`\<`string`, `unknown`\>
 
 #### llmResult.instruction?
 

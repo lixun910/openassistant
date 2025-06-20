@@ -25,6 +25,7 @@ export * from './spatial_ops/mst';
 export * from './spatial_ops/cartogram';
 
 export * from './variable/tool';
+export * from './rate/tool';
 
 export * from './types';
 export * from './utils';

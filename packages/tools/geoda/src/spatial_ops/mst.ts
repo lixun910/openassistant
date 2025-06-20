@@ -15,6 +15,8 @@ import { isSpatialToolContext } from '../utils';
  * For polygons, the centroids are used to generate the minimum spanning tree.
  * :::
  *
+ * <img width="1040" src="https://github.com/user-attachments/assets/acdde378-05d2-4fce-9eba-c9e6eb3db662" />
+ * 
  * Example user prompts:
  * - "Generate the minimum spanning tree for this dataset"
  *

@@ -1,6 +1,6 @@
 # Enumeration: MapToolNames
 
-Defined in: [packages/tools/map/src/register-tools.ts:8](https://github.com/GeoDaCenter/openassistant/blob/dc72d81a35cf8e46295657303846fbb4ad891993/packages/tools/map/src/register-tools.ts#L8)
+Defined in: [packages/tools/map/src/register-tools.ts:8](https://github.com/GeoDaCenter/openassistant/blob/37d127dc7a76d6b5cf9de906c055e4c904e3dfed/packages/tools/map/src/register-tools.ts#L8)
 
 ## Enumeration Members
 
@@ -8,7 +8,7 @@ Defined in: [packages/tools/map/src/register-tools.ts:8](https://github.com/GeoD
 
 > **downloadMapData**: `"downloadMapData"`
 
-Defined in: [packages/tools/map/src/register-tools.ts:11](https://github.com/GeoDaCenter/openassistant/blob/dc72d81a35cf8e46295657303846fbb4ad891993/packages/tools/map/src/register-tools.ts#L11)
+Defined in: [packages/tools/map/src/register-tools.ts:11](https://github.com/GeoDaCenter/openassistant/blob/37d127dc7a76d6b5cf9de906c055e4c904e3dfed/packages/tools/map/src/register-tools.ts#L11)
 
 ***
 
@@ -16,7 +16,7 @@ Defined in: [packages/tools/map/src/register-tools.ts:11](https://github.com/Geo
 
 > **keplergl**: `"keplergl"`
 
-Defined in: [packages/tools/map/src/register-tools.ts:9](https://github.com/GeoDaCenter/openassistant/blob/dc72d81a35cf8e46295657303846fbb4ad891993/packages/tools/map/src/register-tools.ts#L9)
+Defined in: [packages/tools/map/src/register-tools.ts:9](https://github.com/GeoDaCenter/openassistant/blob/37d127dc7a76d6b5cf9de906c055e4c904e3dfed/packages/tools/map/src/register-tools.ts#L9)
 
 ***
 
@@ -24,4 +24,4 @@ Defined in: [packages/tools/map/src/register-tools.ts:9](https://github.com/GeoD
 
 > **leaflet**: `"leaflet"`
 
-Defined in: [packages/tools/map/src/register-tools.ts:10](https://github.com/GeoDaCenter/openassistant/blob/dc72d81a35cf8e46295657303846fbb4ad891993/packages/tools/map/src/register-tools.ts#L10)
+Defined in: [packages/tools/map/src/register-tools.ts:10](https://github.com/GeoDaCenter/openassistant/blob/37d127dc7a76d6b5cf9de906c055e4c904e3dfed/packages/tools/map/src/register-tools.ts#L10)

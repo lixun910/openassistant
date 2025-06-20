@@ -28,9 +28,9 @@
     "package.json"
   ],
   "dependencies": {
-    "@geoda/core": "^0.0.21",
-    "@geoda/lisa": "^0.0.21",
-    "@geoda/regression": "^0.0.21",
+    "@geoda/core": "^0.0.22",
+    "@geoda/lisa": "^0.0.22",
+    "@geoda/regression": "^0.0.22",
     "@loaders.gl/core": "^4.3.3",
     "@loaders.gl/gis": "^4.3.3",
     "@loaders.gl/schema": "^4.3.3",

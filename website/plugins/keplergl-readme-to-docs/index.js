@@ -5,7 +5,7 @@ async function keplerglReadmeToDocsPlugin(context) {
   return {
     name: 'keplergl-readme-to-docs',
     async loadContent() {
-      const readmePath = path.join(context.siteDir, '..', 'packages', 'keplergl', 'README.md');
+      const readmePath = path.join(context.siteDir, '..', 'packages', 'components', 'keplergl', 'README.md');
       const docsPath = path.join(context.siteDir, 'docs', 'tools', 'keplergl-plugin.md');
 
       try {
@@ -21,7 +21,7 @@ async function keplerglReadmeToDocsPlugin(context) {
         // Add Docusaurus frontmatter
         const docusaurusContent = `---
 sidebar_position: 1
-sidebar_label: Kepler.gl Tools
+sidebar_label: Map Tools
 ---
 
 ${readmeContent}`;

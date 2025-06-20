@@ -3,16 +3,19 @@ import { AiAssistant } from '@openassistant/ui';
 import { z } from 'zod';
 
 function WeatherStation({
-  weather,
   station,
 }: {
-  weather: string;
-  station: string;
+  station: {
+    stationId: string;
+    weather: string;
+    timestamp: string;
+  };
 }) {
   return (
     <div className="flex flex-col gap-2 rounded-md border p-2 bg-gray-100">
-      <div>{weather}</div>
-      <div>{station}</div>
+      <div>Weather: {station.weather}</div>
+      <div>Station ID: {station.stationId}</div>
+      <div>Timestamp: {station.timestamp}</div>
     </div>
   );
 }
@@ -29,14 +32,13 @@ export function App() {
           throw new Error('Context is required');
         }
         const getStation = options.context['getStation'];
-        const station = getStation ? await getStation(cityName) : null;
+        const station = await getStation(cityName);
         return {
           llmResult: {
             success: true,
-            result: `The weather in ${cityName} is sunny from weather station ${station}.`,
+            result: `The weather in ${cityName} is ${station.weather} from weather station ${station.stationId}.`,
           },
           additionalData: {
-            weather: 'sunny',
             station,
           },
         };
@@ -44,9 +46,21 @@ export function App() {
       context: {
         getStation: async (cityName: string) => {
           const stations = {
-            'New York': '123',
-            'Los Angeles': '456',
-            Chicago: '789',
+            'New York': {
+              stationId: '123',
+              weather: 'sunny',
+              timestamp: '2025-06-20 10:00:00',
+            },
+            'Los Angeles': {
+              stationId: '456',
+              weather: 'cloudy',
+              timestamp: '2025-06-20 10:00:00',
+            },
+            Chicago: {
+              stationId: '789',
+              weather: 'rainy',
+              timestamp: '2025-06-20 10:00:00',
+            },
           };
           return stations[cityName];
         },
