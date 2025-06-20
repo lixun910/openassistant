@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.12](https://github.com/GeoDaCenter/openassistant/compare/@openassistant/core@0.0.5...@openassistant/core@0.5.12) (2025-06-20)
+
+## 0.5.11 (2025-06-18)
+
+## 0.5.9 (2025-06-13)
+
+## 0.5.8 (2025-06-12)
+
+## 0.4.4 (2025-05-22)
+
+## 0.4.3 (2025-05-20)
+
+## 0.4.2 (2025-05-20)
+
+### Features
+
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+
+## 0.0.6 (2025-01-21)
+
 ## [0.5.11](https://github.com/GeoDaCenter/openassistant/compare/@openassistant/core@0.0.5...@openassistant/core@0.5.11) (2025-06-18)
 
 ## 0.5.9 (2025-06-13)
