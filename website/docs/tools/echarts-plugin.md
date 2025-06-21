@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-sidebar_label: eCharts Tools
+sidebar_label: Plot Tools
 ---
 
 # eCharts Tools 

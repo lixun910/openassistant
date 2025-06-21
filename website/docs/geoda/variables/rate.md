@@ -2,7 +2,7 @@
 
 > `const` **rate**: `ExtendedTool`\<[`RateFunctionArgs`](../type-aliases/RateFunctionArgs.md), [`RateLlmResult`](../type-aliases/RateLlmResult.md), [`RateAdditionalData`](../type-aliases/RateAdditionalData.md), [`RateContext`](../type-aliases/RateContext.md)\>
 
-Defined in: packages/tools/geoda/src/rate/tool.ts:39
+Defined in: [packages/tools/geoda/src/rate/tool.ts:39](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/geoda/src/rate/tool.ts#L39)
 
 Calculate the rates from a base variable and an event variable using one of the following methods:
 - Raw Rates

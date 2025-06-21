@@ -2,7 +2,7 @@
 
 > **GetAssistantModelByProvider**(`options`): *typeof* [`VercelAi`](../classes/VercelAi.md) \| *typeof* [`OpenAIAssistant`](../classes/OpenAIAssistant.md) \| *typeof* [`DeepSeekAssistant`](../classes/DeepSeekAssistant.md) \| *typeof* [`GoogleAIAssistant`](../classes/GoogleAIAssistant.md) \| *typeof* [`XaiAssistant`](../classes/XaiAssistant.md) \| *typeof* [`OllamaAssistant`](../classes/OllamaAssistant.md) \| *typeof* `AnthropicAssistant`
 
-Defined in: [packages/core/src/lib/model-utils.ts:40](https://github.com/GeoDaCenter/openassistant/blob/37d127dc7a76d6b5cf9de906c055e4c904e3dfed/packages/core/src/lib/model-utils.ts#L40)
+Defined in: [packages/core/src/lib/model-utils.ts:40](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/core/src/lib/model-utils.ts#L40)
 
 Returns the appropriate Assistant model based on the provider. (Internal use)
 

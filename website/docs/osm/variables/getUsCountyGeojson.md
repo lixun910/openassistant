@@ -2,7 +2,7 @@
 
 > `const` **getUsCountyGeojson**: `ExtendedTool`\<[`GetUsCountyGeojsonFunctionArgs`](../type-aliases/GetUsCountyGeojsonFunctionArgs.md), [`GetUsCountyGeojsonLlmResult`](../type-aliases/GetUsCountyGeojsonLlmResult.md), [`GetUsCountyGeojsonAdditionalData`](../type-aliases/GetUsCountyGeojsonAdditionalData.md), `object`\>
 
-Defined in: [packages/tools/osm/src/us/county.ts:76](https://github.com/GeoDaCenter/openassistant/blob/37d127dc7a76d6b5cf9de906c055e4c904e3dfed/packages/tools/osm/src/us/county.ts#L76)
+Defined in: [packages/tools/osm/src/us/county.ts:76](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/osm/src/us/county.ts#L76)
 
 Get US County GeoJSON Tool
 

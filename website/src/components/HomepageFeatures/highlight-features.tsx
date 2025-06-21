@@ -10,8 +10,6 @@ import {
   codeScreenCapture,
   codeTailwind,
   codeVoiceToText,
-  codeFunctionCalling,
-  codeMyFunction,
   codeHistogram,
   codeSampleDataset,
   codeMap,
@@ -118,7 +116,7 @@ export const highlightFeatures: HighlightFeature[] = [
     ],
   },
   {
-    title: <>Iteractive React chat component</>,
+    title: <>Interactive React chat component</>,
     items: [
       {
         image: '/img/getstart-light.png',
@@ -214,7 +212,7 @@ export function HighlightFeatureComponent({ title, items }: HighlightFeature) {
   };
 
   return (
-    <div className="w-10/12 mt-10 flex flex-col p-4 gap-4 items-center">
+    <div className="w-10/12 mt-0 flex flex-col p-4 gap-4 items-center">
       <div className=" text-gray-600 dark:text-gray-100 font-bold leading-[1.2] tracking-tighter sm:text-[36px]">
         <div className="bg-hero-section-title bg-clip-text">{title}</div>
       </div>

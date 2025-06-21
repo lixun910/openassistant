@@ -2,7 +2,7 @@
 
 > **extractMaxToolInvocationStep**(`toolInvocations`): `undefined` \| `number`
 
-Defined in: [packages/core/src/llm/vercelai.ts:29](https://github.com/GeoDaCenter/openassistant/blob/37d127dc7a76d6b5cf9de906c055e4c904e3dfed/packages/core/src/llm/vercelai.ts#L29)
+Defined in: [packages/core/src/llm/vercelai.ts:29](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/core/src/llm/vercelai.ts#L29)
 
 ## Parameters
 

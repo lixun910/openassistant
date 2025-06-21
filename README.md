@@ -99,6 +99,8 @@ additionalData {
 
 See the full example code 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples).
 
+<img src="https://openassistant-doc.vercel.app/img/histogram-1-400.png" width="400" alt="Histogram Plugin" />
+
 ### 2. Create your own tool with context and callback function support
 
 The `extendedTool` function is a wrapper around the `tool` function from the `ai` package. It allows you to add context and callback function support to your tool.
@@ -313,6 +315,7 @@ const localQueryTool: LocalQueryTool = {
   functions={{ localQuery: localQueryTool }}
 />
 ```
+
 See the source code of the example 🔗 [here](https://github.com/geodacenter/openassistant/tree/main/examples/duckdb_esbuild).
 
 For message persistence, see the example 🔗 [here](https://github.com/geodacenter/openassistant/tree/main/examples/message_persistence).
@@ -400,18 +403,18 @@ See a more complex example of using OpenAssistant core package to create a multi
 
 Check out our example projects:
 
-- [Basic Example](examples/cli_example)
-- [Custom Function Example](examples/zod_function_tools)
-- [Multiple Step Tools](examples/multisteps_tools)
-- [Message Persistence Example](examples/message_persistence)
-- [React with TailwindCSS Example](examples/react_tailwind)
-- [Tool Example: ECharts](examples/echarts_tools)
-- [Tool Example: DuckDB](examples/duckdb_esbuild)
-- [Tool Example: Data analysis](examples/geoda_tools)
-- [Vercel AI Example](examples/vercel_example)
-- [Tool Example: Kepler.gl map](examples/vercel_map_example)
-- [Tool Example: Leaftlet map](examples/vercel_leaflet_example)
-- [Tool Example: Vega-Lite](examples/vercel_vega_example)
+- [Basic Example](https://github.com/GeoDaCenter/openassistant/tree/main/examples/cli_example/index.js)
+- [Custom Function Example](https://github.com/GeoDaCenter/openassistant/blob/main/examples/zod_function_tools/src/app.tsx)
+- [Multiple Step Tools](https://github.com/GeoDaCenter/openassistant/blob/main/examples/multisteps_tools/src/app.tsx)
+- [Message Persistence Example](https://github.com/GeoDaCenter/openassistant/blob/main/examples/message_persistent/src/app.tsx)
+- [React with TailwindCSS Example](https://github.com/GeoDaCenter/openassistant/blob/main/examples/react_tailwind/src/app.tsx)
+- [Tool Example: Plots](https://github.com/GeoDaCenter/openassistant/blob/main/examples/echarts_tools/src/app.tsx)
+- [Tool Example: DuckDB](https://github.com/GeoDaCenter/openassistant/blob/main/examples/duckdb_esbuild/src/App.tsx)
+- [Tool Example: Data analysis](https://github.com/GeoDaCenter/openassistant/blob/main/examples/geoda_tools/src/assistant.tsx)
+- [Next.js Example](https://github.com/GeoDaCenter/openassistant/blob/main/examples/vercel_usechat_example)
+- [Tool Example: Kepler.gl map](https://github.com/GeoDaCenter/openassistant/blob/main/examples/keplergl_tools/src/app.tsx)
+- [Tool Example: Leaftlet map](https://github.com/GeoDaCenter/openassistant/blob/main/examples/vercel_leaflet_example)
+- [Tool Example: Vega-Lite](https://github.com/GeoDaCenter/openassistant/blob/main/examples/vercel_vega_example)
 
 ## 📄 License
 
