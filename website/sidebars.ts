@@ -40,6 +40,7 @@ const sidebars: SidebarsConfig = {
           collapsed: false,
           items: [
             'tools/get-started',
+            'tools/create-tool',
             'tools/echarts-plugin',
             'tools/duckdb-plugin',
             'tools/geoda-plugin',

@@ -20,7 +20,7 @@ function HomepageHeader() {
     >
       <div className="container m-4">
         <div className="flex flex-col gap-2">
-          <div className="text-gray-600 dark:text-gray-100 font-bold text-[42px]">
+          <div className="text-gray-600 dark:text-gray-100 font-bold text-[40px]">
             OpenAssistant
           </div>
           <div className="text-gray-400 text-[32px]">

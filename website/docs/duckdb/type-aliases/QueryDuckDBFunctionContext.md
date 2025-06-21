@@ -2,7 +2,7 @@
 
 > **QueryDuckDBFunctionContext**: `object`
 
-Defined in: [packages/tools/duckdb/src/query.ts:81](https://github.com/GeoDaCenter/openassistant/blob/37d127dc7a76d6b5cf9de906c055e4c904e3dfed/packages/tools/duckdb/src/query.ts#L81)
+Defined in: [packages/tools/duckdb/src/query.ts:81](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/duckdb/src/query.ts#L81)
 
 The context of the queryDuckDB function.
 

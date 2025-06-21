@@ -103,6 +103,8 @@ additionalData {
 
 See the full example code 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples).
 
+<img src="https://openassistant-doc.vercel.app/img/histogram-1-400.png" width="400" alt="Histogram Plugin" />
+
 ### 2. Create your own tool with context and callback function support
 
 The `extendedTool` function is a wrapper around the `tool` function from the `ai` package. It allows you to add context and callback function support to your tool.
@@ -317,6 +319,7 @@ const localQueryTool: LocalQueryTool = {
   functions={{ localQuery: localQueryTool }}
 />
 ```
+
 See the source code of the example 🔗 [here](https://github.com/geodacenter/openassistant/tree/main/examples/duckdb_esbuild).
 
 For message persistence, see the example 🔗 [here](https://github.com/geodacenter/openassistant/tree/main/examples/message_persistence).
@@ -412,7 +415,7 @@ Check out our example projects:
 - [Tool Example: ECharts](examples/echarts_tools)
 - [Tool Example: DuckDB](examples/duckdb_esbuild)
 - [Tool Example: Data analysis](examples/geoda_tools)
-- [Vercel AI Example](examples/vercel_example)
+- [Next.js Example](examples/vercel_example)
 - [Tool Example: Kepler.gl map](examples/vercel_map_example)
 - [Tool Example: Leaftlet map](examples/vercel_leaflet_example)
 - [Tool Example: Vega-Lite](examples/vercel_vega_example)

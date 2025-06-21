@@ -19,7 +19,7 @@ npm install @openassistant/ui
 ```jsx
 import { AiAssistant } from '@openassistant/ui';
 // Only needed for React apps without TailwindCSS
-// import '@openassistant/ui/dist/styles.css';
+// import '@openassistant/ui/dist/bundle.css';
 
 function App() {
   return (
@@ -38,21 +38,21 @@ function App() {
 
 <img src="https://openassistant-doc.vercel.app/img/getstart-light.png" width={400} />
 
-### TailwindCSS Integration
+### TailwindCSS Configuration
 
 If you're using TailwindCSS, configure your `tailwind.config.js` to include the necessary UI components:
 
 ```js
-import { nextui } from '@nextui-org/react';
+import { heroUI } from '@hero-ui/react';
 
 module.exports = {
   content: [
     // your original content
     './node_modules/@openassistant/ui/dist/**/*.{js,ts,jsx,tsx}',
-    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
+    './node_modules/@hero-ui/react/dist/**/*.{js,ts,jsx,tsx}',
   ],
   darkMode: 'class',
-  plugins: [nextui()],
+  plugins: [heroUI()],
 };
 ```
 
@@ -74,7 +74,7 @@ The chat component supports tools by default, and it uses @openassistant/core pa
 
 <img src="https://openassistant-doc.vercel.app/img/getstart-show-tools.png" width={600} />
 
-See [examples/zod_function_tools](https://github.com/geodacenter/openassistant/tree/main/examples/zod_function_tools) and [examples/multisteps_tools](https://github.com/geodacenter/openassistant/tree/main/examples/multisteps_tools) for a complete example.
+See 📁 [examples/zod_function_tools](https://github.com/geodacenter/openassistant/tree/main/examples/zod_function_tools) and 📁 [examples/multisteps_tools](https://github.com/geodacenter/openassistant/tree/main/examples/multisteps_tools) for a complete example.
 
 If you don't want to show the tool execution result, you can set `showTools` prop to `false`.
 

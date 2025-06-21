@@ -2,7 +2,7 @@
 
 > `const` **dataClassify**: `ExtendedTool`\<[`DataClassifyFunctionArgs`](../type-aliases/DataClassifyFunctionArgs.md), [`DataClassifyLlmResult`](../type-aliases/DataClassifyLlmResult.md), [`DataClassifyAdditionalData`](../type-aliases/DataClassifyAdditionalData.md), [`DataClassifyFunctionContext`](../type-aliases/DataClassifyFunctionContext.md)\>
 
-Defined in: [packages/tools/geoda/src/data-classify/tool.ts:98](https://github.com/GeoDaCenter/openassistant/blob/37d127dc7a76d6b5cf9de906c055e4c904e3dfed/packages/tools/geoda/src/data-classify/tool.ts#L98)
+Defined in: [packages/tools/geoda/src/data-classify/tool.ts:98](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/geoda/src/data-classify/tool.ts#L98)
 
 The data classify tool is used to classify the data into k bins or classes.
 
