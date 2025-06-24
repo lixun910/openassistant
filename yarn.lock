@@ -73,6 +73,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ai-sdk/provider-utils@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@ai-sdk/provider-utils@npm:2.1.6"
+  dependencies:
+    "@ai-sdk/provider": "npm:1.0.7"
+    eventsource-parser: "npm:^3.0.0"
+    nanoid: "npm:^3.3.8"
+    secure-json-parse: "npm:^2.7.0"
+  peerDependencies:
+    zod: ^3.0.0
+  peerDependenciesMeta:
+    zod:
+      optional: true
+  checksum: 48804ab8aba51e1a47d1f17d5f1f4a4617837ef633eebc4159db36b683e96b7603b166bdff871fc84d6d4e40075a89d67fa7f2bb56bd6a2b13904618bed621d4
+  languageName: node
+  linkType: hard
+
 "@ai-sdk/provider-utils@npm:2.2.7":
   version: 2.2.7
   resolution: "@ai-sdk/provider-utils@npm:2.2.7"
@@ -86,7 +103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ai-sdk/provider-utils@npm:2.2.8, @ai-sdk/provider-utils@npm:^2.0.0":
+"@ai-sdk/provider-utils@npm:2.2.8":
   version: 2.2.8
   resolution: "@ai-sdk/provider-utils@npm:2.2.8"
   dependencies:
@@ -99,7 +116,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ai-sdk/provider@npm:1.1.3, @ai-sdk/provider@npm:^1.0.0, @ai-sdk/provider@npm:^1.1.2":
+"@ai-sdk/provider@npm:1.0.7":
+  version: 1.0.7
+  resolution: "@ai-sdk/provider@npm:1.0.7"
+  dependencies:
+    json-schema: "npm:^0.4.0"
+  checksum: 75b56a82a1d837e40fd5c35fecf0bf74f1b05e2d0f93cc6a57f90defd4d8eb6f903c170e37644f4271c27cac59bb65716369c94c07de4269d54b1d53f50431a4
+  languageName: node
+  linkType: hard
+
+"@ai-sdk/provider@npm:1.1.3, @ai-sdk/provider@npm:^1.1.2":
   version: 1.1.3
   resolution: "@ai-sdk/provider@npm:1.1.3"
   dependencies:
@@ -6417,7 +6443,7 @@ __metadata:
     "@ai-sdk/deepseek": ^0.1.8
     "@ai-sdk/google": ^1.1.8
     "@ai-sdk/xai": ^1.1.8
-    ollama-ai-provider: ^1.2.0
+    ollama-ai-provider-v2: ^0.0.5
     react: ">=18.2"
   peerDependenciesMeta:
     "@ai-sdk/anthropic":
@@ -6428,7 +6454,7 @@ __metadata:
       optional: true
     "@ai-sdk/xai":
       optional: true
-    ollama-ai-provider:
+    ollama-ai-provider-v2:
       optional: true
   languageName: unknown
   linkType: soft
@@ -15242,6 +15268,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eventsource-parser@npm:^3.0.0":
+  version: 3.0.2
+  resolution: "eventsource-parser@npm:3.0.2"
+  checksum: a42b0c494eb8026a88e9a3d313f5cc3efc4b81bdf59e64a13f69972ed71b7a4317f3c5d36410128e2c23193364ae8d851afda12738bb71fa40946c82c5bb3027
+  languageName: node
+  linkType: hard
+
 "execa@npm:^5.0.0":
   version: 5.1.1
   resolution: "execa@npm:5.1.1"
@@ -21107,19 +21140,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ollama-ai-provider@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "ollama-ai-provider@npm:1.2.0"
+"ollama-ai-provider-v2@npm:^0.0.5":
+  version: 0.0.5
+  resolution: "ollama-ai-provider-v2@npm:0.0.5"
   dependencies:
-    "@ai-sdk/provider": "npm:^1.0.0"
-    "@ai-sdk/provider-utils": "npm:^2.0.0"
-    partial-json: "npm:0.1.7"
+    "@ai-sdk/provider": "npm:1.0.7"
+    "@ai-sdk/provider-utils": "npm:2.1.6"
   peerDependencies:
     zod: ^3.0.0
-  peerDependenciesMeta:
-    zod:
-      optional: true
-  checksum: bee535c484d74a884e786939eaf559471d6544f9a6a8078627ea479bea7fe4ba4af1b474dcaa2182661c1586019264cfd3b8069176bfe269787f879781bdd429
+  checksum: abec5c1089855664a1ad00a0f75c7bd70f3a1f93be1dc42341ac47695d1171dbf08c5b78236119d1f04e8a16640b06a2623987551d44273c4c9d5b463e3e6c0e
   languageName: node
   linkType: hard
 
@@ -21611,13 +21640,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"partial-json@npm:0.1.7":
-  version: 0.1.7
-  resolution: "partial-json@npm:0.1.7"
-  checksum: 6fb8d305638e4747fccfc0649b8a8de99314bfafcc4e3136a3a27c0632857c40b62e6e6bb5f17af00472387393f1d8a58a7865242ca20382af31b593a7bb1f89
-  languageName: node
-  linkType: hard
-
 "partof@npm:1.0.0":
   version: 1.0.0
   resolution: "partof@npm:1.0.0"
@@ -21805,7 +21827,7 @@ __metadata:
     eslint-config-next: "npm:^15.1.5"
     github-markdown-css: "npm:^5.8.1"
     next: "npm:^14.2.21"
-    ollama-ai-provider: "npm:^1.2.0"
+    ollama-ai-provider-v2: "npm:^0.0.5"
     postcss: "npm:^8.5.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"

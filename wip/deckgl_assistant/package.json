@@ -18,7 +18,7 @@
     "@openassistant/duckdb": "workspace:*",
     "@openassistant/plots": "workspace:*",
     "@openassistant/ui": "workspace:*",
-    "ollama-ai-provider": "^1.2.0",
+    "ollama-ai-provider-v2": "^0.0.5",
     "preact": "^10.25.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

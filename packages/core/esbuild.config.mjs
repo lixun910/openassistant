@@ -20,7 +20,7 @@ const baseConfig = createBaseConfig({
     '@ai-sdk/xai',
     '@ai-sdk/react',
     '@ai-sdk/ui-utils',
-    'ollama-ai-provider',
+    'ollama-ai-provider-v2',
     'openai',
     'p-retry',
     'p-queue',

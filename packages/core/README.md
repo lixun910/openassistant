@@ -70,7 +70,7 @@ OpenAssistant also supports the following model providers:
 | Anthropic      | [models](https://sdk.vercel.ai/providers/ai-sdk-providers/anthropic#model-capabilities)            | @ai-sdk/anthropic  |
 | DeepSeek       | [models](https://sdk.vercel.ai/providers/ai-sdk-providers/deepseek#model-capabilities)             | @ai-sdk/deepseek   |
 | xAI            | [models](https://sdk.vercel.ai/providers/ai-sdk-providers/xai#model-capabilities)                  | @ai-sdk/xai        |
-| Ollama         | [models](https://ollama.com/models)                                                                | ollama-ai-provider |
+| Ollama         | [models](https://ollama.com/models)                                                                | ollama-ai-provider-v2 |
 
 :::
 
