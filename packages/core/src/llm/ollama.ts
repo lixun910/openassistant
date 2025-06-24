@@ -37,9 +37,9 @@ export class OllamaAssistant extends VercelAiClient {
     try {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore dynamic import will be installed by the user
-      return await import('ollama-ai-provider');
+      return await import('ollama-ai-provider-v2');
     } catch (error) {
-      throw new Error(`Failed to load ollama-ai-provider: ${error}`);
+      throw new Error(`Failed to load ollama-ai-provider-v2: ${error}`);
     }
   }
 
@@ -72,7 +72,6 @@ export class OllamaAssistant extends VercelAiClient {
     if (OllamaAssistant.model) {
       const options = {
         baseURL: OllamaAssistant.baseURL,
-        simulateStreaming: true
       };
 
       this.providerInstance = module.createOllama(options);
