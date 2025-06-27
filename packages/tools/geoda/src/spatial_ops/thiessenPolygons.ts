@@ -6,9 +6,12 @@ import { SpatialToolContext } from '../types';
 import { isSpatialToolContext } from '../utils';
 
 /**
- * Thiessen Polygons Tool
+ * ## thiessenPolygons Tool
  *
  * This tool generates thiessen polygons or voronoi diagrams from a given dataset or geojson.
+ *
+ * ### Thiessen Polygons Generation
+ *
  * It supports both direct geojson input and dataset names.
  *
  * Example user prompts:

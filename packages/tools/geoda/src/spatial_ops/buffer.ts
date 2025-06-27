@@ -29,7 +29,11 @@ export type BufferAdditionalData = {
 };
 
 /**
- * The buffer tool is used to create buffer zones around geometries.
+ * ## buffer Tool
+ *
+ * This tool is used to create buffer zones around geometries.
+ *
+ * ### Buffer Creation
  *
  * The tool supports:
  * - Creating buffers from GeoJSON input

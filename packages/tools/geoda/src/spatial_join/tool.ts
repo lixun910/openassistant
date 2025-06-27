@@ -58,7 +58,11 @@ export type SpatialJoinFunctionContext = {
 };
 
 /**
- * The spatial join tool is used to join geometries from one dataset with geometries from another dataset.
+ * ## spatialJoin Tool
+ * 
+ * This tool is used to join geometries from one dataset with geometries from another dataset.
+ *
+ * ### Spatial Join Operations
  *
  * The tool supports various join operations:
  * - sum: sum of values in overlapping geometries

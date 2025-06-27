@@ -24,9 +24,12 @@ export type LengthAdditionalData = {
 };
 
 /**
- * Length Tool
+ * ## length Tool
  *
  * This tool calculates the length of geometries in a GeoJSON dataset.
+ *
+ * ### Length Calculation
+ *
  * It supports both direct GeoJSON input and dataset names, and can calculate
  * lengths in either kilometers or miles.
  *

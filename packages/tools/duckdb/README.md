@@ -2,35 +2,22 @@
 
 This package provides several tools for querying your data using DuckDB in browser.
 
-**localQuery**
+## Features
 
-This tool helps to query any data that has been loaded in your application using user's prompt.
+| Tool Name                                       | Description                                                                  |
+| ----------------------------------------------- | ---------------------------------------------------------------------------- |
+| [localQuery](/docs/duckdb/variables/localQuery) | Query any data that has been loaded in your application using user's prompt. |
+| [dbQuery](/docs/duckdb/variables/dbQuery)       | Query any database that you want to query.                                   |
 
-- the data in your application will be loaded into a local duckdb instance temporarily
-- LLM will generate SQL query based on user's prompt against the data
-- the SQL query result will be executed in the local duckdb instance
-- the query result will be displayed in a React table component
+## Installation
 
-**dbQuery**
+```bash
+npm install @openassistant/duckdb @openassistant/utils ai
+```
 
-If you have a database that you want to query, you can use the `dbQueryTool`.
+## Quick Start
 
-- the database will be connected to the local duckdb instance
-- LLM will generate SQL query based on user's prompt
-- the SQL query result will be executed in your database
-- the query result will be displayed in a React table component
-
-This example project shows how to use the `localQuery` and `dbQuery` tools in a multi-step tool.
-
-## multiStepTool
-
-This example project shows how to use the `localQuery` and `dbQuery` tools in a multi-step tool.
-
-### localQuery Example
-
-#### Data
-
-In your application, the data could be loaded from a csv/json/parquet/xml file. For this example, we will use the `SAMPLE_DATASETS` in `dataset.ts` to simulate the data.
+Suppose you have a dataset in your application, the data could be loaded from a csv/json/parquet/xml file. For this example, we will use the `SAMPLE_DATASETS` in `dataset.ts` to simulate the data.
 
 ```ts
 export const SAMPLE_DATASETS = {
@@ -48,124 +35,140 @@ export const SAMPLE_DATASETS = {
 };
 ```
 
-#### Tool
+Share the meta data of your dataset in the system prompt, so the LLM can understand which datasets are available to use when creating a map.
 
-- Import the `localQuery` tool from `@openassistent/duckdb` and use it in your application.
-- Provide the `getValues` function in the `context` to get the values from your data.
+:::note
+The meta data is good enough for the AI assistant. Don't put the entire dataset in the context, and there is no need to share your dataset with the LLM models. This also helps to keep your dataset private.
+:::
 
-```ts
-import { localQuery } from '@openassistent/duckdb';
+```js
+const systemPrompt = `You can help users to create a map from a dataset.
+Please always confirm the function calling and its arguments with the user.
 
-const localQueryTool = {
+Here is the dataset are available for function calling:
+DatasetName: myVenues
+Fields: location, longitude, latitude, revenue, population`;
+```
+
+### localQuery Tool
+
+```typescript
+import { localQuery, LocalQueryTool } from '@openassistent/duckdb';
+import { convertToVercelAiTool } from '@openassistant/utils';
+import { generateText } from 'ai';
+
+const localQueryTool: LocalQueryTool = {
   ...localQuery,
   context: {
     ...localQuery.context,
     getValues: (datasetName: string, variableName: string) => {
-      return SAMPLE_DATASETS[datasetName][variableName];
+      return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
     },
   },
 };
+
+generateText({
+  model: openai('gpt-4o-mini', { apiKey: key }),
+  system: systemPrompt,
+  prompt: 'what is the average revenue of the venues in dataset myVenues?',
+  tools: {
+    localQuery: convertToVercelAiTool(localQueryTool),
+  },
+});
 ```
 
-#### Use the tool in your AI assistant UI
+:::note
+The `localQuery` tool is not executable on server side since it requires rendering the table on the client side (in the browser). You need to use it on client, e.g.:
+:::
 
-```tsx
-<AiAssistant
-  name="My Assistant"
-  apiKey={process.env.OPENAI_TOKEN || ''}
-  version="v1"
-  modelProvider="openai"
-  model="gpt-4o"
-  welcomeMessage="Hello, how can I help you today?"
-  instructions="You are a duckDB expert. You can help users to query their data using duckdb. Explain the steps you are taking to solve the user's problem."
-  functions={{localQuery: localQueryTool}}
-  useMarkdown={true}
-/>
-```
-
-## Type Definitions
-
-For TypeScript users, this package provides comprehensive type definitions:
-
-### LocalQueryTool
-
-The main type for the localQuery tool:
+- `app/api/chat/route.ts`
 
 ```typescript
-import { LocalQueryTool } from '@openassistant/duckdb';
+import { localQuery } from '@openassistant/duckdb';
+import { convertToVercelAiTool } from '@openassistent/utils';
+import { streamText } from 'ai';
 
-// Create a type-safe localQuery tool instance
-const typedLocalQueryTool: LocalQueryTool = {
+// localQuery tool will be running on the client side
+const localQueryTool = convertToVercelAiTool(localQuery, {
+  isExecutable: false,
+});
+
+export async function POST(req: Request) {
+  // ...
+  const result = streamText({
+    model: openai('gpt-4o-mini'),
+    system: systemPrompt,
+    messages: messages,
+    tools: { localQuery: localQueryTool },
+  });
+}
+```
+
+- `app/page.tsx`
+
+```typescript
+import { useChat } from 'ai/react';
+import { localQuery } from '@openassistant/duckdb';
+import { convertToVercelAiTool } from '@openassistent/utils';
+
+const myLocalQuery: LocalQueryTool = {
   ...localQuery,
   context: {
-    // ...configuration
-  }
+    ...localQuery.context,
+    getValues: async (datasetName: string, variableName: string) => {
+      // get the values of the variable from your dataset, e.g.
+      return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+    },
+  },
 };
+
+const localQueryTool = convertToVercelAiTool(myLocalQuery);
+
+const { messages, input, handleInputChange, handleSubmit } = useChat({
+  maxSteps: 20,
+  onToolCall: async (toolCall) => {
+    if (toolCall.name === 'localQuery') {
+      const result = await localQueryTool.execute(
+        toolCall.args,
+        toolCall.options
+      );
+      return result;
+    }
+  },
+});
 ```
 
-### LocalQueryParameters
+### Use the tool with @openassistant/ui
 
-Input parameters for the query:
+Here is an example of using @openassistant/ui to query the data using the localQuery tool and display the result in a QueryResult component.
 
 ```typescript
-interface LocalQueryParameters {
-  datasetName: string;       // The name of the original dataset
-  variableNames: string[];   // The names of the variables to include in the query
-  sql: string;               // The SQL query to execute
-  dbTableName: string;       // The name of the table used in the sql string
+import { localQuery } from '@openassistant/duckdb';
+import { convertToVercelAiTool } from '@openassistent/utils';
+
+const localQueryTool: LocalQueryTool = {
+  ...localQuery,
+  context: {
+    ...localQuery.context,
+    getValues: async (datasetName: string, variableName: string) => {
+      // get the values of the variable from your dataset, e.g.
+      return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+    },
+  },
+};
+
+export function App() {
+  return (
+    <AiAssistant
+      apiKey={process.env.OPENAI_API_KEY || ''}
+      modelProvider="openai"
+      model="gpt-4o"
+      welcomeMessage="Hello! I'm your assistant."
+      instructions={systemPrompt}
+      tools={{localQuery: localQueryTool}}
+      useMarkdown={true}
+      theme="dark"
+    />
+  );
 }
 ```
-
-### LocalQueryContext
-
-Configuration context for the tool:
-
-```typescript
-interface LocalQueryContext {
-  // Get values from a dataset
-  getValues: (datasetName: string, variableName: string) => unknown[];
-  
-  // Optional callback when values are selected in the result table
-  onSelected?: (datasetName: string, columnName: string, selectedValues: unknown[]) => void;
-  
-  // Optional configuration
-  config?: {
-    isDraggable?: boolean;
-    [key: string]: unknown;
-  };
-  
-  // Optional DuckDB instance
-  duckDB?: AsyncDuckDB | null;
-}
-```
-
-### LocalQueryResponse
-
-The structure of a query result:
-
-```typescript
-interface LocalQueryResponse {
-  llmResult: {
-    success: boolean;
-    data?: {
-      firstTwoRows: Record<string, unknown>[];
-      [key: string]: unknown;
-    };
-    error?: string;
-    instruction?: string;
-  };
-  additionalData?: {
-    title: string;
-    sql: string;
-    columnData: Record<string, unknown[]>;
-    variableNames: string[];
-    datasetName: string;
-    dbTableName: string;
-    onSelected?: (datasetName: string, columnName: string, selectedValues: unknown[]) => void;
-  };
-}
-```
-
-## License
-
-MIT

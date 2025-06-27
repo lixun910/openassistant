@@ -6,9 +6,12 @@ import { SpatialToolContext } from '../types';
 import { isSpatialToolContext } from '../utils';
 
 /**
- * Minimum Spanning Tree Tool
+ * ## minimumSpanningTree Tool
  *
  * This tool generates the minimum spanning tree from a given dataset or geojson.
+ *
+ * ### Minimum Spanning Tree Generation
+ *
  * It supports both direct geojson input and dataset names.
  *
  * :::note

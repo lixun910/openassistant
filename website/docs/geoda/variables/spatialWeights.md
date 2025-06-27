@@ -2,11 +2,14 @@
 
 > `const` **spatialWeights**: `ExtendedTool`\<[`SpatialWeightsFunctionArgs`](../type-aliases/SpatialWeightsFunctionArgs.md), [`SpatialWeightsLlmResult`](../type-aliases/SpatialWeightsLlmResult.md), [`SpatialWeightsAdditionalData`](../type-aliases/SpatialWeightsAdditionalData.md), [`SpatialWeightsFunctionContext`](../type-aliases/SpatialWeightsFunctionContext.md)\>
 
-Defined in: [packages/tools/geoda/src/weights/tool.ts:88](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/geoda/src/weights/tool.ts#L88)
+Defined in: [packages/tools/geoda/src/weights/tool.ts:91](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/geoda/src/weights/tool.ts#L91)
 
-Spatial Weights Tool
+## spatialWeights Tool
 
 This tool creates spatial weights matrices for spatial analysis. It supports multiple types of weights:
+
+### Spatial Weights Types
+
 - K-Nearest Neighbors (knn)
 - Queen Contiguity
 - Rook Contiguity

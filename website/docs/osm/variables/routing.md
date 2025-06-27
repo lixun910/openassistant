@@ -2,9 +2,11 @@
 
 > `const` **routing**: `ExtendedTool`\<[`RoutingFunctionArgs`](../type-aliases/RoutingFunctionArgs.md), [`RoutingLlmResult`](../type-aliases/RoutingLlmResult.md), [`RoutingAdditionalData`](../type-aliases/RoutingAdditionalData.md), [`MapboxToolContext`](../type-aliases/MapboxToolContext.md)\>
 
-Defined in: [packages/tools/osm/src/routing.ts:136](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/osm/src/routing.ts#L136)
+Defined in: [packages/tools/osm/src/routing.ts:138](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/osm/src/routing.ts#L138)
 
-This routing tool calculates routes between two points using Mapbox's Directions API.
+## Routing Tool
+
+This tool calculates routes between two points using Mapbox's Directions API.
 It supports different transportation modes (driving, walking, cycling) and returns
 detailed route information including distance, duration, and turn-by-turn directions.
 
@@ -17,7 +19,8 @@ Example user prompts:
 - "How do I walk from the Eiffel Tower to the Louvre?"
 - "Get cycling directions from my current location to the nearest coffee shop"
 
-Example code:
+## Example
+
 ```typescript
 import { geocoding, routing, RoutingTool, GeocodingTool } from "@openassistant/osm";
 import { convertToVercelAiTool, ToolCache } from '@openassistant/utils';

@@ -23,7 +23,11 @@ export type CentroidAdditionalData = {
 };
 
 /**
- * The centroid tool is used to calculate the centroids (geometric centers) of geometries.
+ * ## centroid Tool
+ *
+ * This tool is used to calculate the centroids (geometric centers) of geometries.
+ *
+ * ### Centroid Calculation
  *
  * The tool supports:
  * - Calculating centroids from GeoJSON input

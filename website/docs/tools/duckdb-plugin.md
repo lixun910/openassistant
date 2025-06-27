@@ -1,127 +1,179 @@
 ---
-sidebar_position: 4
+sidebar_position: 2
+sidebar_label: SQL Tools
 ---
 
-# duckDB Tools
+# @openassistant/duckdb
 
-import duckdbPlugin from '../../images/duckdbPlugin-2-400.png';
+This package provides several tools for querying your data using DuckDB in browser.
 
-The DuckDB plugin enables natural language querying of your data through OpenAssistant. Your users can ask questions in plain English, and the AI assistant will translate these into SQL queries and return the results.
+## Features
 
-For example, suppose you have a dataset containing city information with revenue and population data. Within your application, you might have data structured like this:
+| Tool Name                                       | Description                                                                  |
+| ----------------------------------------------- | ---------------------------------------------------------------------------- |
+| [localQuery](/docs/duckdb/variables/localQuery) | Query any data that has been loaded in your application using user's prompt. |
+| [dbQuery](/docs/duckdb/variables/dbQuery)       | Query any database that you want to query.                                   |
 
-```json
-const myDatasets = {
-  myVenues: [
-    { "location": "New York", "latitude": 40.7128, "longitude": -74.0060, "revenue": 12500000, "population": 8400000 },
-    { "location": "Los Angeles", "latitude": 34.0522, "longitude": -118.2437, "revenue": 9800000, "population": 3900000 },
-    { "location": "Chicago", "latitude": 41.8781, "longitude": -87.6298, "revenue": 7200000, "population": 2700000 }
-  ]
-};
-```
-
-You can query this data by simply asking the AI assistant questions like:
-
-```text
-Which cities make the most money per person?
-```
-
-<img src={duckdbPlugin} width="400" alt="DuckDB Plugin Query Result" />
-
-## Implementation Guide
-
-### Step 1: Install Required Packages
-
-Install the OpenAssistant packages in your application:
+## Installation
 
 ```bash
-yarn add @openassistant/core @openassistant/duckdb @openassistant/ui
+npm install @openassistant/duckdb @openassistant/utils ai
 ```
 
-### Step 2: Setup the OpenAssistant
+## Quick Start
 
-Configure your AI assistant with the necessary properties:
+Suppose you have a dataset in your application, the data could be loaded from a csv/json/parquet/xml file. For this example, we will use the `SAMPLE_DATASETS` in `dataset.ts` to simulate the data.
 
-```typescript
-const assistantProps = {
-  name: 'Data Query Assistant',
-  modelProvider: 'openai',
-  model: 'gpt-4',
-  apiKey: 'your-api-key',
-  welcomeMessage:
-    'Hi! I can help you analyze your data. What would you like to know?',
-  instructions:
-    'You are a data analyst who helps users query and analyze data. When users ask questions, translate them into SQL queries and explain the results in simple terms.',
-  functions: [],
+```ts
+export const SAMPLE_DATASETS = {
+  myVenues: [
+    {
+      index: 0,
+      location: 'New York',
+      latitude: 40.7128,
+      longitude: -74.006,
+      revenue: 12500000,
+      population: 8400000,
+    },
+    ...
+  ],
 };
 ```
 
-:::tip
-The instructions help guide the AI assistant in understanding its role and how to interact with users. Make sure to customize them based on your specific use case.
+Share the meta data of your dataset in the system prompt, so the LLM can understand which datasets are available to use when creating a map.
+
+:::note
+The meta data is good enough for the AI assistant. Don't put the entire dataset in the context, and there is no need to share your dataset with the LLM models. This also helps to keep your dataset private.
 :::
 
-### Step 3: Define Your Data Context
+```js
+const systemPrompt = `You can help users to create a map from a dataset.
+Please always confirm the function calling and its arguments with the user.
 
-Share the metadata of your datasets with the AI assistant:
-
-```typescript
-const dataContext = [
-  {
-    description: 'Available datasets for analysis:',
-    metaData: [
-      {
-        datasetName: 'myVenues',
-        fields: ['location', 'latitude', 'longitude', 'revenue', 'population'],
-      },
-    ],
-  },
-];
-
-// Add the context to the assistant's instructions
-assistantProps.instructions =
-  assistantProps.instructions + '\n' + JSON.stringify(dataContext);
+Here is the dataset are available for function calling:
+DatasetName: myVenues
+Fields: location, longitude, latitude, revenue, population`;
 ```
 
-### Step 4: Configure the DuckDB Plugin
-
-Import and set up the DuckDB query function:
+### localQuery Tool
 
 ```typescript
-import { queryDuckDBFunctionDefinition } from '@openassistant/duckdb';
+import { localQuery, LocalQueryTool } from '@openassistent/duckdb';
+import { convertToVercelAiTool } from '@openassistant/utils';
+import { generateText } from 'ai';
 
-const myFunctions = [
-  queryDuckDBFunctionDefinition({
-    getValues: (datasetName, variableName) => {
-      if (!myDatasets[datasetName]) {
-        throw new Error('Dataset not found');
-      }
-      return myDatasets[datasetName];
+const localQueryTool: LocalQueryTool = {
+  ...localQuery,
+  context: {
+    ...localQuery.context,
+    getValues: (datasetName: string, variableName: string) => {
+      return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
     },
-  }),
-];
+  },
+};
+
+generateText({
+  model: openai('gpt-4o-mini', { apiKey: key }),
+  system: systemPrompt,
+  prompt: 'what is the average revenue of the venues in dataset myVenues?',
+  tools: {
+    localQuery: convertToVercelAiTool(localQueryTool),
+  },
+});
 ```
 
-### Step 5: Initialize and Render the Assistant
+:::note
+The `localQuery` tool is not executable on server side since it requires rendering the table on the client side (in the browser). You need to use it on client, e.g.:
+:::
 
-Update the assistant props with the functions and render the component:
+- `app/api/chat/route.ts`
 
 ```typescript
-assistantProps.functions = myFunctions;
+import { localQuery } from '@openassistant/duckdb';
+import { convertToVercelAiTool } from '@openassistent/utils';
+import { streamText } from 'ai';
 
-return <AiAssistant {...assistantProps} />;
+// localQuery tool will be running on the client side
+const localQueryTool = convertToVercelAiTool(localQuery, {
+  isExecutable: false,
+});
+
+export async function POST(req: Request) {
+  // ...
+  const result = streamText({
+    model: openai('gpt-4o-mini'),
+    system: systemPrompt,
+    messages: messages,
+    tools: { localQuery: localQueryTool },
+  });
+}
 ```
 
-## Using the Assistant
+- `app/page.tsx`
 
-Once set up, users can ask various questions about their data:
+```typescript
+import { useChat } from 'ai/react';
+import { localQuery } from '@openassistant/duckdb';
+import { convertToVercelAiTool } from '@openassistent/utils';
 
-- Simple queries: "Show me all cities with population over 5 million"
-- Calculations: "What's the average revenue per city?"
-- Complex analysis: "Which cities have above-average revenue but below-average population?"
+const myLocalQuery: LocalQueryTool = {
+  ...localQuery,
+  context: {
+    ...localQuery.context,
+    getValues: async (datasetName: string, variableName: string) => {
+      // get the values of the variable from your dataset, e.g.
+      return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+    },
+  },
+};
 
-The assistant will:
+const localQueryTool = convertToVercelAiTool(myLocalQuery);
 
-1. Understand the natural language question
-2. Convert it to an appropriate SQL query
-3. Execute the query using DuckDB
-4. Present the results in a user-friendly format
+const { messages, input, handleInputChange, handleSubmit } = useChat({
+  maxSteps: 20,
+  onToolCall: async (toolCall) => {
+    if (toolCall.name === 'localQuery') {
+      const result = await localQueryTool.execute(
+        toolCall.args,
+        toolCall.options
+      );
+      return result;
+    }
+  },
+});
+```
+
+### Use the tool with @openassistant/ui
+
+Here is an example of using @openassistant/ui to query the data using the localQuery tool and display the result in a QueryResult component.
+
+```typescript
+import { localQuery } from '@openassistant/duckdb';
+import { convertToVercelAiTool } from '@openassistent/utils';
+
+const localQueryTool: LocalQueryTool = {
+  ...localQuery,
+  context: {
+    ...localQuery.context,
+    getValues: async (datasetName: string, variableName: string) => {
+      // get the values of the variable from your dataset, e.g.
+      return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+    },
+  },
+};
+
+export function App() {
+  return (
+    <AiAssistant
+      apiKey={process.env.OPENAI_API_KEY || ''}
+      modelProvider="openai"
+      model="gpt-4o"
+      welcomeMessage="Hello! I'm your assistant."
+      instructions={systemPrompt}
+      tools={{localQuery: localQueryTool}}
+      useMarkdown={true}
+      theme="dark"
+    />
+  );
+}
+```

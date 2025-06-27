@@ -26,25 +26,26 @@ const sidebars: SidebarsConfig = {
       items: [
         {
           type: 'category',
+          label: 'Use Tools',
+          collapsed: false,
+          items: [
+            'tools/get-started',
+            'tools/echarts-plugin',
+            'tools/duckdb-plugin',
+            'tools/keplergl-plugin',
+            'tools/osm-plugin',
+            'tools/geoda-plugin',
+            'tools/create-tool',
+          ],
+        },
+        {
+          type: 'category',
           label: 'Use Chat Component',
           collapsed: false,
           items: [
             'chatui/add-config-ui',
             'chatui/screencapture',
             'chatui/voice-to-text',
-          ],
-        },
-        {
-          type: 'category',
-          label: 'Use Tools',
-          collapsed: false,
-          items: [
-            'tools/get-started',
-            'tools/create-tool',
-            'tools/echarts-plugin',
-            'tools/duckdb-plugin',
-            'tools/geoda-plugin',
-            'tools/keplergl-plugin',
           ],
         },
       ],
@@ -56,11 +57,6 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: '@openassistant/plots',
       items: [
-        {
-          type: 'doc',
-          id: 'echarts/index',
-          label: 'Quick Start',
-        },
         {
           type: 'category',
           label: 'Tools',
@@ -78,16 +74,6 @@ const sidebars: SidebarsConfig = {
       label: '@openassistant/geoda',
       items: [
         {
-          type: 'doc',
-          id: 'geoda/index',
-          label: 'Quick Start',
-        },
-        // {
-        //   type: 'doc',
-        //   id: 'geoda/globals',
-        //   label: 'Overview',
-        // },
-        {
           type: 'category',
           label: 'Tools',
           items: [
@@ -104,11 +90,6 @@ const sidebars: SidebarsConfig = {
       label: '@openassistant/duckdb',
       items: [
         {
-          type: 'doc',
-          id: 'duckdb/index',
-          label: 'Quick Start',
-        },
-        {
           type: 'category',
           label: 'Tools',
           items: [
@@ -124,11 +105,6 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: '@openassistant/osm',
       items: [
-        {
-          type: 'doc',
-          id: 'osm/index',
-          label: 'Quick Start',
-        },
         {
           type: 'category',
           label: 'Tools',

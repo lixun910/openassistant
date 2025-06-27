@@ -91,7 +91,9 @@ export type ExecuteRoutingResult = {
 };
 
 /**
- * This routing tool calculates routes between two points using Mapbox's Directions API.
+ * ## Routing Tool
+ * 
+ * This tool calculates routes between two points using Mapbox's Directions API.
  * It supports different transportation modes (driving, walking, cycling) and returns
  * detailed route information including distance, duration, and turn-by-turn directions.
  *
@@ -104,7 +106,7 @@ export type ExecuteRoutingResult = {
  * - "How do I walk from the Eiffel Tower to the Louvre?"
  * - "Get cycling directions from my current location to the nearest coffee shop"
  *
- * Example code:
+ * @example
  * ```typescript
  * import { geocoding, routing, RoutingTool, GeocodingTool } from "@openassistant/osm";
  * import { convertToVercelAiTool, ToolCache } from '@openassistant/utils';

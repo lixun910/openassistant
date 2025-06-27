@@ -37,7 +37,11 @@ export type SpatialRegressionFunctionContext = {
 };
 
 /**
- * The spatial regression tool is used to perform regression analysis with spatial data.
+ * ## spatialRegression Tool
+ *
+ * This tool is used to perform regression analysis with spatial data.
+ *
+ * ### Spatial Regression Models
  *
  * The tool supports three types of regression models:
  * - Classic (OLS) regression

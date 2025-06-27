@@ -45,6 +45,7 @@
 ## Variables
 
 - [ConversationSchema](variables/ConversationSchema.md)
+- [StreamMessagePartSchema](variables/StreamMessagePartSchema.md)
 - [StreamMessageSchema](variables/StreamMessageSchema.md)
 - [ToolCallMessageSchema](variables/ToolCallMessageSchema.md)
 

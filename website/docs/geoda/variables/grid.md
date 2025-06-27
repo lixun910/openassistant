@@ -2,9 +2,13 @@
 
 > `const` **grid**: `ExtendedTool`\<[`GridFunctionArgs`](../type-aliases/GridFunctionArgs.md), [`GridLlmResult`](../type-aliases/GridLlmResult.md), [`GridAdditionalData`](../type-aliases/GridAdditionalData.md), [`SpatialToolContext`](../type-aliases/SpatialToolContext.md)\>
 
-Defined in: [packages/tools/geoda/src/spatial\_ops/grid.ts:175](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/geoda/src/spatial_ops/grid.ts#L175)
+Defined in: [packages/tools/geoda/src/spatial\_ops/grid.ts:179](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/geoda/src/spatial_ops/grid.ts#L179)
 
-Grid Tool
+## grid Tool
+
+This tool creates a grid of polygons that divides a given area into N rows and M columns.
+
+### Grid Creation
 
 This tool creates a grid of polygons that divides a given area into
 N rows and M columns. The grid can be created either from the boundary

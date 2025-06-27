@@ -29,13 +29,16 @@ export type KeplerGlToolArgs = z.ZodObject<{
 }>;
 
 /**
- * The keplergl tool is used to create a map using Kepler.gl from a dataset.
+ * ## keplergl Tool
+ * 
+ * This tool is used to create a map using Kepler.gl from a dataset.
  *
  * :::note
  * This tool should be used in Browser environment.
  * :::
  *
  * ### Example
+ * 
  * ```typescript
  * import { keplergl, KeplerglTool } from '@openassistant/map';
  * import { convertToVercelAiTool } from '@openassistant/utils';

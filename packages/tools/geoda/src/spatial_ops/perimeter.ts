@@ -25,9 +25,12 @@ export type PerimeterAdditionalData = {
 };
 
 /**
- * Perimeter Tool
+ * ## perimeter Tool
  *
  * This tool calculates the perimeter of geometries in a GeoJSON dataset.
+ *
+ * ### Perimeter Calculation
+ *
  * It supports both direct GeoJSON input and dataset names, and can calculate
  * perimeters in either kilometers or miles.
  *

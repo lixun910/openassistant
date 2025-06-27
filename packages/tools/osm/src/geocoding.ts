@@ -24,7 +24,7 @@ export type GeocodingAdditionalData = {
 };
 
 /**
- * Geocoding Tool
+ * ## Geocoding Tool
  *
  * This tool converts addresses into geographic coordinates (latitude and longitude) using OpenStreetMap's Nominatim service.
  *

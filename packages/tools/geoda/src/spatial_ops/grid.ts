@@ -124,7 +124,11 @@ function spatialGeometryToGeoJSON(
 }
 
 /**
- * Grid Tool
+ * ## grid Tool
+ *
+ * This tool creates a grid of polygons that divides a given area into N rows and M columns.
+ *
+ * ### Grid Creation
  *
  * This tool creates a grid of polygons that divides a given area into
  * N rows and M columns. The grid can be created either from the boundary

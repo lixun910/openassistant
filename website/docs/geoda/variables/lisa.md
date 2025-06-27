@@ -2,10 +2,14 @@
 
 > `const` **lisa**: `ExtendedTool`\<[`LisaFunctionArgs`](../type-aliases/LisaFunctionArgs.md), [`LisaLlmResult`](../type-aliases/LisaLlmResult.md), [`LisaAdditionalData`](../type-aliases/LisaAdditionalData.md), [`LisaFunctionContext`](../type-aliases/LisaFunctionContext.md)\>
 
-Defined in: [packages/tools/geoda/src/lisa/tool.ts:105](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/geoda/src/lisa/tool.ts#L105)
+Defined in: [packages/tools/geoda/src/lisa/tool.ts:109](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/geoda/src/lisa/tool.ts#L109)
 
-The LISA tool is used to apply local indicators of spatial association (LISA) statistics
+## lisa Tool
+
+This tool is used to apply local indicators of spatial association (LISA) statistics
 to identify local clusters and spatial outliers.
+
+### LISA Methods
 
 The LISA method can be one of the following types: localMoran, localGeary, localG, localGStar, quantileLisa.
 

@@ -6,7 +6,11 @@ import { Feature } from 'geojson';
 import { SpatialToolContext } from '../types';
 
 /**
- * Create a dorling Cartogram from a given geometries and a variable.
+ * ## cartogram Tool
+ *
+ * This tool is used to create a dorling cartogram from a given geometries and a variable.
+ *
+ * ### Cartogram Creation
  *
  * A cartogram is a map type where the original layout of the areal unit is replaced by a geometric form (usually a circle, rectangle, or hexagon) that is proportional to the value of the variable for the location. This is in contrast to a standard choropleth map, where the size of the polygon corresponds to the area of the location in question. The cartogram has a long history and many variants have been suggested, some quite creative. In essence, the construction of a cartogram is an example of a nonlinear optimization problem, where the geometric forms have to be located such that they reflect the topology (spatial arrangement) of the locations as closely as possible (see Tobler 2004, for an extensive discussion of various aspects of the cartogram).
  *

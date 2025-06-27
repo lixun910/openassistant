@@ -44,9 +44,12 @@ export type SpatialWeightsAdditionalData = {
 };
 
 /**
- * Spatial Weights Tool
- *
+ * ## spatialWeights Tool
+ * 
  * This tool creates spatial weights matrices for spatial analysis. It supports multiple types of weights:
+ *
+ * ### Spatial Weights Types
+ *
  * - K-Nearest Neighbors (knn)
  * - Queen Contiguity
  * - Rook Contiguity

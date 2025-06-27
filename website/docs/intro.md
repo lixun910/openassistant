@@ -6,27 +6,27 @@ sidebar_position: 1
 
 OpenAssistant is a javascript library helping your build your AI application with powerful data analysis tools and an interactive React chat component.
 
-| Category                | Tool/Feature                  | Description                                                                                                                 |
-| ----------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| **Plot Tools**          | Vega-Lite                     | All plot types using Vega-Lite                                                                                              |
-|                         | eCharts                       | interactive plots: box plot, bubble chart, histogram, parallel coordinates, scatter plot with regression lines              |
-| **GeoTools**            | Geocoding                     | Geocode addresses using OSM API                                                                                             |
-|                         | Routing                       | Calculate driving routes using Mapbox API                                                                                   |
-|                         | Isochrone                     | Calculate isochrones using Mapbox API                                                                                       |
-|                         | Geographic boundaries         | retrieve U.S. state/county/zipcode boundaries                                                                               |
-| **Map Tools**           | Kepler.gl                     | Interactive map visualization using Kepler.gl                                                                               |
-|                         | Leaflet map                   | Web mapping using Leaflet                                                                                                   |
-| **DuckDB Tools**        | Local data querying           | Query local data using in-browser DuckDB SQL                                                                                |
-|                         | Table operations              | Merge, filter, sort, group by, aggregate, etc.                                                                              |
-| **Data Analysis Tools** | Data classification           | Quantile, equal interval, natural breaks, standard deviation, percentile, box, etc.                                         |
-|                         | Data standardization          | Z-score, deviation from mean, MAD, range adjust, range standardization, etc.                                                |
-|                         | Spatial operations            | Buffer, area, centroid, dissolve, length, perimeter, Minimum Spanning Tree, Thiessen polygons (Voronoi diagram), Cartogram. |
-|                         | Spatial join                  | Spatial join spatial datasets                                                                                               |
-|                         | Spatial dissolve/aggregate    | Spatial dissolve/aggregate spatial features                                                                                 |
-|                         | Spatial weights               | Queen/rook contiguity, KNN weights, distance-based weights, kernel weights                                                  |
-|                         | Global spatial analysis       | Global Moran's I, Global Geary's C, Global Join Count                                                                       |
-|                         | Local spatial analysis (LISA) | Local Moran's I, local Getis-Ord Gi\*, local Geary, quantile LISA                                                           |
-|                         | Spatial regression            | OLS, spatial lag, spatial error model                                                                                       |
+| Category                                                                                         | Tool/Feature                  | Description                                                                                                                 |
+| ------------------------------------------------------------------------------------------------ | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Plot Tools** [@openassistant/plots](https://openassistant-doc.vercel.app/docs/tools/echarts-plugin)        | Vega-Lite                     | All plot types using Vega-Lite                                                                                              |
+|                                                                                                  | eCharts                       | interactive plots: box plot, bubble chart, histogram, parallel coordinates, scatter plot with regression lines              |
+| **GeoTools** [@openassistant/osm](https://openassistant-doc.vercel.app/docs/tools/osm-plugin)                | Geocoding                     | Geocode addresses using OSM API                                                                                             |
+|                                                                                                  | Routing                       | Calculate driving routes using Mapbox API                                                                                   |
+|                                                                                                  | Isochrone                     | Calculate isochrones using Mapbox API                                                                                       |
+|                                                                                                  | Geographic boundaries         | retrieve U.S. state/county/zipcode boundaries                                                                               |
+| **Map Tools** [@openassistant/map](https://openassistant-doc.vercel.app/docs/tools/keplergl-plugin)               | Kepler.gl                     | Interactive map visualization using Kepler.gl                                                                               |
+|                                                                                                  | Leaflet map                   | Web mapping using Leaflet                                                                                                   |
+| **SQL Tools** [@openassistant/duckdb](https://openassistant-doc.vercel.app/docs/tools/duckdb-plugin)      | Local data querying           | Query local data using in-browser DuckDB SQL                                                                                |
+|                                                                                                  | Table operations              | Merge, filter, sort, group by, aggregate, etc.                                                                              |
+| **Data Analysis Tools** [@openassistant/geoda](https://openassistant-doc.vercel.app/docs/tools/geoda-plugin) | Data classification           | Quantile, equal interval, natural breaks, standard deviation, percentile, box, etc.                                         |
+|                                                                                                  | Data standardization          | Z-score, deviation from mean, MAD, range adjust, range standardization, etc.                                                |
+|                                                                                                  | Spatial operations            | Buffer, area, centroid, dissolve, length, perimeter, Minimum Spanning Tree, Thiessen polygons (Voronoi diagram), Cartogram. |
+|                                                                                                  | Spatial join                  | Spatial join spatial datasets                                                                                               |
+|                                                                                                  | Spatial dissolve/aggregate    | Spatial dissolve/aggregate spatial features                                                                                 |
+|                                                                                                  | Spatial weights               | Queen/rook contiguity, KNN weights, distance-based weights, kernel weights                                                  |
+|                                                                                                  | Global spatial analysis       | Global Moran's I, Global Geary's C, Global Join Count                                                                       |
+|                                                                                                  | Local spatial analysis (LISA) | Local Moran's I, local Getis-Ord Gi\*, local Geary, quantile LISA                                                           |
+|                                                                                                  | Spatial regression            | OLS, spatial lag, spatial error model                                                                                       |
 
 ### Why use LLM tools?
 
@@ -107,7 +107,7 @@ See the full example code 🔗 [here](https://github.com/GeoDaCenter/openassista
 
 ### 2. Create your own tool with context and callback function support
 
-The `extendedTool` function is a wrapper around the `tool` function from the `ai` package. It allows you to add context and callback function support to your tool.
+You can use `extendedTool` function in [@openassistant/utils](https://openassistant-doc.vercel.app/docs/utils/) to create your own tool. It is a wrapper around the `tool` function from the `ai` package, and allows you to add context and callback function support to your tool.
 
 For example, create a weather tool to return the weather from a weather station you installed at different cities.
 
@@ -188,7 +188,7 @@ See the full example code 🔗 [here](https://github.com/GeoDaCenter/openassista
 
 ### 3. Add a React Chat Component to your App
 
-OpenAssistant also provides a chat component that helps you build your AI application with an interactive chat interface quickly.
+OpenAssistant also provides a chat component [@openassistant/ui` that helps you build your AI application with an interactive chat interface quickly.
 
 #### Installation
 
@@ -326,7 +326,7 @@ For message persistence, see the example 🔗 [here](https://github.com/geodacen
 
 ### 4. Use a uniform interface for different AI providers
 
-If you want to build your own chat interface, you can use the OpenAssistant core package, whic provides
+If you want to build your own chat interface, you can use the OpenAssistant core package [@openassistant/core](https://openassistant-doc.vercel.app/docs/core/), which provides
 
 - a uniform interface for different AI providers
 - a set of powerful LLM tools (data analysis, visualization, mapping, etc.)
@@ -407,18 +407,18 @@ See a more complex example of using OpenAssistant core package to create a multi
 
 Check out our example projects:
 
-- [Basic Example](examples/cli_example)
-- [Custom Function Example](examples/zod_function_tools)
-- [Multiple Step Tools](examples/multisteps_tools)
-- [Message Persistence Example](examples/message_persistence)
-- [React with TailwindCSS Example](examples/react_tailwind)
-- [Tool Example: ECharts](examples/echarts_tools)
-- [Tool Example: DuckDB](examples/duckdb_esbuild)
-- [Tool Example: Data analysis](examples/geoda_tools)
-- [Next.js Example](examples/vercel_example)
-- [Tool Example: Kepler.gl map](examples/vercel_map_example)
-- [Tool Example: Leaftlet map](examples/vercel_leaflet_example)
-- [Tool Example: Vega-Lite](examples/vercel_vega_example)
+- [Basic Example](https://github.com/GeoDaCenter/openassistant/tree/main/examples/cli_example/index.js)
+- [Custom Function Example](https://github.com/GeoDaCenter/openassistant/blob/main/examples/zod_function_tools/src/app.tsx)
+- [Multiple Step Tools](https://github.com/GeoDaCenter/openassistant/blob/main/examples/multisteps_tools/src/app.tsx)
+- [Message Persistence Example](https://github.com/GeoDaCenter/openassistant/blob/main/examples/message_persistent/src/app.tsx)
+- [React with TailwindCSS Example](https://github.com/GeoDaCenter/openassistant/blob/main/examples/react_tailwind/src/app.tsx)
+- [Tool Example: Plots](https://github.com/GeoDaCenter/openassistant/blob/main/examples/echarts_tools/src/app.tsx)
+- [Tool Example: DuckDB](https://github.com/GeoDaCenter/openassistant/blob/main/examples/duckdb_esbuild/src/App.tsx)
+- [Tool Example: Data analysis](https://github.com/GeoDaCenter/openassistant/blob/main/examples/geoda_tools/src/assistant.tsx)
+- [Next.js Example](https://github.com/GeoDaCenter/openassistant/blob/main/examples/vercel_usechat_example)
+- [Tool Example: Kepler.gl map](https://github.com/GeoDaCenter/openassistant/blob/main/examples/keplergl_tools/src/app.tsx)
+- [Tool Example: Leaftlet map](https://github.com/GeoDaCenter/openassistant/blob/main/examples/vercel_leaflet_example)
+- [Tool Example: Vega-Lite](https://github.com/GeoDaCenter/openassistant/blob/main/examples/vercel_vega_example)
 
 ## 📄 License
 
