@@ -2,11 +2,14 @@
 
 > `const` **thiessenPolygons**: `ExtendedTool`\<[`ThiessenPolygonsArgs`](../type-aliases/ThiessenPolygonsArgs.md), [`ThiessenPolygonsLlmResult`](../type-aliases/ThiessenPolygonsLlmResult.md), [`ThiessenPolygonsAdditionalData`](../type-aliases/ThiessenPolygonsAdditionalData.md), [`SpatialToolContext`](../type-aliases/SpatialToolContext.md)\>
 
-Defined in: [packages/tools/geoda/src/spatial\_ops/thiessenPolygons.ts:45](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/geoda/src/spatial_ops/thiessenPolygons.ts#L45)
+Defined in: [packages/tools/geoda/src/spatial\_ops/thiessenPolygons.ts:48](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/geoda/src/spatial_ops/thiessenPolygons.ts#L48)
 
-Thiessen Polygons Tool
+## thiessenPolygons Tool
 
 This tool generates thiessen polygons or voronoi diagrams from a given dataset or geojson.
+
+### Thiessen Polygons Generation
+
 It supports both direct geojson input and dataset names.
 
 Example user prompts:

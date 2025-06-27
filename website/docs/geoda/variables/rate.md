@@ -2,9 +2,14 @@
 
 > `const` **rate**: `ExtendedTool`\<[`RateFunctionArgs`](../type-aliases/RateFunctionArgs.md), [`RateLlmResult`](../type-aliases/RateLlmResult.md), [`RateAdditionalData`](../type-aliases/RateAdditionalData.md), [`RateContext`](../type-aliases/RateContext.md)\>
 
-Defined in: [packages/tools/geoda/src/rate/tool.ts:39](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/geoda/src/rate/tool.ts#L39)
+Defined in: [packages/tools/geoda/src/rate/tool.ts:44](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/geoda/src/rate/tool.ts#L44)
 
-Calculate the rates from a base variable and an event variable using one of the following methods:
+## rate Tool
+
+This tool is used to calculate the rates from a base variable and an event variable using one of the following methods:
+
+### Rate Methods
+
 - Raw Rates
 - Excess Risk
 - Empirical Bayes

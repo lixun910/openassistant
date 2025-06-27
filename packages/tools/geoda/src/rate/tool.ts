@@ -6,7 +6,12 @@ import { GetValues } from '../types';
 import { getWeights } from '../utils';
 
 /**
- * Calculate the rates from a base variable and an event variable using one of the following methods:
+ * ## rate Tool
+ * 
+ * This tool is used to calculate the rates from a base variable and an event variable using one of the following methods:
+ * 
+ * ### Rate Methods
+ *
  * - Raw Rates
  * - Excess Risk
  * - Empirical Bayes

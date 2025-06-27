@@ -12,7 +12,9 @@ import { convertArrowRowToObject } from './merge';
 import { Feature } from 'geojson';
 
 /**
- * The `localQuery` tool is used to execute a query against a local dataset.
+ * ## localQuery Tool
+ * 
+ * This tool is used to execute a query against a local dataset.
  *
  * :::note
  * This tool should be executed in Browser environment for now.

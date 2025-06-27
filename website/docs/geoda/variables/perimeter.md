@@ -2,11 +2,14 @@
 
 > `const` **perimeter**: `ExtendedTool`\<[`PerimeterFunctionArgs`](../type-aliases/PerimeterFunctionArgs.md), [`PerimeterLlmResult`](../type-aliases/PerimeterLlmResult.md), [`PerimeterAdditionalData`](../type-aliases/PerimeterAdditionalData.md), [`SpatialToolContext`](../type-aliases/SpatialToolContext.md)\>
 
-Defined in: [packages/tools/geoda/src/spatial\_ops/perimeter.ts:62](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/geoda/src/spatial_ops/perimeter.ts#L62)
+Defined in: [packages/tools/geoda/src/spatial\_ops/perimeter.ts:65](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/geoda/src/spatial_ops/perimeter.ts#L65)
 
-Perimeter Tool
+## perimeter Tool
 
 This tool calculates the perimeter of geometries in a GeoJSON dataset.
+
+### Perimeter Calculation
+
 It supports both direct GeoJSON input and dataset names, and can calculate
 perimeters in either kilometers or miles.
 

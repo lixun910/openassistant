@@ -2,9 +2,13 @@
 
 > `const` **centroid**: `ExtendedTool`\<[`CentroidFunctionArgs`](../type-aliases/CentroidFunctionArgs.md), [`CentroidLlmResult`](../type-aliases/CentroidLlmResult.md), [`CentroidAdditionalData`](../type-aliases/CentroidAdditionalData.md), [`SpatialToolContext`](../type-aliases/SpatialToolContext.md)\>
 
-Defined in: [packages/tools/geoda/src/spatial\_ops/centroid.ts:67](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/geoda/src/spatial_ops/centroid.ts#L67)
+Defined in: [packages/tools/geoda/src/spatial\_ops/centroid.ts:71](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/geoda/src/spatial_ops/centroid.ts#L71)
 
-The centroid tool is used to calculate the centroids (geometric centers) of geometries.
+## centroid Tool
+
+This tool is used to calculate the centroids (geometric centers) of geometries.
+
+### Centroid Calculation
 
 The tool supports:
 - Calculating centroids from GeoJSON input

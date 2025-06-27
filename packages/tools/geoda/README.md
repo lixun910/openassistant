@@ -1,4 +1,4 @@
-# Data Analysis Tools
+# @openassistant/geoda
 
 The GeoDa tools for OpenAssistant provides spatial data analysis capabilities using [GeoDa-lib](https://geodacenter.github.io/geoda-lib/).
 
@@ -6,56 +6,31 @@ The GeoDa tools for OpenAssistant provides spatial data analysis capabilities us
 
 ## Features
 
-- Data classification
-  - Natural Breaks
-  - Equal Intervals
-  - Quantile
-  - Standard Deviation
-  - Percentile
-- Rate Map
-  - Raw Rate
-  - Excess Risk
-  - Empirical Bayes
-  - Spatial Rates
-  - Spatial Empirical Bayes
-  - EB Rate Standardization
-- Spatial Operations
-  - Spatial Join
-  - Spatial Dissolve
-  - Buffer
-  - Centroid
-  - Length
-  - Area
-  - Perimeter
-  - Minimum Spanning Tree
-  - Thiessen Polygons (Voronoi Diagram)
-  - Cartogram
-- Spatial weights
-  - Queen
-  - Rook
-  - K-Nearest Neighbors
-  - Distance Band
-- Spatial autocorrelation
-  - Global Moran's I
-  - Local Moran's I
-  - Local G / Local G\*
-  - Local Geary
-  - Quantile LISA
-- Spatial regression
-  - OLS
-  - Spatial lag
-  - Spatial error
-- Spatial Data
-  - Get US State Data e.g. ask "how many venues are there in California and Texas?"
-  - Get US Zipcode Data
-  - Get US County Data
-
-See the full list of tools [here](https://openassistant-doc.vercel.app/docs/tools/geoda).
+| Tool Name                                                        | Description                                                                                                                                                                                                  |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [standardizeVariable](/docs/geoda/variables/standardizeVariable) | Standardize the data of a variable using one of the following methods: deviation from mean, standardize MAD, range adjust, range standardize, standardize (Z-score).                                         |
+| [dataClassify](/docs/geoda/variables/dataClassify)               | Perform data classification using various methods: natural breaks, equal intervals, quantile, standard deviation, percentile, box, unique values.                                                            |
+| [rate](/docs/geoda/variables/rate)                               | Calculate the rates from a base variable and an event variable using one of the following methods: raw rates, excess risk, empirical bayes, spatial rates, spatial empirical bayes, eb rate standardization. |
+| [spatialJoin](/docs/geoda/variables/spatialJoin)                 | Join geometries from one dataset with geometries from another dataset.                                                                                                                                       |
+| [globalMoran](/docs/geoda/variables/globalMoran)                 | Calculate Global Moran's I for a given variable to check if the variable is spatially clustered or dispersed.                                                                                                |
+| [lisa](/docs/geoda/variables/lisa)                               | Apply local indicators of spatial association (LISA) statistics to identify local clusters and spatial outliers, including local Moran's I, local G, local G\*, local Geary's C, and quantile LISA.          |
+| [spatialWeights](/docs/geoda/variables/spatialWeights)           | Generate spatial weights matrices for spatial analysis: queen, rook, k-nearest neighbors, distance band.                                                                                                     |
+| [spatialRegression](/docs/geoda/variables/spatialRegression)     | Perform regression analysis with spatial data: classic, spatial lag, spatial error.                                                                                                                          |
+| [area](/docs/geoda/variables/area)                               | Calculate the area of geometries in a GeoJSON dataset.                                                                                                                                                       |
+| [buffer](/docs/geoda/variables/buffer)                           | Create buffer zones around geometries.                                                                                                                                                                       |
+| [cartogram](/docs/geoda/variables/cartogram)                     | Create a dorling cartogram from a given geometries and a variable.                                                                                                                                           |
+| [centroid](/docs/geoda/variables/centroid)                       | Calculate the centroids (geometric centers) of geometries.                                                                                                                                                   |
+| [dissolve](/docs/geoda/variables/dissolve)                       | Merge multiple geometries into a single geometry.                                                                                                                                                            |
+| [grid](/docs/geoda/variables/grid)                               | Create a grid of polygons that divides a given area into N rows and M columns.                                                                                                                               |
+| [length](/docs/geoda/variables/length)                           | Calculate the length of geometries in a GeoJSON dataset.                                                                                                                                                     |
+| [minimumSpanningTree](/docs/geoda/variables/minimumSpanningTree) | Generate the minimum spanning tree from a given dataset or geojson.                                                                                                                                          |
+| [perimeter](/docs/geoda/variables/perimeter)                     | Calculate the perimeter of geometries in a GeoJSON dataset.                                                                                                                                                  |
+| [thiessenPolygons](/docs/geoda/variables/thiessenPolygons)       | Generate thiessen polygons or voronoi diagrams from a given dataset or geojson.                                                                                                                              |
 
 ## Installation
 
 ```bash
-npm install @openassistant/geoda
+npm install @openassistant/geoda @openassistant/utils ai
 ```
 
 ## Quick Start
@@ -88,28 +63,26 @@ Fields: location, longitude, latitude, value`;
 
 Then, you can add the Geoda tools in your application:
 
-```tsx
+```typescript
 import { dataClassify, DataClassifyTool } from '@openassistant/geoda';
+import { convertToVercelAiTool } from '@openassistant/utils';
+import { generateText } from 'ai';
+import { openai } from '@ai-sdk/openai';
 
-// use DataClassifyTool for type safety
-const dataClassifyTool: DataClassifyTool = {
+const classifyTool: DataClassifyTool = {
   ...dataClassify,
-  context: {
-    getValues: (datasetName, variableName) => {
-      return SAMPLE_DATASETS[datasetName][variableName];
+  toolContext: {
+    getValues: async (datasetName: string, variableName: string) => {
+      return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
     },
   },
 };
 
-// use the tool in the chat component
-<AiAssistant
-  modelProvider="openai"
-  model="gpt-4"
-  apiKey={process.env.OPENAI_API_KEY || ''}
-  welcomeMessage="Hello! How can I help you today?"
-  instructions={instructions}
-  functions={{ dataClassify: dataClassifyTool }}
-/>;
+const result = await generateText({
+  model: openai('gpt-4o-mini', { apiKey: key }),
+  prompt: 'Can you classify the data of population into 5 classes?',
+  tools: { dataClassify: convertToVercelAiTool(classifyTool) },
+});
 ```
 
 Once set up, you can perform spatial analyses through natural language prompts:
@@ -123,26 +96,3 @@ Once set up, you can perform spatial analyses through natural language prompts:
 The assistant will automatically understand your request and use the appropriate spatial analysis function.
 
 See the [example](https://github.com/geodacenter/openassistant/tree/main/examples/geoda_tools) for more details.
-
-## With TailwindCSS
-
-If you are using TailwindCSS, make sure to include the package's CSS in your project:
-
-```typescript
-import { nextui } from '@nextui-org/react';
-
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    './src/**/*.{js,ts,jsx,tsx}',
-    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
-    './node_modules/@openassistant/ui/dist/**/*.{js,ts,jsx,tsx}',
-    './node_modules/@openassistant/geoda/dist/**/*.{js,ts,jsx,tsx}',
-  ],
-  theme: {
-    extend: {},
-  },
-  darkMode: 'class',
-  plugins: [nextui()],
-};
-```

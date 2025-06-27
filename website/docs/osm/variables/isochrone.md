@@ -2,9 +2,11 @@
 
 > `const` **isochrone**: `ExtendedTool`\<[`IsochroneFunctionArgs`](../type-aliases/IsochroneFunctionArgs.md), [`IsochroneLlmResult`](../type-aliases/IsochroneLlmResult.md), [`IsochroneAdditionalData`](../type-aliases/IsochroneAdditionalData.md), [`MapboxToolContext`](../type-aliases/MapboxToolContext.md)\>
 
-Defined in: [packages/tools/osm/src/isochrone.ts:114](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/osm/src/isochrone.ts#L114)
+Defined in: [packages/tools/osm/src/isochrone.ts:116](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/osm/src/isochrone.ts#L116)
 
-This Isochrone tool generates isochrone polygons showing reachable areas within a given time or distance limit
+## Isochrone Tool
+
+This tool generates isochrone polygons showing reachable areas within a given time or distance limit
 from a starting point using Mapbox's Isochrone API. It supports different transportation modes
 and can return either polygons or linestrings.
 

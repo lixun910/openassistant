@@ -2,15 +2,18 @@
 
 > `const` **keplergl**: `ExtendedTool`\<[`KeplerGlToolArgs`](../type-aliases/KeplerGlToolArgs-1.md), [`KeplerGlToolLlmResult`](../type-aliases/KeplerGlToolLlmResult.md), [`KeplerGlToolAdditionalData`](../type-aliases/KeplerGlToolAdditionalData.md), [`MapToolContext`](../type-aliases/MapToolContext.md)\>
 
-Defined in: [packages/tools/map/src/keplergl/tool.ts:105](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/map/src/keplergl/tool.ts#L105)
+Defined in: [packages/tools/map/src/keplergl/tool.ts:108](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/map/src/keplergl/tool.ts#L108)
 
-The keplergl tool is used to create a map using Kepler.gl from a dataset.
+## keplergl Tool
+
+This tool is used to create a map using Kepler.gl from a dataset.
 
 :::note
 This tool should be used in Browser environment.
 :::
 
 ### Example
+
 ```typescript
 import { keplergl, KeplerglTool } from '@openassistant/map';
 import { convertToVercelAiTool } from '@openassistant/utils';

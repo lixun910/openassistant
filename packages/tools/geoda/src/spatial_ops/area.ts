@@ -25,9 +25,12 @@ export type AreaAdditionalData = {
 };
 
 /**
- * Area Tool
+ * ## area Tool
  *
  * This tool calculates the area of geometries in a GeoJSON dataset.
+ *
+ * ### Area Calculation
+ *
  * It supports both direct GeoJSON input and dataset names, and can calculate
  * areas in either square kilometers or square miles.
  *

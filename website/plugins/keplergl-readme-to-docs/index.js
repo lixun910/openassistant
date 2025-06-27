@@ -5,7 +5,7 @@ async function keplerglReadmeToDocsPlugin(context) {
   return {
     name: 'keplergl-readme-to-docs',
     async loadContent() {
-      const readmePath = path.join(context.siteDir, '..', 'packages', 'components', 'keplergl', 'README.md');
+      const readmePath = path.join(context.siteDir, '..', 'packages', 'tools', 'map', 'README.md');
       const docsPath = path.join(context.siteDir, 'docs', 'tools', 'keplergl-plugin.md');
 
       try {

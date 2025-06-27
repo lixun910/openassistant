@@ -57,7 +57,11 @@ export type DataClassifyFunctionContext = {
 };
 
 /**
- * The data classify tool is used to classify the data into k bins or classes.
+ * ## dataClassify Tool
+ * 
+ * This tool is used to classify the data into k bins or classes.
+ *
+ * ### Classification Methods
  *
  * The classification method can be one of the following types:
  * - quantile
@@ -101,7 +105,7 @@ export const dataClassify = extendedTool<
   DataClassifyAdditionalData,
   DataClassifyFunctionContext
 >({
-  description: 'Classify the data into k bins or categories.',
+  description: 'Classify the data into k bins or categories, and return k-1 or k (for unique values) break values.',
   parameters: z.object({
     datasetName: z.string(),
     variableName: z.string(),

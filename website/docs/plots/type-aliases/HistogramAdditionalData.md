@@ -2,7 +2,7 @@
 
 > **HistogramAdditionalData**: `object`
 
-Defined in: [packages/tools/plots/src/echarts/histogram/tool.ts:102](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/plots/src/echarts/histogram/tool.ts#L102)
+Defined in: [packages/tools/plots/src/echarts/histogram/tool.ts:102](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/plots/src/echarts/histogram/tool.ts#L102)
 
 ## Type declaration
 

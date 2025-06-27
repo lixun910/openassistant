@@ -2,11 +2,13 @@
 
 > `const` **vegaLitePlot**: `ExtendedTool`\<[`VegaLitePlotToolArgs`](../type-aliases/VegaLitePlotToolArgs.md), [`VegaLitePlotLlmResult`](../type-aliases/VegaLitePlotLlmResult.md), [`VegaLitePlotAdditionalData`](../type-aliases/VegaLitePlotAdditionalData.md), [`EChartsToolContext`](../type-aliases/EChartsToolContext.md)\>
 
-Defined in: [packages/tools/plots/src/vegalite/tool.ts:70](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/plots/src/vegalite/tool.ts#L70)
+Defined in: [packages/tools/plots/src/vegalite/tool.ts:72](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/plots/src/vegalite/tool.ts#L72)
 
-Tool to create a Vega plot from a dataset and variables.
+vegaLitePlot Tool
 
-There are many different plot types in Vega-Lite, you can find the full list of plot types [here](https://vega.github.io/vega-lite/docs/mark.html).
+This tool is used to create a Vega plot from a dataset and variables.
+
+There are many different plot types in Vega-Lite, you can find the full list of plot types [here](https://vega.github.io/vega-lite/examples/).
 
 **Example user prompts:**
 - "Can you create a bar chart of the population for each location in dataset myVenues?"
@@ -20,7 +22,6 @@ This tool is a browser-side tool.
 
 ```ts
 import { vegaLitePlot, VegaLitePlotTool } from '@openassistant/plots';
-// import { VegaPlotComponent } from '@openassistant/vegalite';
 import { convertToVercelAiTool } from '@openassistant/utils';
 import { generateText } from 'ai';
 
@@ -34,6 +35,7 @@ const vegaLitePlotTool: VegaLitePlotTool = {
   },
   onToolCompleted: (toolCallId, additionalData) => {
     console.log('Tool call completed:', toolCallId, additionalData);
+    // you can import { VegaPlotComponent } from '@openassistant/vegalite'; 
     // render the Vega plot using <VegaPlotComponent props={additionalData} />
   },
 };

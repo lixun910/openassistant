@@ -2,7 +2,7 @@
 
 > `const` **boxplot**: `ExtendedTool`\<[`BoxplotToolArgs`](../type-aliases/BoxplotToolArgs.md), [`BoxplotLlmResult`](../type-aliases/BoxplotLlmResult.md), [`BoxplotAdditionalData`](../type-aliases/BoxplotAdditionalData.md), [`EChartsToolContext`](../type-aliases/EChartsToolContext.md)\>
 
-Defined in: [packages/tools/plots/src/echarts/boxplot/tool.ts:51](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/plots/src/echarts/boxplot/tool.ts#L51)
+Defined in: [packages/tools/plots/src/echarts/boxplot/tool.ts:51](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/plots/src/echarts/boxplot/tool.ts#L51)
 
 The boxplot tool is used to create a box plot for a given dataset and variable.
 

@@ -2,7 +2,7 @@
 
 > `const` **downloadMapData**: `ExtendedTool`\<[`DownloadMapDataArgs`](../type-aliases/DownloadMapDataArgs.md), [`DownloadMapLlmResult`](../type-aliases/DownloadMapLlmResult.md), [`DownloadMapAdditionalData`](../type-aliases/DownloadMapAdditionalData.md), [`MapToolContext`](../type-aliases/MapToolContext.md)\>
 
-Defined in: [packages/tools/map/src/data/tool.ts:72](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/map/src/data/tool.ts#L72)
+Defined in: [packages/tools/map/src/data/tool.ts:72](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/map/src/data/tool.ts#L72)
 
 The downloadMapData tool is used to download map data (GeoJson or CSV) from a url.
 

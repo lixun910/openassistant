@@ -36,7 +36,11 @@ export type DissolveAdditionalData = {
 };
 
 /**
- * The dissolve tool is used to merge multiple geometries into a single geometry.
+ * ## dissolve Tool
+ *
+ * This tool is used to merge multiple geometries into a single geometry.
+ *
+ * ### Dissolve Function
  *
  * The tool supports:
  * - Dissolving geometries from GeoJSON input

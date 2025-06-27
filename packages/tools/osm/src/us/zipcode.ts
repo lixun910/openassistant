@@ -31,7 +31,7 @@ export type ExecuteGetUsZipcodeGeojsonResult = {
 };
 
 /**
- * Get US Zipcode GeoJSON Tool
+ * getUsZipcodeGeojson Tool
  *
  * This tool can be used to get the GeoJSON data of one or more United States zipcodes from the Github repository: https://github.com/greencoder/us-zipcode-to-geojson*
  *

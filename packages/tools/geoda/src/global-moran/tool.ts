@@ -45,7 +45,15 @@ export type MoranScatterPlotFunctionContext = {
 };
 
 /**
- * The Global Moran's I tool is used to calculate Global Moran's I for a given variable to check if the variable is spatially clustered or dispersed.
+ * ## globalMoran Tool
+ * 
+ * This tool is used to calculate Global Moran's I for a given variable to check if the variable is spatially clustered or dispersed.
+ *
+ * ### Example user prompts
+ *
+ * - "Is the population data spatially clustered or dispersed?"
+ * - "Is there a spatial autocorrelation in the population data?"
+ * - "What is the Global Moran's I for the population data?"
  *
  * **Example user prompts:**
  * - "Is the population data spatially clustered or dispersed?"

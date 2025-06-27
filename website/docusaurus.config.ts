@@ -45,6 +45,8 @@ const config: Config = {
     './plugins/keplergl-readme-to-docs',
     './plugins/echarts-readme-to-docs',
     './plugins/geoda-readme-to-docs',
+    './plugins/duckdb-readme-to-docs',
+    './plugins/osm-readme-to-docs',
     [
       'docusaurus-plugin-typedoc',
       {

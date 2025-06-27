@@ -25,9 +25,11 @@ export type VegaLitePlotAdditionalData = {
 };
 
 /**
- * Tool to create a Vega plot from a dataset and variables.
+ * vegaLitePlot Tool
+ * 
+ * This tool is used to create a Vega plot from a dataset and variables.
  *
- * There are many different plot types in Vega-Lite, you can find the full list of plot types [here](https://vega.github.io/vega-lite/docs/mark.html).
+ * There are many different plot types in Vega-Lite, you can find the full list of plot types [here](https://vega.github.io/vega-lite/examples/).
  *
  * **Example user prompts:**
  * - "Can you create a bar chart of the population for each location in dataset myVenues?"
@@ -40,7 +42,6 @@ export type VegaLitePlotAdditionalData = {
  * @example
  * ```ts
  * import { vegaLitePlot, VegaLitePlotTool } from '@openassistant/plots';
- * // import { VegaPlotComponent } from '@openassistant/vegalite';
  * import { convertToVercelAiTool } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
@@ -54,6 +55,7 @@ export type VegaLitePlotAdditionalData = {
  *   },
  *   onToolCompleted: (toolCallId, additionalData) => {
  *     console.log('Tool call completed:', toolCallId, additionalData);
+ *     // you can import { VegaPlotComponent } from '@openassistant/vegalite'; 
  *     // render the Vega plot using <VegaPlotComponent props={additionalData} />
  *   },
  * };

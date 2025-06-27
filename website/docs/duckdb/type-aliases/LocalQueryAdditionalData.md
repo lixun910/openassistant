@@ -2,7 +2,7 @@
 
 > **LocalQueryAdditionalData**: `object`
 
-Defined in: [packages/tools/duckdb/src/types.ts:53](https://github.com/GeoDaCenter/openassistant/blob/bc4037be52d89829440fcc4aaa1010be73719d16/packages/tools/duckdb/src/types.ts#L53)
+Defined in: [packages/tools/duckdb/src/types.ts:53](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/duckdb/src/types.ts#L53)
 
 Additional data returned with the query result
 

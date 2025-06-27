@@ -68,7 +68,9 @@ export type ExecuteIsochroneResult = {
 };
 
 /**
- * This Isochrone tool generates isochrone polygons showing reachable areas within a given time or distance limit
+ * ## Isochrone Tool
+ * 
+ * This tool generates isochrone polygons showing reachable areas within a given time or distance limit
  * from a starting point using Mapbox's Isochrone API. It supports different transportation modes
  * and can return either polygons or linestrings.
  *

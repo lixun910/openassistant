@@ -55,8 +55,12 @@ export type LisaFunctionContext = {
 };
 
 /**
- * The LISA tool is used to apply local indicators of spatial association (LISA) statistics
+ * ## lisa Tool
+ * 
+ * This tool is used to apply local indicators of spatial association (LISA) statistics
  * to identify local clusters and spatial outliers.
+ *
+ * ### LISA Methods
  *
  * The LISA method can be one of the following types: localMoran, localGeary, localG, localGStar, quantileLisa.
  *

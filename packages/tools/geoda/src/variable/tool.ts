@@ -53,7 +53,12 @@ export type StandardizeVariableToolContext = {
 };
 
 /**
+ * ## standardizeVariable Tool
+ * 
  * This tool is used to standardize the data of a variable using one of the following methods:
+ *
+ * ### Standardization Methods
+ *
  * - deviation from mean
  * - standardize MAD
  * - range adjust
