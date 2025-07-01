@@ -62,6 +62,18 @@ const config: Config = {
     [
       'docusaurus-plugin-typedoc',
       {
+        id: 'utils',
+        entryPoints: ['../packages/utils/src/index.ts'],
+        tsconfig: '../packages/utils/tsconfig.json',
+        out: 'docs/utils',
+        watch: false,
+        excludePrivate: true,
+        excludeInternal: true,
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
         id: 'plots',
         entryPoints: ['../packages/tools/plots/src/index.ts'],
         tsconfig: '../packages/tools/plots/tsconfig.json',
@@ -79,6 +91,18 @@ const config: Config = {
         entryPoints: ['../packages/tools/geoda/src/index.ts'],
         tsconfig: '../packages/tools/geoda/tsconfig.json',
         out: 'docs/geoda',
+        watch: false,
+        excludePrivate: true,
+        excludeInternal: true,
+      },
+    ],
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'map',
+        entryPoints: ['../packages/tools/map/src/index.ts'],
+        tsconfig: '../packages/tools/map/tsconfig.json',
+        out: 'docs/map',
         watch: false,
         excludePrivate: true,
         excludeInternal: true,
@@ -115,18 +139,6 @@ const config: Config = {
         entryPoints: ['../packages/tools/osm/src/index.ts'],
         tsconfig: '../packages/tools/osm/tsconfig.json',
         out: 'docs/osm',
-        watch: false,
-        excludePrivate: true,
-        excludeInternal: true,
-      },
-    ],
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        id: 'map',
-        entryPoints: ['../packages/tools/map/src/index.ts'],
-        tsconfig: '../packages/tools/map/tsconfig.json',
-        out: 'docs/map',
         watch: false,
         excludePrivate: true,
         excludeInternal: true,

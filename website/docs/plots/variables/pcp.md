@@ -2,7 +2,7 @@
 
 > `const` **pcp**: `ExtendedTool`\<[`PCPFunctionArgs`](../type-aliases/PCPFunctionArgs.md), [`PCPLlmResult`](../type-aliases/PCPLlmResult.md), [`PCPAdditionalData`](../type-aliases/PCPAdditionalData.md), [`EChartsToolContext`](../type-aliases/EChartsToolContext.md)\>
 
-Defined in: [packages/tools/plots/src/echarts/pcp/tool.ts:54](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/plots/src/echarts/pcp/tool.ts#L54)
+Defined in: [packages/tools/plots/src/echarts/pcp/tool.ts:54](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/plots/src/echarts/pcp/tool.ts#L54)
 
 The PCP tool is used to create a parallel coordinates plot for a given dataset and variables.
 

@@ -2,7 +2,7 @@
 
 > **linearRegression**(`x`, `y`): [`RegressionResults`](../type-aliases/RegressionResults.md)
 
-Defined in: [packages/tools/plots/src/echarts/math/linear-regression.ts:80](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/plots/src/echarts/math/linear-regression.ts#L80)
+Defined in: [packages/tools/plots/src/echarts/math/linear-regression.ts:80](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/plots/src/echarts/math/linear-regression.ts#L80)
 
 Perform linear regression on the data.
 

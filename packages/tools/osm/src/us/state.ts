@@ -30,7 +30,7 @@ export type ExecuteGetUsStateGeojsonResult = {
 };
 
 /**
- * Get US State GeoJSON Tool
+ * getUsStateGeojson Tool
  *
  * This tool can be used to get the GeoJSON data of one or more United States states using the Github repository: https://github.com/glynnbird/usstatesgeojson
  *
