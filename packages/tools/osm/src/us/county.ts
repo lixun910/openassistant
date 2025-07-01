@@ -30,7 +30,7 @@ export type ExecuteGetUsCountyGeojsonResult = {
 };
 
 /**
- * Get US County GeoJSON Tool
+ * getUsCountyGeojson Tool
  *
  * This tool can be used to get the GeoJSON data of one or more United States counties using the Github repository: https://github.com/hyperknot/country-levels-export
  *

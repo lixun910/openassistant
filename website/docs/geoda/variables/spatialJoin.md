@@ -2,7 +2,7 @@
 
 > `const` **spatialJoin**: `ExtendedTool`\<[`SpatialJoinFunctionArgs`](../type-aliases/SpatialJoinFunctionArgs.md), [`SpatialJoinLlmResult`](../type-aliases/SpatialJoinLlmResult.md), [`SpatialJoinAdditionalData`](../type-aliases/SpatialJoinAdditionalData.md), [`SpatialJoinFunctionContext`](../type-aliases/SpatialJoinFunctionContext.md)\>
 
-Defined in: [packages/tools/geoda/src/spatial\_join/tool.ts:117](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/geoda/src/spatial_join/tool.ts#L117)
+Defined in: [packages/tools/geoda/src/spatial\_join/tool.ts:117](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/geoda/src/spatial_join/tool.ts#L117)
 
 ## spatialJoin Tool
 

@@ -103,7 +103,7 @@ See the full example code 🔗 [here](https://github.com/GeoDaCenter/openassista
 
 ### 2. Create your own tool with context and callback function support
 
-You can use `extendedTool` function in [@openassistant/utils](https://openassistant-doc.vercel.app/docs/utils/) to create your own tool. It is a wrapper around the `tool` function from the `ai` package, and allows you to add context and callback function support to your tool.
+You can use `extendedTool` function in [@openassistant/utils](https://openassistant-doc.vercel.app/docs/utils/) to create your own tool. It is a wrapper around the `tool` function from the `ai` package, and allows you to add context and callback function support to your tool. See [Why use extendedTool](https://openassistant-doc.vercel.app/docs/tools/create-tool#why-extendedtool) section for more details.
 
 For example, create a weather tool to return the weather from a weather station you installed at different cities.
 
@@ -184,7 +184,7 @@ See the full example code 🔗 [here](https://github.com/GeoDaCenter/openassista
 
 ### 3. Add a React Chat Component to your App
 
-OpenAssistant also provides a chat component [@openassistant/ui` that helps you build your AI application with an interactive chat interface quickly.
+OpenAssistant also provides a chat component [@openassistant/ui](https://openassistant-doc.vercel.app/docs/ui/) that helps you build your AI application with an interactive chat interface quickly. It can be used in browser-only web applications.
 
 #### Installation
 

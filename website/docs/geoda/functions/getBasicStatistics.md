@@ -2,7 +2,7 @@
 
 > **getBasicStatistics**(`result`): `object`
 
-Defined in: [packages/tools/geoda/src/spatial\_join/tool.ts:351](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/geoda/src/spatial_join/tool.ts#L351)
+Defined in: [packages/tools/geoda/src/spatial\_join/tool.ts:351](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/geoda/src/spatial_join/tool.ts#L351)
 
 Get basic statistics of the result
 

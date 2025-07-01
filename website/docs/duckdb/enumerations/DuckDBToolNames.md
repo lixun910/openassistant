@@ -1,6 +1,6 @@
 # Enumeration: DuckDBToolNames
 
-Defined in: [packages/tools/duckdb/src/register-tools.ts:6](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/duckdb/src/register-tools.ts#L6)
+Defined in: [packages/tools/duckdb/src/register-tools.ts:6](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/duckdb/src/register-tools.ts#L6)
 
 ## Enumeration Members
 
@@ -8,4 +8,4 @@ Defined in: [packages/tools/duckdb/src/register-tools.ts:6](https://github.com/G
 
 > **localQuery**: `"localQuery"`
 
-Defined in: [packages/tools/duckdb/src/register-tools.ts:7](https://github.com/GeoDaCenter/openassistant/blob/0f7bf760e453a1735df9463dc799b04ee2f630fd/packages/tools/duckdb/src/register-tools.ts#L7)
+Defined in: [packages/tools/duckdb/src/register-tools.ts:7](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/duckdb/src/register-tools.ts#L7)
