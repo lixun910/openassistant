@@ -361,7 +361,16 @@ export abstract class VercelAiClient extends VercelAi {
           streamMessageCallback
         );
       } else if (chunk.type === 'error') {
-        throw new Error(`Error from Vercel AI API: ${chunk.error}`);
+        let errorMessage = `Error from Vercel AI API: ${chunk.error}`;
+        // append the chunk.error.responseBody if it exists
+        if (
+          chunk.error &&
+          typeof chunk.error === 'object' &&
+          'responseBody' in chunk.error
+        ) {
+          errorMessage += `\n${JSON.stringify(chunk.error.responseBody)}`;
+        }
+        throw new Error(errorMessage);
       }
     }
 
