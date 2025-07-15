@@ -115,7 +115,7 @@ useChat({
 });
 ```
 
-Please see the [example](https://github.com/geodacenter/openassistant/tree/main/examples/vercel_map_example) for more details.
+Please see the [example](https://github.com/geodaopenjs/openassistant/tree/main/examples/vercel_map_example) for more details.
 
 ## Maps Example using AiAssistant
 
@@ -238,7 +238,7 @@ Once set up, you can create maps through natural language prompts:
 
 The assistant will automatically understand your request and use the appropriate mapping function.
 
-See the [examples](https://github.com/geodacenter/openassistant/tree/main/examples) for more details.
+See the [examples](https://github.com/geodaopenjs/openassistant/tree/main/examples) for more details.
 
 ### With TailwindCSS
 

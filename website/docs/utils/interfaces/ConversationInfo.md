@@ -1,6 +1,6 @@
 # Interface: ConversationInfo
 
-Defined in: [conversation-cache.ts:14](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L14)
+Defined in: [conversation-cache.ts:14](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L14)
 
 ## Properties
 
@@ -8,7 +8,7 @@ Defined in: [conversation-cache.ts:14](https://github.com/GeoDaCenter/openassist
 
 > **ageMinutes**: `number`
 
-Defined in: [conversation-cache.ts:16](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L16)
+Defined in: [conversation-cache.ts:16](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L16)
 
 ***
 
@@ -16,7 +16,7 @@ Defined in: [conversation-cache.ts:16](https://github.com/GeoDaCenter/openassist
 
 > **hasCache**: `boolean`
 
-Defined in: [conversation-cache.ts:17](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L17)
+Defined in: [conversation-cache.ts:17](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L17)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [conversation-cache.ts:17](https://github.com/GeoDaCenter/openassist
 
 > **id**: `string`
 
-Defined in: [conversation-cache.ts:15](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L15)
+Defined in: [conversation-cache.ts:15](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L15)
 
 ***
 
@@ -32,4 +32,4 @@ Defined in: [conversation-cache.ts:15](https://github.com/GeoDaCenter/openassist
 
 > `optional` **toolOutputCount**: `number`
 
-Defined in: [conversation-cache.ts:18](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L18)
+Defined in: [conversation-cache.ts:18](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L18)

@@ -26,7 +26,7 @@ OpenAssistant provides a set of tools that helps you build your AI application.
 
 To get a quick start, let's use the **localQuery** tool in @openassistant/duckdb to build a simple AI assistant that can help users query their own data using natural language.
 
-Let's say you have a dataset in your application. For this example, we will use the *[SAMPLE_DATASETS](https://github.com/GeoDaCenter/openassistant/blob/main/examples/duckdb_esbuild/src/dataset.ts)* to simulate the data:
+Let's say you have a dataset in your application. For this example, we will use the *[SAMPLE_DATASETS](https://github.com/geodaopenjs/openassistant/blob/main/examples/duckdb_esbuild/src/dataset.ts)* to simulate the data:
 
 ```ts
 export const SAMPLE_DATASETS = {
@@ -106,7 +106,7 @@ export default function App() {
 
 <img width="400" src="https://github.com/user-attachments/assets/4115b474-13af-48ba-b69e-b39cc325f1b1"/>
 
-See the source code of the example 🔗 [here](https://github.com/geodacenter/openassistant/tree/main/examples/duckdb_esbuild).
+See the source code of the example 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples/duckdb_esbuild).
 
 :::tip
 Why does LLM know it can call the `localQuery` tool to answer the user's question?

@@ -1,6 +1,6 @@
 # Class: ConversationCache
 
-Defined in: [conversation-cache.ts:43](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L43)
+Defined in: [conversation-cache.ts:43](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L43)
 
 ConversationCache manages ToolOutputManager instances per conversation,
 providing persistent caching across requests within the same conversation
@@ -12,7 +12,7 @@ while maintaining isolation between different conversations.
 
 > **new ConversationCache**(`config`): [`ConversationCache`](ConversationCache.md)
 
-Defined in: [conversation-cache.ts:48](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L48)
+Defined in: [conversation-cache.ts:48](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L48)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: [conversation-cache.ts:48](https://github.com/GeoDaCenter/openassist
 
 > **clearAll**(): `void`
 
-Defined in: [conversation-cache.ts:184](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L184)
+Defined in: [conversation-cache.ts:184](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L184)
 
 Manually clear all conversations from the cache.
 
@@ -44,7 +44,7 @@ Manually clear all conversations from the cache.
 
 > **getConfig**(): `Required`\<[`ConversationCacheConfig`](../interfaces/ConversationCacheConfig.md)\>
 
-Defined in: [conversation-cache.ts:195](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L195)
+Defined in: [conversation-cache.ts:195](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L195)
 
 Get the current configuration.
 
@@ -58,7 +58,7 @@ Get the current configuration.
 
 > **getStatus**(): `Promise`\<[`ConversationCacheStatus`](../interfaces/ConversationCacheStatus.md)\>
 
-Defined in: [conversation-cache.ts:152](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L152)
+Defined in: [conversation-cache.ts:152](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L152)
 
 Get status information about the conversation cache.
 
@@ -72,7 +72,7 @@ Get status information about the conversation cache.
 
 > **getToolOutputManager**(`conversationId`): `Promise`\<[`ToolOutputManager`](ToolOutputManager.md)\>
 
-Defined in: [conversation-cache.ts:73](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L73)
+Defined in: [conversation-cache.ts:73](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L73)
 
 Get or create a ToolOutputManager for the given conversation ID.
 

@@ -116,7 +116,7 @@ The weather in New York is sunny from your weather station 123.
 
 The `additionalData` is the data returned from the tool execution. You can use it to render a component or save it to your database.
 
-See the full example code 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples/zod_function_tools).
+See the full example code 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples/zod_function_tools).
 
 ## Why `extendedTool`?
 

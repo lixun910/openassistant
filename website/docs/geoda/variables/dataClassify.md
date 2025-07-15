@@ -2,7 +2,7 @@
 
 > `const` **dataClassify**: `ExtendedTool`\<[`DataClassifyFunctionArgs`](../type-aliases/DataClassifyFunctionArgs.md), [`DataClassifyLlmResult`](../type-aliases/DataClassifyLlmResult.md), [`DataClassifyAdditionalData`](../type-aliases/DataClassifyAdditionalData.md), [`DataClassifyFunctionContext`](../type-aliases/DataClassifyFunctionContext.md)\>
 
-Defined in: [packages/tools/geoda/src/data-classify/tool.ts:102](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/geoda/src/data-classify/tool.ts#L102)
+Defined in: [packages/tools/geoda/src/data-classify/tool.ts:102](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/geoda/src/data-classify/tool.ts#L102)
 
 ## dataClassify Tool
 

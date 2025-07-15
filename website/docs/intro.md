@@ -101,7 +101,7 @@ additionalData {
 }
 ```
 
-See the full example code 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples).
+See the full example code 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples).
 
 <img src="https://openassistant-doc.vercel.app/img/histogram-1-400.png" width="400" alt="Histogram Plugin" />
 
@@ -184,7 +184,7 @@ The weather in New York is sunny from your weather station 123.
 
 The `additionalData` is the data returned from the tool execution. You can use it to render a component or save it to your database.
 
-See the full example code 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples/zod_function_tools).
+See the full example code 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples/zod_function_tools).
 
 ### 3. Add a React Chat Component to your App
 
@@ -226,7 +226,7 @@ function App() {
 
 <img src="https://openassistant-doc.vercel.app/img/getstart-dark.png" width="300" />
 
-See the source code of the example 🔗 [here](https://github.com/geodacenter/openassistant/tree/main/examples).
+See the source code of the example 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples).
 
 If you are using TailwindCSS, you need to add the following configurations to your `tailwind.config.js` file:
 
@@ -248,7 +248,7 @@ module.exports = {
 };
 ```
 
-See the source code of the example 🔗 [here](https://github.com/geodacenter/openassistant/tree/main/examples).
+See the source code of the example 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples).
 
 #### Use Tools with chat component
 
@@ -320,9 +320,9 @@ const localQueryTool: LocalQueryTool = {
 />
 ```
 
-See the source code of the example 🔗 [here](https://github.com/geodacenter/openassistant/tree/main/examples/duckdb_esbuild).
+See the source code of the example 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples/duckdb_esbuild).
 
-For message persistence, see the example 🔗 [here](https://github.com/geodacenter/openassistant/tree/main/examples/message_persistence).
+For message persistence, see the example 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples/message_persistence).
 
 ### 4. Use a uniform interface for different AI providers
 
@@ -374,7 +374,7 @@ await assistant.processTextMessage({
 });
 ```
 
-See the source code of the example 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples/cli_example).
+See the source code of the example 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples/cli_example).
 
 :::tip
 
@@ -401,24 +401,24 @@ OpenAssistant also supports the following model providers:
 
 :::
 
-See a more complex example of using OpenAssistant core package to create a multi-step tool 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples/multisteps_tools).
+See a more complex example of using OpenAssistant core package to create a multi-step tool 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples/multisteps_tools).
 
 ## 🎯 Examples
 
 Check out our example projects:
 
-- [Basic Example](https://github.com/GeoDaCenter/openassistant/tree/main/examples/cli_example/index.js)
-- [Custom Function Example](https://github.com/GeoDaCenter/openassistant/blob/main/examples/zod_function_tools/src/app.tsx)
-- [Multiple Step Tools](https://github.com/GeoDaCenter/openassistant/blob/main/examples/multisteps_tools/src/app.tsx)
-- [Message Persistence Example](https://github.com/GeoDaCenter/openassistant/blob/main/examples/message_persistent/src/app.tsx)
-- [React with TailwindCSS Example](https://github.com/GeoDaCenter/openassistant/blob/main/examples/react_tailwind/src/app.tsx)
-- [Tool Example: Plots](https://github.com/GeoDaCenter/openassistant/blob/main/examples/echarts_tools/src/app.tsx)
-- [Tool Example: DuckDB](https://github.com/GeoDaCenter/openassistant/blob/main/examples/duckdb_esbuild/src/App.tsx)
-- [Tool Example: Data analysis](https://github.com/GeoDaCenter/openassistant/blob/main/examples/geoda_tools/src/assistant.tsx)
-- [Next.js Example](https://github.com/GeoDaCenter/openassistant/blob/main/examples/vercel_usechat_example)
-- [Tool Example: Kepler.gl map](https://github.com/GeoDaCenter/openassistant/blob/main/examples/keplergl_tools/src/app.tsx)
-- [Tool Example: Leaftlet map](https://github.com/GeoDaCenter/openassistant/blob/main/examples/vercel_leaflet_example)
-- [Tool Example: Vega-Lite](https://github.com/GeoDaCenter/openassistant/blob/main/examples/vercel_vega_example)
+- [Basic Example](https://github.com/geodaopenjs/openassistant/tree/main/examples/cli_example/index.js)
+- [Custom Function Example](https://github.com/geodaopenjs/openassistant/blob/main/examples/zod_function_tools/src/app.tsx)
+- [Multiple Step Tools](https://github.com/geodaopenjs/openassistant/blob/main/examples/multisteps_tools/src/app.tsx)
+- [Message Persistence Example](https://github.com/geodaopenjs/openassistant/blob/main/examples/message_persistent/src/app.tsx)
+- [React with TailwindCSS Example](https://github.com/geodaopenjs/openassistant/blob/main/examples/react_tailwind/src/app.tsx)
+- [Tool Example: Plots](https://github.com/geodaopenjs/openassistant/blob/main/examples/echarts_tools/src/app.tsx)
+- [Tool Example: DuckDB](https://github.com/geodaopenjs/openassistant/blob/main/examples/duckdb_esbuild/src/App.tsx)
+- [Tool Example: Data analysis](https://github.com/geodaopenjs/openassistant/blob/main/examples/geoda_tools/src/assistant.tsx)
+- [Next.js Example](https://github.com/geodaopenjs/openassistant/blob/main/examples/vercel_usechat_example)
+- [Tool Example: Kepler.gl map](https://github.com/geodaopenjs/openassistant/blob/main/examples/keplergl_tools/src/app.tsx)
+- [Tool Example: Leaftlet map](https://github.com/geodaopenjs/openassistant/blob/main/examples/vercel_leaflet_example)
+- [Tool Example: Vega-Lite](https://github.com/geodaopenjs/openassistant/blob/main/examples/vercel_vega_example)
 
 ## 📄 License
 

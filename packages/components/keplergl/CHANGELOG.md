@@ -139,8 +139,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 
@@ -150,8 +150,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 
@@ -159,8 +159,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 
@@ -168,8 +168,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 
@@ -177,8 +177,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 
@@ -192,7 +192,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 
@@ -204,7 +204,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 
@@ -214,7 +214,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 
@@ -222,7 +222,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 
@@ -240,8 +240,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* add osm workspace; fix messages not updating in core package; histogram supports string values ([3e6f721](https://github.com/GeoDaCenter/openassistant/commit/3e6f721aeb405305b4cdaeea9d9fb2c0a9cbd27c))
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* add osm workspace; fix messages not updating in core package; histogram supports string values ([3e6f721](https://github.com/geodaopenjs/openassistant/commit/3e6f721aeb405305b4cdaeea9d9fb2c0a9cbd27c))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 
@@ -257,8 +257,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* add osm workspace; fix messages not updating in core package; histogram supports string values ([3e6f721](https://github.com/GeoDaCenter/openassistant/commit/3e6f721aeb405305b4cdaeea9d9fb2c0a9cbd27c))
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* add osm workspace; fix messages not updating in core package; histogram supports string values ([3e6f721](https://github.com/geodaopenjs/openassistant/commit/3e6f721aeb405305b4cdaeea9d9fb2c0a9cbd27c))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 
@@ -272,8 +272,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* add osm workspace; fix messages not updating in core package; histogram supports string values ([3e6f721](https://github.com/GeoDaCenter/openassistant/commit/3e6f721aeb405305b4cdaeea9d9fb2c0a9cbd27c))
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* add osm workspace; fix messages not updating in core package; histogram supports string values ([3e6f721](https://github.com/geodaopenjs/openassistant/commit/3e6f721aeb405305b4cdaeea9d9fb2c0a9cbd27c))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 
@@ -285,8 +285,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* add osm workspace; fix messages not updating in core package; histogram supports string values ([3e6f721](https://github.com/GeoDaCenter/openassistant/commit/3e6f721aeb405305b4cdaeea9d9fb2c0a9cbd27c))
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* add osm workspace; fix messages not updating in core package; histogram supports string values ([3e6f721](https://github.com/geodaopenjs/openassistant/commit/3e6f721aeb405305b4cdaeea9d9fb2c0a9cbd27c))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 
@@ -296,8 +296,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* add osm workspace; fix messages not updating in core package; histogram supports string values ([3e6f721](https://github.com/GeoDaCenter/openassistant/commit/3e6f721aeb405305b4cdaeea9d9fb2c0a9cbd27c))
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* add osm workspace; fix messages not updating in core package; histogram supports string values ([3e6f721](https://github.com/geodaopenjs/openassistant/commit/3e6f721aeb405305b4cdaeea9d9fb2c0a9cbd27c))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 
@@ -305,8 +305,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* add osm workspace; fix messages not updating in core package; histogram supports string values ([3e6f721](https://github.com/GeoDaCenter/openassistant/commit/3e6f721aeb405305b4cdaeea9d9fb2c0a9cbd27c))
-* update playground ([#15](https://github.com/GeoDaCenter/openassistant/issues/15)) ([6ed4ca9](https://github.com/GeoDaCenter/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+* add osm workspace; fix messages not updating in core package; histogram supports string values ([3e6f721](https://github.com/geodaopenjs/openassistant/commit/3e6f721aeb405305b4cdaeea9d9fb2c0a9cbd27c))
+* update playground ([#15](https://github.com/geodaopenjs/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaopenjs/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
 
 ## 0.0.6 (2025-01-21)
 

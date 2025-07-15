@@ -2,7 +2,7 @@
 
 > `const` **grid**: `ExtendedTool`\<[`GridFunctionArgs`](../type-aliases/GridFunctionArgs.md), [`GridLlmResult`](../type-aliases/GridLlmResult.md), [`GridAdditionalData`](../type-aliases/GridAdditionalData.md), [`SpatialToolContext`](../type-aliases/SpatialToolContext.md)\>
 
-Defined in: [packages/tools/geoda/src/spatial\_ops/grid.ts:179](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/geoda/src/spatial_ops/grid.ts#L179)
+Defined in: [packages/tools/geoda/src/spatial\_ops/grid.ts:179](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/geoda/src/spatial_ops/grid.ts#L179)
 
 ## grid Tool
 

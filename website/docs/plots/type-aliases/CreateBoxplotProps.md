@@ -2,7 +2,7 @@
 
 > **CreateBoxplotProps**: `object`
 
-Defined in: [packages/tools/plots/src/echarts/boxplot/utils.ts:14](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/plots/src/echarts/boxplot/utils.ts#L14)
+Defined in: [packages/tools/plots/src/echarts/boxplot/utils.ts:14](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/plots/src/echarts/boxplot/utils.ts#L14)
 
 Properties required to create a boxplot visualization
 

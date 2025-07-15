@@ -2,7 +2,7 @@
 
 > `const` **scatterplot**: `ExtendedTool`\<[`ScatterplotFunctionArgs`](../type-aliases/ScatterplotFunctionArgs.md), [`ScatterplotLlmResult`](../type-aliases/ScatterplotLlmResult.md), [`ScatterplotAdditionalData`](../type-aliases/ScatterplotAdditionalData.md), [`EChartsToolContext`](../type-aliases/EChartsToolContext.md)\>
 
-Defined in: [packages/tools/plots/src/echarts/scatterplot/tool.ts:56](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/plots/src/echarts/scatterplot/tool.ts#L56)
+Defined in: [packages/tools/plots/src/echarts/scatterplot/tool.ts:56](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/plots/src/echarts/scatterplot/tool.ts#L56)
 
 The scatterplot tool is used to create a scatterplot chart for a given dataset and variables.
 

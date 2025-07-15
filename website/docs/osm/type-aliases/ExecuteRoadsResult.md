@@ -2,7 +2,7 @@
 
 > **ExecuteRoadsResult**: `object`
 
-Defined in: [packages/tools/osm/src/roads.ts:283](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/osm/src/roads.ts#L283)
+Defined in: [packages/tools/osm/src/roads.ts:283](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/osm/src/roads.ts#L283)
 
 ## Type declaration
 

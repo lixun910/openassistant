@@ -2,7 +2,7 @@
 
 > **createAssistant**(`props`): `Promise`\<[`VercelAi`](../classes/VercelAi.md) \| [`OpenAIAssistant`](../classes/OpenAIAssistant.md) \| [`DeepSeekAssistant`](../classes/DeepSeekAssistant.md) \| [`GoogleAIAssistant`](../classes/GoogleAIAssistant.md) \| [`XaiAssistant`](../classes/XaiAssistant.md) \| [`OllamaAssistant`](../classes/OllamaAssistant.md) \| `AnthropicAssistant`\>
 
-Defined in: [packages/core/src/utils/create-assistant.ts:42](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/core/src/utils/create-assistant.ts#L42)
+Defined in: [packages/core/src/utils/create-assistant.ts:42](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/core/src/utils/create-assistant.ts#L42)
 
 Creates an AI assistant instance with the specified configuration
 

@@ -2,7 +2,7 @@
 
 > `const` **keplergl**: `ExtendedTool`\<[`KeplerGlToolArgs`](../type-aliases/KeplerGlToolArgs-1.md), [`KeplerGlToolLlmResult`](../type-aliases/KeplerGlToolLlmResult.md), [`KeplerGlToolAdditionalData`](../type-aliases/KeplerGlToolAdditionalData.md), [`MapToolContext`](../type-aliases/MapToolContext.md)\>
 
-Defined in: [packages/tools/map/src/keplergl/tool.ts:108](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/map/src/keplergl/tool.ts#L108)
+Defined in: [packages/tools/map/src/keplergl/tool.ts:108](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/map/src/keplergl/tool.ts#L108)
 
 ## keplergl Tool
 

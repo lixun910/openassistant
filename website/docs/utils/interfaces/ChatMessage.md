@@ -1,6 +1,6 @@
 # Interface: ChatMessage
 
-Defined in: [conversation-cache.ts:32](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L32)
+Defined in: [conversation-cache.ts:32](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L32)
 
 ## Indexable
 
@@ -12,7 +12,7 @@ Defined in: [conversation-cache.ts:32](https://github.com/GeoDaCenter/openassist
 
 > **content**: `string`
 
-Defined in: [conversation-cache.ts:34](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L34)
+Defined in: [conversation-cache.ts:34](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L34)
 
 ***
 
@@ -20,4 +20,4 @@ Defined in: [conversation-cache.ts:34](https://github.com/GeoDaCenter/openassist
 
 > **role**: `string`
 
-Defined in: [conversation-cache.ts:33](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L33)
+Defined in: [conversation-cache.ts:33](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/conversation-cache.ts#L33)

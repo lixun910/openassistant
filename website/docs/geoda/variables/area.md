@@ -2,7 +2,7 @@
 
 > `const` **area**: `ExtendedTool`\<[`AreaFunctionArgs`](../type-aliases/AreaFunctionArgs.md), [`AreaLlmResult`](../type-aliases/AreaLlmResult.md), [`AreaAdditionalData`](../type-aliases/AreaAdditionalData.md), [`SpatialToolContext`](../type-aliases/SpatialToolContext.md)\>
 
-Defined in: [packages/tools/geoda/src/spatial\_ops/area.ts:69](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/geoda/src/spatial_ops/area.ts#L69)
+Defined in: [packages/tools/geoda/src/spatial\_ops/area.ts:69](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/geoda/src/spatial_ops/area.ts#L69)
 
 ## area Tool
 

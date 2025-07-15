@@ -47,7 +47,7 @@ await assistant.processTextMessage({
 });
 ```
 
-See the source code of the example 🔗 [here](https://github.com/GeoDaCenter/openassistant/tree/main/examples/cli_example).
+See the source code of the example 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples/cli_example).
 
 :::tip
 

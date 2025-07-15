@@ -2,7 +2,7 @@
 
 > **ParallelCoordinateDataProps**: `object`[]
 
-Defined in: [packages/tools/plots/src/echarts/pcp/utils.ts:5](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/plots/src/echarts/pcp/utils.ts#L5)
+Defined in: [packages/tools/plots/src/echarts/pcp/utils.ts:5](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/plots/src/echarts/pcp/utils.ts#L5)
 
 Represents the properties for Parallel Coordinates Plot (PCP) data.
 Each element in the array describes a dimension/axis of the PCP.

@@ -2,7 +2,7 @@
 
 > **ToolCallMessage**: `object`
 
-Defined in: [packages/core/src/types.ts:25](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/core/src/types.ts#L25)
+Defined in: [packages/core/src/types.ts:25](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/core/src/types.ts#L25)
 
 The tool call message is used to store the tool call information.
 

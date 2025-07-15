@@ -2,7 +2,7 @@
 
 > **ExtendedTool**\<`PARAMETERS`, `RETURN_TYPE`, `ADDITIONAL_DATA`, `CONTEXT`\>: `object`
 
-Defined in: [tool.ts:40](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool.ts#L40)
+Defined in: [tool.ts:40](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool.ts#L40)
 
 ## Type Parameters
 

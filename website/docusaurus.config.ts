@@ -17,7 +17,7 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'GeoDaCenter',
+  organizationName: 'GeoDaOpenJS',
   projectName: 'openassistant',
 
   onBrokenLinks: 'warn',
@@ -155,7 +155,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/GeoDaCenter/openassistant/tree/main/website/docs',
+            'https://github.com/geodaopenjs/openassistant/tree/main/website/docs',
         },
         blog: {
           showReadingTime: true,
@@ -166,7 +166,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/GeoDaCenter/openassistant/tree/main/website/docs',
+            'https://github.com/geodaopenjs/openassistant/tree/main/website/docs',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
@@ -203,7 +203,7 @@ const config: Config = {
         },
         { to: '/blog', label: 'Blog', position: 'left' },
         {
-          href: 'https://github.com/GeoDaCenter/openassistant',
+          href: 'https://github.com/geodaopenjs/openassistant',
           label: 'GitHub',
           position: 'right',
         },
@@ -247,7 +247,7 @@ const config: Config = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/GeoDaCenter/openassistant',
+              href: 'https://github.com/geodaopenjs/openassistant',
             },
           ],
         },
