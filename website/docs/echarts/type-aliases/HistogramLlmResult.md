@@ -2,7 +2,7 @@
 
 > **HistogramLlmResult**: `object`
 
-Defined in: [packages/echarts/src/histogram/tool.ts:91](https://github.com/GeoDaCenter/openassistant/blob/2c7e2a603db0fcbd6603996e5ea15006191c5f7f/packages/echarts/src/histogram/tool.ts#L91)
+Defined in: [packages/echarts/src/histogram/tool.ts:91](https://github.com/geodaopenjs/openassistant/blob/2c7e2a603db0fcbd6603996e5ea15006191c5f7f/packages/echarts/src/histogram/tool.ts#L91)
 
 ## Type declaration
 

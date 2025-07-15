@@ -2,7 +2,7 @@
 
 > **EChartsToolContext**: `object`
 
-Defined in: [packages/tools/plots/src/types.ts:32](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/plots/src/types.ts#L32)
+Defined in: [packages/tools/plots/src/types.ts:32](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/plots/src/types.ts#L32)
 
 The context you should provided to run the ECharts tool.
 

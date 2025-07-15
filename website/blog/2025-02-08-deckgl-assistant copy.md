@@ -703,4 +703,4 @@ The combination of powerful visualization libraries and AI assistants opens up n
 For more information, check out:
 - [Deck.gl Documentation](https://deck.gl)
 - [OpenAssistant Documentation](https://openassistant-doc.vercel.app/)
-- [Source Code for this Tutorial](https://github.com/GeoDaCenter/openassistant/tree/main/examples)
+- [Source Code for this Tutorial](https://github.com/geodaopenjs/openassistant/tree/main/examples)

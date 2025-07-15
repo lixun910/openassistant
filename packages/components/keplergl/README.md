@@ -126,7 +126,7 @@ import { AiAssistant } from '@openassistant/ui';
 />;
 ```
 
-See the [example](https://github.com/geodacenter/openassistant/tree/main/examples/keplergl_plugin) for more details.
+See the [example](https://github.com/geodaopenjs/openassistant/tree/main/examples/keplergl_plugin) for more details.
 
 ## Common Issues
 

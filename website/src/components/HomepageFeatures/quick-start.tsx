@@ -359,7 +359,7 @@ export function QuickStart() {
               </a>{' '}
               and the{' '}
               <a
-                href="https://github.com/GeoDaCenter/openassistant/wiki/Integration-Kepler.gl---GeoDaLib"
+                href="https://github.com/geodaopenjs/openassistant/wiki/Integration-Kepler.gl---GeoDaLib"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500"

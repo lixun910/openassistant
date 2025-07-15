@@ -25,7 +25,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.5.14-alpha.0 (2025-07-04)
 
@@ -47,7 +47,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.5.13 (2025-06-24)
 
@@ -67,7 +67,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.5.12 (2025-06-20)
 
@@ -85,7 +85,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.5.11 (2025-06-18)
 
@@ -101,7 +101,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.5.10 (2025-06-18)
 
@@ -117,7 +117,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.5.9 (2025-06-13)
 
@@ -131,7 +131,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.5.8 (2025-06-12)
 
@@ -143,7 +143,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.5.7 (2025-06-11)
 
@@ -161,7 +161,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.5.6 (2025-06-10)
 
@@ -177,7 +177,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.5.5 (2025-06-10)
 
@@ -191,7 +191,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.5.4 (2025-06-10)
 
@@ -203,7 +203,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.5.3 (2025-05-29)
 
@@ -217,7 +217,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.5.2 (2025-05-28)
 
@@ -231,7 +231,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.5.1 (2025-05-28)
 
@@ -245,7 +245,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 # 0.5.0 (2025-05-27)
 
@@ -257,7 +257,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.4.4 (2025-05-22)
 
@@ -267,7 +267,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.4.3 (2025-05-20)
 
@@ -275,25 +275,25 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.4.2 (2025-05-20)
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.4.1 (2025-05-19)
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 # 0.4.0 (2025-05-07)
 
 ### Features
 
-* allow using tools directly with vercel ai sdk ([#17](https://github.com/GeoDaCenter/openassistant/issues/17)) ([fef9fa2](https://github.com/GeoDaCenter/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaopenjs/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaopenjs/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
 
 ## 0.3.10 (2025-05-06)
 
@@ -303,7 +303,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* tool type errors; update docs ([881891e](https://github.com/GeoDaCenter/openassistant/commit/881891e2bfe80e2fadc5d3c717bf2a6e192b0fae))
+* tool type errors; update docs ([881891e](https://github.com/geodaopenjs/openassistant/commit/881891e2bfe80e2fadc5d3c717bf2a6e192b0fae))
 
 ## 0.3.7 (2025-05-06)
 
@@ -313,7 +313,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* tool type errors; update docs ([881891e](https://github.com/GeoDaCenter/openassistant/commit/881891e2bfe80e2fadc5d3c717bf2a6e192b0fae))
+* tool type errors; update docs ([881891e](https://github.com/geodaopenjs/openassistant/commit/881891e2bfe80e2fadc5d3c717bf2a6e192b0fae))
 
 ## 0.3.7 (2025-05-06)
 
@@ -321,7 +321,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* tool type errors; update docs ([881891e](https://github.com/GeoDaCenter/openassistant/commit/881891e2bfe80e2fadc5d3c717bf2a6e192b0fae))
+* tool type errors; update docs ([881891e](https://github.com/geodaopenjs/openassistant/commit/881891e2bfe80e2fadc5d3c717bf2a6e192b0fae))
 
 ## 0.3.7 (2025-05-06)
 

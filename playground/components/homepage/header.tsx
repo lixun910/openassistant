@@ -52,7 +52,7 @@ export default function Header({ className }: { className: string }) {
         <NavbarItem>
           <Button
             as={Link}
-            href="https://github.com/geodacenter/openassistant"
+            href="https://github.com/geodaopenjs/openassistant"
             variant="light"
             startContent={<Icon icon="mdi:github" width={32} />}
           >

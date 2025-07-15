@@ -2,7 +2,7 @@
 
 > **createBoxplot**(`props`): [`BoxplotDataProps`](../type-aliases/BoxplotDataProps.md)
 
-Defined in: [packages/tools/plots/src/echarts/boxplot/utils.ts:90](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/plots/src/echarts/boxplot/utils.ts#L90)
+Defined in: [packages/tools/plots/src/echarts/boxplot/utils.ts:90](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/tools/plots/src/echarts/boxplot/utils.ts#L90)
 
 Create a boxplot from a list of numbers and option boundIQR (1.5 or 3.0)
 

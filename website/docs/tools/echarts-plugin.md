@@ -159,7 +159,7 @@ Once set up, you can create histograms through natural language prompts:
 
 The assistant will automatically understand your request and use the appropriate visualization function.
 
-See the [example](https://github.com/geodacenter/openassistant/tree/main/examples/echarts_plugin) for more details.
+See the [example](https://github.com/geodaopenjs/openassistant/tree/main/examples/echarts_plugin) for more details.
 
 ### With TailwindCSS
 

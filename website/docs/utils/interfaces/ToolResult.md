@@ -1,6 +1,6 @@
 # Interface: ToolResult
 
-Defined in: [vercel-tool.ts:23](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/vercel-tool.ts#L23)
+Defined in: [vercel-tool.ts:23](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/vercel-tool.ts#L23)
 
 ## Properties
 
@@ -8,7 +8,7 @@ Defined in: [vercel-tool.ts:23](https://github.com/GeoDaCenter/openassistant/blo
 
 > **description**: `string`
 
-Defined in: [vercel-tool.ts:24](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/vercel-tool.ts#L24)
+Defined in: [vercel-tool.ts:24](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/vercel-tool.ts#L24)
 
 ***
 
@@ -16,7 +16,7 @@ Defined in: [vercel-tool.ts:24](https://github.com/GeoDaCenter/openassistant/blo
 
 > `optional` **execute**: (`args`, `options`) => `Promise`\<`unknown`\>
 
-Defined in: [vercel-tool.ts:26](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/vercel-tool.ts#L26)
+Defined in: [vercel-tool.ts:26](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/vercel-tool.ts#L26)
 
 #### Parameters
 
@@ -38,4 +38,4 @@ Defined in: [vercel-tool.ts:26](https://github.com/GeoDaCenter/openassistant/blo
 
 > **parameters**: `Record`\<`string`, `unknown`\>
 
-Defined in: [vercel-tool.ts:25](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/vercel-tool.ts#L25)
+Defined in: [vercel-tool.ts:25](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/vercel-tool.ts#L25)

@@ -5,7 +5,7 @@ sidebar_label: Data Analysis Tools
 
 # @openassistant/geoda
 
-The GeoDa tools for OpenAssistant provides spatial data analysis capabilities using [GeoDa-lib](https://geodacenter.github.io/geoda-lib/).
+The GeoDa tools for OpenAssistant provides spatial data analysis capabilities using [GeoDaLib](https://geodaopenjs.github.io/geodalib/).
 
 <img src="https://openassistant-doc.vercel.app/img/geoda-tools.png" alt="Geoda Plugin" />
 
@@ -100,4 +100,4 @@ Once set up, you can perform spatial analyses through natural language prompts:
 
 The assistant will automatically understand your request and use the appropriate spatial analysis function.
 
-See the [example](https://github.com/geodacenter/openassistant/tree/main/examples/geoda_tools) for more details.
+See the [example](https://github.com/geodaopenjs/openassistant/tree/main/examples/geoda_tools) for more details.

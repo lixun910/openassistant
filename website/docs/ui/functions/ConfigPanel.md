@@ -2,7 +2,7 @@
 
 > **ConfigPanel**(`props`): `Element`
 
-Defined in: [config-panel.tsx:120](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/ui/src/components/config-panel.tsx#L120)
+Defined in: [config-panel.tsx:120](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/ui/src/components/config-panel.tsx#L120)
 
 The AI Assistant configuration panel.
 

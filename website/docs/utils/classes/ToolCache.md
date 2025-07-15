@@ -1,6 +1,6 @@
 # Class: ToolCache
 
-Defined in: [tool-cache.ts:42](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L42)
+Defined in: [tool-cache.ts:42](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L42)
 
 A singleton class to cache the results of tools.
 
@@ -12,7 +12,7 @@ A singleton class to cache the results of tools.
 
 > **get** **toolCache**(): `Record`\<`string`, `unknown`\>
 
-Defined in: [tool-cache.ts:55](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L55)
+Defined in: [tool-cache.ts:55](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L55)
 
 ##### Returns
 
@@ -24,7 +24,7 @@ Defined in: [tool-cache.ts:55](https://github.com/GeoDaCenter/openassistant/blob
 
 > **addDataset**(`toolCallId`, `additionalData`): `void`
 
-Defined in: [tool-cache.ts:59](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L59)
+Defined in: [tool-cache.ts:59](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L59)
 
 #### Parameters
 
@@ -46,7 +46,7 @@ Defined in: [tool-cache.ts:59](https://github.com/GeoDaCenter/openassistant/blob
 
 > **clearCache**(): `void`
 
-Defined in: [tool-cache.ts:79](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L79)
+Defined in: [tool-cache.ts:79](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L79)
 
 #### Returns
 
@@ -58,7 +58,7 @@ Defined in: [tool-cache.ts:79](https://github.com/GeoDaCenter/openassistant/blob
 
 > **getDataset**(`datasetName`): `null` \| [`ToolCacheDataset`](../type-aliases/ToolCacheDataset.md)
 
-Defined in: [tool-cache.ts:93](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L93)
+Defined in: [tool-cache.ts:93](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L93)
 
 #### Parameters
 
@@ -76,7 +76,7 @@ Defined in: [tool-cache.ts:93](https://github.com/GeoDaCenter/openassistant/blob
 
 > **hasDataset**(`datasetName`): `boolean`
 
-Defined in: [tool-cache.ts:89](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L89)
+Defined in: [tool-cache.ts:89](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L89)
 
 #### Parameters
 
@@ -94,7 +94,7 @@ Defined in: [tool-cache.ts:89](https://github.com/GeoDaCenter/openassistant/blob
 
 > **removeDataset**(`datasetName`): `void`
 
-Defined in: [tool-cache.ts:83](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L83)
+Defined in: [tool-cache.ts:83](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L83)
 
 #### Parameters
 
@@ -112,7 +112,7 @@ Defined in: [tool-cache.ts:83](https://github.com/GeoDaCenter/openassistant/blob
 
 > `static` **getInstance**(): [`ToolCache`](ToolCache.md)
 
-Defined in: [tool-cache.ts:48](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L48)
+Defined in: [tool-cache.ts:48](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/tool-cache.ts#L48)
 
 #### Returns
 

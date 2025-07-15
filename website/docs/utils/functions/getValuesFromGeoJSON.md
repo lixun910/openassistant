@@ -2,7 +2,7 @@
 
 > **getValuesFromGeoJSON**(`geojson`, `propertyName`): `unknown`[]
 
-Defined in: [geojson.ts:9](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/geojson.ts#L9)
+Defined in: [geojson.ts:9](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/geojson.ts#L9)
 
 Extracts values for a specific property from a GeoJSON Feature or FeatureCollection
 

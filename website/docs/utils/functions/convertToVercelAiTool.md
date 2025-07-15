@@ -2,7 +2,7 @@
 
 > **convertToVercelAiTool**\<`PARAMETERS`, `RETURN_TYPE`, `ADDITIONAL_DATA`, `CONTEXT`\>(`extendedTool`, `isExecutable`): `object`
 
-Defined in: [vercel-tool.ts:96](https://github.com/GeoDaCenter/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/vercel-tool.ts#L96)
+Defined in: [vercel-tool.ts:96](https://github.com/geodaopenjs/openassistant/blob/0a6a7e7306d75a25dc968b3117f04cb7bd613bec/packages/utils/src/vercel-tool.ts#L96)
 
 Convert an extended tool to a Vercel AI tool.
 
