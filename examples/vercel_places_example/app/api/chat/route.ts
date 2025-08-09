@@ -36,79 +36,74 @@ Please use emojis to make your response more engaging.
 
 export async function POST(req: Request) {
   console.log('🚀 POST /api/chat - Request started');
-  
+
   try {
     const { id: requestId, messages } = await req.json();
-    console.log('📨 Request data:', { 
-      requestId, 
+    console.log('📨 Request data:', {
+      requestId,
       messageCount: messages.length,
-      lastMessage: messages[messages.length - 1]?.content?.substring(0, 100) + '...'
+      lastMessage:
+        messages[messages.length - 1]?.content?.substring(0, 100) + '...',
     });
 
     // Get conversation-scoped ToolOutputManager
     const toolOutputManager =
       await conversationCache.getToolOutputManager(requestId);
 
-  // Start a new session to track tool outputs for this specific request
-  await toolOutputManager.startSession();
+    // Start a new session to track tool outputs for this specific request
+    await toolOutputManager.startSession();
 
-  // Log cache status for this conversation
-  const cacheInfo = await toolOutputManager.getAllToolOutputs();
-  console.log(
-    `Conversation ${requestId}: Found ${cacheInfo.length} cached tool outputs`
-  );
+    // Log cache status for this conversation
+    const cacheInfo = await toolOutputManager.getAllToolOutputs();
+    console.log(
+      `Conversation ${requestId}: Found ${cacheInfo.length} cached tool outputs`
+    );
 
-  // Create all tools using the tools utility
-  const tools = createTools(toolOutputManager);
+    // Create all tools using the tools utility
+    const tools = createTools(toolOutputManager);
 
-  return createDataStreamResponse({
-    execute: (dataStream) => {
-      try {
-        const result = streamText({
-          model: openai('gpt-4o'),
-          messages: messages,
-          system: systemPrompt,
-          tools,
-          async onFinish() {
-            // Only write tool data to client if tools were actually called in THIS request
-            const hasToolOutputsInSession =
-              await toolOutputManager.hasToolOutputsInCurrentSession();
-            if (hasToolOutputsInSession) {
-              const lastToolData =
-                await toolOutputManager.getLastToolOutputFromCurrentSession();
-              if (lastToolData) {
-                console.log('write toolData back to client', lastToolData);
-                // @ts-expect-error - toolAdditionalData is a record of unknown values
-                dataStream.writeMessageAnnotation(lastToolData);
+    return createDataStreamResponse({
+      execute: (dataStream) => {
+        try {
+          const result = streamText({
+            model: openai('gpt-4o'),
+            messages: messages,
+            system: systemPrompt,
+            tools,
+            async onFinish() {
+              // Only write tool data to client if tools were actually called in THIS request
+              const hasToolOutputsInSession =
+                await toolOutputManager.hasToolOutputsInCurrentSession();
+              if (hasToolOutputsInSession) {
+                const lastToolData =
+                  await toolOutputManager.getLastToolOutputFromCurrentSession();
+                if (lastToolData) {
+                  console.log('write toolData back to client', lastToolData);
+                  // @ts-expect-error - toolAdditionalData is a record of unknown values
+                  dataStream.writeMessageAnnotation(lastToolData);
+                }
               }
-            }
 
-            // End the session when request is complete
-            await toolOutputManager.endSession();
-          },
-        });
+              // End the session when request is complete
+              await toolOutputManager.endSession();
+            },
+          });
 
-        result.mergeIntoDataStream(dataStream);
-      } catch (error) {
-        // Ensure session is ended even on error
-        toolOutputManager.endSession().catch(console.error);
-        throw error;
-      }
-    },
-    onError: (error) => {
-      // Error messages are masked by default for security reasons.
-      // If you want to expose the error message to the client, you can do so here:
-      return error instanceof Error ? error.message : String(error);
-    },
-  });
+          result.mergeIntoDataStream(dataStream);
+        } catch (error) {
+          // Ensure session is ended even on error
+          toolOutputManager.endSession().catch(console.error);
+          throw error;
+        }
+      },
+      onError: (error) => {
+        // Error messages are masked by default for security reasons.
+        // If you want to expose the error message to the client, you can do so here:
+        return error instanceof Error ? error.message : String(error);
+      },
+    });
   } catch (error) {
     console.error('❌ Error in POST /api/chat:', error);
     throw error;
   }
 }
-
-// Debug endpoint to check cache status
-export async function GET() {
-  const cacheStatus = await conversationCache.getStatus();
-  return Response.json(cacheStatus);
-} 
