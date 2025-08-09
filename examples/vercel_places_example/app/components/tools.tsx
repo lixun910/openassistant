@@ -19,7 +19,12 @@ interface ToolInvocationProps {
   state: string;
   toolName: string;
   additionalData: unknown;
-  getValues: (datasetName: string, variableName: string) => Promise<unknown[]>;
+  getValues: (
+    // eslint-disable-next-line no-unused-vars
+    datasetName: string,
+    // eslint-disable-next-line no-unused-vars
+    variableName: string
+  ) => Promise<unknown[]>;
 }
 
 export function ToolInvocation({
@@ -48,7 +53,9 @@ export function ToolInvocation({
         // For these tools, we'll just display the result as JSON for now
         return (
           <div key={toolCallId} className="mt-4 p-4 bg-gray-50 rounded-lg">
-            <h3 className="font-semibold mb-2 capitalize">{toolName} Result:</h3>
+            <h3 className="font-semibold mb-2 capitalize">
+              {toolName} Result:
+            </h3>
             <pre className="text-sm overflow-auto max-h-96">
               {JSON.stringify(additionalData, null, 2)}
             </pre>
@@ -57,4 +64,4 @@ export function ToolInvocation({
     }
   }
   return null;
-} 
+}

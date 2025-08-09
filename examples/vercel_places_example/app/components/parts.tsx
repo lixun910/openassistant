@@ -17,6 +17,7 @@ const MemoizedToolInvocation = memo(ToolInvocation);
 export const MessageParts = memo(function MessageParts({
   parts,
   toolAdditionalData,
+  getValues,
 }: {
   parts: Array<
     | TextUIPart
@@ -27,6 +28,7 @@ export const MessageParts = memo(function MessageParts({
     | StepStartUIPart
   >;
   toolAdditionalData: Record<string, unknown>;
+  // eslint-disable-next-line no-unused-vars
   getValues: (datasetName: string, variableName: string) => Promise<unknown[]>;
 }) {
   return (
@@ -45,7 +47,7 @@ export const MessageParts = memo(function MessageParts({
                 state={state}
                 toolName={toolName}
                 additionalData={additionalData}
-                getValues={() => Promise.resolve([])}
+                getValues={getValues}
               />
             );
           }
@@ -54,4 +56,4 @@ export const MessageParts = memo(function MessageParts({
       <br />
     </div>
   );
-}); 
+});
