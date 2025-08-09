@@ -1,3 +1,14 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## 0.5.15 (2025-08-09)
+
+### Features
+
+* add places tool ([#33](https://github.com/geodaai/openassistant/issues/33)) ([57ce710](https://github.com/geodaai/openassistant/commit/57ce710511485b85a09c900e753f074556ec21dd))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -13,4 +24,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for location-based searches with coordinates or geocodable localities
 - Rate limiting for Foursquare API calls
 - Comprehensive TypeScript types and documentation
-- Integration with OpenAssistant tool system 
+- Integration with OpenAssistant tool system
