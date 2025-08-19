@@ -35,10 +35,10 @@ export class OpenAIAssistant extends VercelAiClient {
   public static override configure(config: VercelAiClientConfigureProps) {
     // Check if model has changed
     const modelChanged = config.model && config.model !== OpenAIAssistant.model;
-    
+
     // call parent configure
     super.configure(config);
-    
+
     // If model changed, reset the instance to force recreation
     if (modelChanged) {
       if (OpenAIAssistant.instance) {
@@ -70,7 +70,10 @@ export class OpenAIAssistant extends VercelAiClient {
       const options: OpenAIProviderSettings = {
         apiKey: OpenAIAssistant.apiKey,
         baseURL: OpenAIAssistant.baseURL,
-        compatibility: 'strict', // strict mode, enable when using the OpenAI API
+        compatibility:
+          OpenAIAssistant.baseURL === DEFAULT_OPENAI_BASE_URL
+            ? 'strict'
+            : 'compatible',
       };
 
       // Initialize openai instance
@@ -79,7 +82,7 @@ export class OpenAIAssistant extends VercelAiClient {
       // create a language model from the provider instance
       this.llm = this.providerInstance(OpenAIAssistant.model, {
         structuredOutputs: false,
-        downloadImages: true
+        downloadImages: true,
       });
 
       // create a openai client instance for whisper transcription
