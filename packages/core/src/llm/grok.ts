@@ -13,11 +13,13 @@ interface Module {
   createXai: (options: { apiKey: string; baseURL: string }) => XaiProvider;
 }
 
+const DEFAULT_XAI_BASE_URL = 'https://api.grok.com/v1';
+
 /**
  * XAi Grok Assistant LLM for Client only
  */
 export class XaiAssistant extends VercelAiClient {
-  protected static baseURL = 'https://api.grok.com/v1';
+  protected static baseURL = DEFAULT_XAI_BASE_URL;
   protected providerInstance: XaiProvider | null = null;
 
   protected static instance: XaiAssistant | null = null;
@@ -29,12 +31,15 @@ export class XaiAssistant extends VercelAiClient {
   public static override configure(config: VercelAiClientConfigureProps) {
     // Check if model has changed
     const modelChanged = config.model && config.model !== XaiAssistant.model;
-    
+    const baseURLChanged =
+      config.baseURL && config.baseURL !== XaiAssistant.baseURL;
+
     // call parent configure
     super.configure(config);
-    
-    // If model changed, reset the instance to force recreation
-    if (modelChanged) {
+    if (config.baseURL) XaiAssistant.baseURL = config.baseURL;
+
+    // If model or baseURL changed, reset the instance to force recreation
+    if (modelChanged || baseURLChanged) {
       if (XaiAssistant.instance) {
         XaiAssistant.instance.restart();
       }
@@ -66,22 +71,20 @@ export class XaiAssistant extends VercelAiClient {
   }
 
   private initializeProvider(module: Module) {
-    if (!XaiAssistant.apiKey) {
-      return;
+    if (XaiAssistant.apiKey || XaiAssistant.baseURL !== DEFAULT_XAI_BASE_URL) {
+      const options = {
+        apiKey: XaiAssistant.apiKey,
+        baseURL: XaiAssistant.baseURL,
+      };
+
+      this.providerInstance = module.createXai(options);
+
+      if (!this.providerInstance) {
+        throw new Error('Failed to initialize Xai');
+      }
+
+      this.llm = this.providerInstance(XaiAssistant.model);
     }
-
-    const options = {
-      apiKey: XaiAssistant.apiKey,
-      baseURL: XaiAssistant.baseURL,
-    };
-
-    this.providerInstance = module.createXai(options);
-
-    if (!this.providerInstance) {
-      throw new Error('Failed to initialize Xai');
-    }
-
-    this.llm = this.providerInstance(XaiAssistant.model);
   }
 
   public static async getInstance(): Promise<XaiAssistant> {

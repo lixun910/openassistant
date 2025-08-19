@@ -33,14 +33,16 @@ export class OpenAIAssistant extends VercelAiClient {
   }
 
   public static override configure(config: VercelAiClientConfigureProps) {
-    // Check if model has changed
+    // Check if instance needs to be restarted
     const modelChanged = config.model && config.model !== OpenAIAssistant.model;
+    const baseURLChanged = config.baseURL && config.baseURL !== OpenAIAssistant.baseURL;
 
     // call parent configure
     super.configure(config);
+    if (config.baseURL) OpenAIAssistant.baseURL = config.baseURL;
 
-    // If model changed, reset the instance to force recreation
-    if (modelChanged) {
+    // If model or baseURL changed, reset the instance to force recreation
+    if (modelChanged || baseURLChanged) {
       if (OpenAIAssistant.instance) {
         OpenAIAssistant.instance.restart();
       }
@@ -65,7 +67,7 @@ export class OpenAIAssistant extends VercelAiClient {
   private constructor() {
     super();
 
-    if (OpenAIAssistant.apiKey) {
+    if (OpenAIAssistant.apiKey || OpenAIAssistant.baseURL !== DEFAULT_OPENAI_BASE_URL) {
       // only apiKey is provided, so we can create the openai LLM instance in the client
       const options: OpenAIProviderSettings = {
         apiKey: OpenAIAssistant.apiKey,
