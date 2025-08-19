@@ -12,7 +12,7 @@ import {
 import { Message } from '@ai-sdk/ui-utils';
 import { tiktokenCounterPerMessage } from '../utils/token-counter';
 import { trimMessages } from '../utils/trim-messages';
-import { executeToolCall } from 'src/utils/toolcall';
+import { executeToolCall } from '../utils/toolcall';
 
 /**
  * Chat handler class to manage chat requests and responses
