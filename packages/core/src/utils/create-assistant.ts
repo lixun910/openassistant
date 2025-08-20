@@ -43,7 +43,7 @@ function isExtendedTool(tool: Tool | ExtendedTool): tool is ExtendedTool {
  * });
  */
 export async function createAssistant(props: UseAssistantProps) {
-  const AssistantModel = GetAssistantModelByProvider({
+  const AssistantModel = await GetAssistantModelByProvider({
     provider: props.modelProvider,
     chatEndpoint: props.chatEndpoint,
   });
@@ -87,7 +87,7 @@ export async function createAssistant(props: UseAssistantProps) {
               const { additionalData, llmResult } = result;
 
               if (additionalData && toolCallId) {
-                AssistantModel.addToolResult(toolCallId, additionalData);
+                AssistantModel.addToolResult?.(toolCallId, additionalData);
                 if (onToolCompleted) {
                   onToolCompleted(toolCallId, additionalData);
                 }
