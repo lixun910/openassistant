@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.18](https://github.com/geodaai/openassistant/compare/@openassistant/core@0.0.5...@openassistant/core@0.5.18) (2025-08-20)
+
+### Features
+
+* add bedrock provider ([#35](https://github.com/geodaai/openassistant/issues/35)) ([0fe6139](https://github.com/geodaai/openassistant/commit/0fe6139a3c3ffbd2b75e5c2f67cc3f2519fd019b))
+
+## 0.5.17 (2025-08-19)
+
+### Features
+
+* support liteLLM proxy server ([fc9b9d9](https://github.com/geodaai/openassistant/commit/fc9b9d9e72a80187e0b5d42166fccbc8627a1c03))
+
+## 0.5.16 (2025-08-19)
+
+### Bug Fixes
+
+* allow custom baseURL for LLM models ([7bb3ca2](https://github.com/geodaai/openassistant/commit/7bb3ca2b18f66fdc3c6f7934796fd719c439e96e))
+
+## 0.5.14 (2025-07-25)
+
+## 0.5.13 (2025-06-24)
+
+### Bug Fixes
+
+* ollama streamText not working ([fbfa874](https://github.com/geodaai/openassistant/commit/fbfa874decaee537639a9fbf62d6ca28796c79ef))
+
+## 0.5.12 (2025-06-20)
+
+## 0.5.11 (2025-06-18)
+
+## 0.5.9 (2025-06-13)
+
+## 0.5.8 (2025-06-12)
+
+## 0.4.4 (2025-05-22)
+
+## 0.4.3 (2025-05-20)
+
+## 0.4.2 (2025-05-20)
+
+### Features
+
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaai/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaai/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+* update playground ([#15](https://github.com/geodaai/openassistant/issues/15)) ([6ed4ca9](https://github.com/geodaai/openassistant/commit/6ed4ca97901626b84eb5667bdbab3d38cc33570a))
+
+## 0.0.6 (2025-01-21)
+
 ## [0.5.17](https://github.com/geodaai/openassistant/compare/@openassistant/core@0.0.5...@openassistant/core@0.5.17) (2025-08-19)
 
 ## 0.5.16 (2025-08-19)

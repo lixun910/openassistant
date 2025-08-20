@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.5.18 (2025-08-20)
+
+## 0.5.17 (2025-08-19)
+
+### Features
+
+* support liteLLM proxy server ([fc9b9d9](https://github.com/geodaai/openassistant/commit/fc9b9d9e72a80187e0b5d42166fccbc8627a1c03))
+
+## 0.5.16 (2025-08-19)
+
+## 0.5.14 (2025-07-25)
+
+## 0.5.13 (2025-06-24)
+
+## 0.5.12 (2025-06-20)
+
+## 0.5.11 (2025-06-18)
+
+## 0.5.9 (2025-06-13)
+
+## 0.5.8 (2025-06-12)
+
+## 0.4.4 (2025-05-22)
+
+## 0.4.3 (2025-05-20)
+
+## 0.4.2 (2025-05-20)
+
+### Features
+
+* allow using tools directly with vercel ai sdk ([#17](https://github.com/geodaai/openassistant/issues/17)) ([fef9fa2](https://github.com/geodaai/openassistant/commit/fef9fa2d21938c304a4415c7b2fc3972280e0908))
+
 ## 0.5.17 (2025-08-19)
 
 ## 0.5.16 (2025-08-19)
