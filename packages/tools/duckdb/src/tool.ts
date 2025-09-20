@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
 import { Table as ArrowTable, tableFromArrays } from 'apache-arrow';
-import { z } from 'zod';
 import { getDuckDB } from './query';
 import {
   LocalQueryAdditionalData,
@@ -131,40 +130,56 @@ import { Feature } from 'geojson';
  *  }
  * ```
  */
-export const localQuery = extendedTool<
-  LocalQueryArgs,
-  LocalQueryResult,
-  LocalQueryAdditionalData,
-  LocalQueryContext
->({
-  description: `You are a SQL (duckdb) expert. You can help to query users datasets using select query clause.`,
-  parameters: z.object({
-    datasetName: z.string(),
-    variableNames: z
-      .array(z.string())
-      .describe(
-        'Only use variable names already exist in the dataset. New columns created via SQL expressions should only be referenced in the SQL query.'
-      ),
-    dbTableName: z
-      .string()
-      .describe(
-        'The alias of the table created from from the dataset specified by datasetName. Please use datasetName plus a 6-digit random number to avoid conflicts.'
-      ),
-    sql: z
-      .string()
-      .describe(
-        'IMPORTANT: please use dbTableName instead of the datasetName in SQL query.'
-      ),
-  }),
-  execute: executeLocalQuery,
-  context: {
-    getValues: () => {
-      // get the values of the variable from the dataset,
-      // the values will be used to create and plot the histogram
-      throw new Error('getValues() of LocalQueryTool is not implemented');
+export class LocalQueryTool extends OpenAssistantTool<typeof LocalQueryArgs> {
+  constructor(
+    context: LocalQueryContext = {
+      getValues: () => {
+        // get the values of the variable from the dataset,
+        // the values will be used to create and plot the histogram
+        throw new Error('getValues() of LocalQueryTool is not implemented');
+      },
     },
-  },
+    component?: React.ReactNode,
+    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
+  ) {
+    super(
+      `You are a SQL (duckdb) expert. You can help to query users datasets using select query clause.`,
+      LocalQueryArgs,
+      context,
+      component,
+      onToolCompleted
+    );
+  }
+
+  async execute(
+    params: z.infer<typeof LocalQueryArgs>,
+    options?: { context?: Record<string, unknown> }
+  ): Promise<LocalQueryResult> {
+    return executeLocalQuery(params, options);
+  }
+}
+
+export const LocalQueryArgs = z.object({
+  datasetName: z.string(),
+  variableNames: z
+    .array(z.string())
+    .describe(
+      'Only use variable names already exist in the dataset. New columns created via SQL expressions should only be referenced in the SQL query.'
+    ),
+  dbTableName: z
+    .string()
+    .describe(
+      'The alias of the table created from from the dataset specified by datasetName. Please use datasetName plus a 6-digit random number to avoid conflicts.'
+    ),
+  sql: z
+    .string()
+    .describe(
+      'IMPORTANT: please use dbTableName instead of the datasetName in SQL query.'
+    ),
 });
+
+// For backward compatibility, create a default instance
+export const localQuery = new LocalQueryTool();
 
 async function executeLocalQuery(
   { datasetName, variableNames, sql, dbTableName },
@@ -280,7 +295,5 @@ async function executeLocalQuery(
   }
 }
 
-/**
- * @inheritDoc {@link localQuery}
- */
-export type LocalQueryTool = typeof localQuery;
+// Export the class as the main type
+export type { LocalQueryTool };

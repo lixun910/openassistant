@@ -1,0 +1,97 @@
+// SPDX-License-Identifier: MIT
+// Copyright contributors to the openassistant project
+
+// Define Zod types locally to avoid dependency issues
+export type ZodTypeAny = any;
+export type ZodSchema = any;
+
+// Simple zod-like object for basic validation
+export const z = {
+  object: (schema: Record<string, any>) => schema,
+  string: () => ({ type: 'string' }),
+  number: () => ({ type: 'number' }),
+  boolean: () => ({ type: 'boolean' }),
+  array: (item: any) => ({ type: 'array', items: item }),
+  optional: (schema: any) => ({ ...schema, optional: true }),
+  describe: (schema: any, description: string) => ({ ...schema, description }),
+  min: (schema: any, min: number) => ({ ...schema, min }),
+  max: (schema: any, max: number) => ({ ...schema, max }),
+  default: (schema: any, defaultValue: any) => ({ ...schema, default: defaultValue }),
+  enum: (values: string[]) => ({ type: 'enum', values }),
+  infer: <T>(schema: T): T => schema,
+};
+
+export type ToolExecutionOptions = {
+  toolCallId: string;
+  abortSignal?: AbortSignal;
+};
+
+export type OnToolCompleted = (
+  toolCallId: string,
+  additionalData?: unknown
+) => void;
+
+export type ExecuteFunctionResult<
+  RETURN_TYPE = never,
+  ADDITIONAL_DATA = never,
+> = {
+  llmResult: RETURN_TYPE extends never ? RETURN_TYPE : object;
+  additionalData?: ADDITIONAL_DATA extends never ? ADDITIONAL_DATA : object;
+};
+
+export abstract class OpenAssistantTool<Params extends ZodTypeAny> {
+  description: string;
+  parameters: Params;
+  context: Record<string, unknown>;
+  component?: any; // React component - using any to avoid React dependency
+  onToolCompleted?: OnToolCompleted;
+
+  constructor(
+    description: string,
+    parameters: Params,
+    context: Record<string, unknown> = {},
+    component?: any,
+    onToolCompleted?: OnToolCompleted
+  ) {
+    this.description = description;
+    this.parameters = parameters;
+    this.context = context;
+    this.component = component;
+    this.onToolCompleted = onToolCompleted;
+  }
+
+  /**
+   * Executes the tool's functionality.
+   * @param params - Tool parameters.
+   * @param options - Optional tool call options (Vercel or custom).
+   */
+  abstract execute(
+    params: any, // z.infer<Params> - simplified for now
+    options?: ToolExecutionOptions & { context?: Record<string, unknown> }
+  ): Promise<ExecuteFunctionResult>;
+
+  /**
+   * Convert this tool to a Vercel AI SDK v5 compatible tool.
+   * This method requires the "ai" package to be available at runtime.
+   */
+  public toVercelAiTool() {
+    // This will be implemented by the consuming package
+    throw new Error('toVercelAiTool() must be implemented by the consuming package with the "ai" dependency.');
+  }
+
+  /**
+   * Convert this tool to a LangChain-compatible tool.
+   * This method requires the "@langchain/core/tools" package to be available at runtime.
+   */
+  public toLangchainTool() {
+    throw new Error('toLangchainTool() must be implemented by the consuming package with the "@langchain/core/tools" dependency.');
+  }
+
+  /**
+   * Convert this tool to an Anthropic Claude-compatible tool.
+   * This method requires the "@anthropic-ai/claude-code" package to be available at runtime.
+   */
+  public toAnthropicTool() {
+    throw new Error('toAnthropicTool() must be implemented by the consuming package with the "@anthropic-ai/claude-code" dependency.');
+  }
+}
