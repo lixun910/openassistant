@@ -39,6 +39,14 @@ export type OpenAssistantExecuteFunctionResult<
   additionalData?: ADDITIONAL_DATA extends never ? ADDITIONAL_DATA : object;
 };
 
+export type OpenAssistantToolOptions<Params extends ZodTypeAny> = {
+  description?: string;
+  parameters?: Params;
+  context?: Record<string, unknown>;
+  component?: any; // React component - using any to avoid React dependency
+  onToolCompleted?: OpenAssistantOnToolCompleted;
+};
+
 export abstract class OpenAssistantTool<Params extends ZodTypeAny> {
   description: string;
   parameters: Params;
@@ -46,18 +54,16 @@ export abstract class OpenAssistantTool<Params extends ZodTypeAny> {
   component?: any; // React component - using any to avoid React dependency
   onToolCompleted?: OpenAssistantOnToolCompleted;
 
-  constructor(
-    description: string,
-    parameters: Params,
-    context: Record<string, unknown> = {},
-    component?: any,
-    onToolCompleted?: OpenAssistantOnToolCompleted
-  ) {
-    this.description = description;
-    this.parameters = parameters;
-    this.context = context;
-    this.component = component;
-    this.onToolCompleted = onToolCompleted;
+  // Abstract properties that subclasses must define
+  protected abstract readonly defaultDescription: string;
+  protected abstract readonly defaultParameters: Params;
+
+  constructor(options: OpenAssistantToolOptions<Params> = {}) {
+    this.description = options.description || this.defaultDescription;
+    this.parameters = options.parameters || this.defaultParameters;
+    this.context = options.context || {};
+    this.component = options.component;
+    this.onToolCompleted = options.onToolCompleted;
   }
 
   /**

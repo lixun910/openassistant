@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { generateId, OpenAssistantTool } from '@openassistant/utils';
+import { generateId, OpenAssistantTool, OpenAssistantToolOptions } from '@openassistant/utils';
 import { isSearchAPIToolContext, SearchAPIToolContext } from './register-tools';
 
 // Types for SearchAPI response
@@ -109,10 +109,11 @@ export type ExecuteWebSearchResult = {
 };
 
 /**
- * ## Web Search Tool
+ * ## WebSearchTool Class
  *
- * This tool performs web searches using the SearchAPI with Google search engine. It takes a query string
- * and returns structured search results that can be used by LLMs and saved as JSON datasets.
+ * The WebSearchTool class performs web searches using the SearchAPI with Google search engine.
+ * This tool extends OpenAssistantTool and provides a class-based approach for web search
+ * functionality that returns structured search results for LLMs and can save data as JSON datasets.
  *
  * Example user prompts:
  * - "Search for information about artificial intelligence"
@@ -123,49 +124,49 @@ export type ExecuteWebSearchResult = {
  *
  * @example
  * ```typescript
- * import { webSearch, WebSearchTool } from "@openassistant/places";
- * import { convertToVercelAiTool, ToolCache } from '@openassistant/utils';
+ * import { WebSearchTool } from "@openassistant/places";
+ * import { ToolCache } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
- * // you can use ToolCache to save the web search dataset for later use
- * const toolResultCache = ToolCache.getInstance();
+ * // Simple usage with defaults
+ * const webSearchTool = new WebSearchTool();
  *
- * const webSearchTool: WebSearchTool = {
- *   ...webSearch,
- *   toolContext: {
+ * // Or with custom context and callbacks
+ * const toolResultCache = ToolCache.getInstance();
+ * const webSearchTool = new WebSearchTool(
+ *   undefined, // use default description
+ *   undefined, // use default parameters
+ *   {
  *     getSearchAPIKey: () => process.env.SEARCH_API_KEY!,
  *   },
- *   onToolCompleted: (toolCallId, additionalData) => {
+ *   WebSearchComponent,
+ *   (toolCallId, additionalData) => {
  *     toolResultCache.addDataset(toolCallId, additionalData);
- *   },
- * };
+ *   }
+ * );
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Search for information about artificial intelligence',
  *   tools: {
- *     webSearch: convertToVercelAiTool(webSearchTool),
+ *     webSearch: webSearchTool.toVercelAiTool(),
  *   },
  * });
  * ```
  */
 export class WebSearchTool extends OpenAssistantTool<typeof WebSearchArgs> {
-  constructor(
-    context: SearchAPIToolContext = {
-      getSearchAPIKey: () => {
-        throw new Error('getSearchAPIKey not implemented.');
+  protected readonly defaultDescription = 'Search the web using Google search engine via SearchAPI';
+  protected readonly defaultParameters = WebSearchArgs;
+
+  constructor(options: OpenAssistantToolOptions<typeof WebSearchArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getSearchAPIKey: () => {
+          throw new Error('getSearchAPIKey not implemented.');
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(
-      'Search the web using Google search engine via SearchAPI.',
-      WebSearchArgs,
-      context,
-      component,
-      onToolCompleted
-    );
+    });
   }
 
   async execute(

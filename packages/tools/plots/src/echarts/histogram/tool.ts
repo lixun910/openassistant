@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { OpenAssistantTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId } from '@openassistant/utils';
 import { createHistogramBins } from './utils';
 import {
   EChartsToolContext,
@@ -11,64 +11,63 @@ import {
 } from '../../types';
 
 /**
- * The histogram tool is used to create a histogram chart for a given dataset and variable.
+ * The HistogramTool class creates histogram charts for given datasets and variables.
+ * This tool extends OpenAssistantTool and provides a class-based approach for creating
+ * interactive histogram visualizations using ECharts.
  *
  * @example
  * ```typescript
- * import { histogram, HistogramTool } from '@openassistant/plots';
- * import { convertToVercelAiTool } from '@openassistant/utils';
+ * import { HistogramTool } from '@openassistant/plots';
  * import { generateText } from 'ai';
  *
- * const toolContext = {
- *   getValues: async (datasetName: string, variableName: string) => {
- *     // get the values of the variable from dataset, e.g.
- *     return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ * // Simple usage with defaults
+ * const histogramTool = new HistogramTool();
+ *
+ * // Or with custom context and callbacks
+ * const histogramTool = new HistogramTool(
+ *   undefined, // use default description
+ *   undefined, // use default parameters
+ *   {
+ *     getValues: async (datasetName: string, variableName: string) => {
+ *       // get the values of the variable from dataset, e.g.
+ *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ *     },
  *   },
- * };
- *
- * const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
- *   console.log('Tool call completed:', toolCallId, additionalData);
- *   // render the histogram using <HistogramComponentContainer props={additionalData} />
- * };
- *
- * const histogramTool: HistogramTool = {
- *   ...histogram,
- *   context: toolContext,
- *   onToolCompleted,
- * };
+ *   HistogramComponent,
+ *   (toolCallId, additionalData) => {
+ *     console.log('Tool call completed:', toolCallId, additionalData);
+ *     // render the histogram using <HistogramComponentContainer props={additionalData} />
+ *   }
+ * );
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Can you create a histogram of the revenue per capita for each location in dataset myVenues?',
  *   tools: {
- *     histogram: convertToVercelAiTool(histogramTool),
+ *     histogram: histogramTool.toVercelAiTool(),
  *   },
  * });
  * ```
  */
 export class HistogramTool extends OpenAssistantTool<typeof HistogramArgs> {
-  constructor(
-    context: EChartsToolContext = {
-      getValues: () => {
-        throw new Error('getValues() of HistogramTool is not implemented');
+  protected readonly defaultDescription = 'Create histogram charts for data visualization';
+  protected readonly defaultParameters = HistogramArgs;
+
+  constructor(options: OpenAssistantToolOptions<typeof HistogramArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error('getValues() of HistogramTool is not implemented');
+        },
+        onSelected: () => {},
+        config: {
+          isDraggable: false,
+          isExpanded: false,
+          theme: 'light',
+        },
       },
-      onSelected: () => {},
-      config: {
-        isDraggable: false,
-        isExpanded: false,
-        theme: 'light',
-      },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(
-      'create a histogram',
-      HistogramArgs,
-      context,
-      component,
-      onToolCompleted
-    );
+    });
   }
 
   async execute(

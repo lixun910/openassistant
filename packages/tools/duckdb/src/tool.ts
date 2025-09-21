@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId, z } from '@openassistant/utils';
 import { Table as ArrowTable, tableFromArrays } from 'apache-arrow';
 import { getDuckDB } from './query';
 import {
@@ -13,9 +13,11 @@ import { convertArrowRowToObject } from './merge';
 import { Feature } from 'geojson';
 
 /**
- * ## localQuery Tool
+ * ## LocalQueryTool Class
  * 
- * This tool is used to execute a query against a local dataset.
+ * The LocalQueryTool class executes SQL queries against local datasets using DuckDB.
+ * This tool extends OpenAssistantTool and provides a class-based approach for database
+ * operations in the browser environment.
  *
  * :::note
  * This tool should be executed in Browser environment for now.
@@ -23,25 +25,32 @@ import { Feature } from 'geojson';
  *
  * ### Example
  * ```typescript
- * import { localQuery } from '@openassistant/duckdb';
- * import { convertToVercelAiTool } from '@openassistent/utils';
+ * import { LocalQueryTool } from '@openassistant/duckdb';
  * import { generateText } from 'ai';
  *
- * const localQueryTool: LocalQueryTool = {
- *   ...localQuery,
- *   context: {
- *     ...localQuery.context,
+ * // Simple usage with defaults
+ * const localQueryTool = new LocalQueryTool();
+ *
+ * // Or with custom context and callbacks
+ * const localQueryTool = new LocalQueryTool(
+ *   undefined, // use default description
+ *   undefined, // use default parameters
+ *   {
  *     getValues: async (datasetName: string, variableName: string) => {
  *       // get the values of the variable from your dataset, e.g.
  *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
  *     },
  *   },
- * };
+ *   LocalQueryComponent,
+ *   (toolCallId, additionalData) => {
+ *     console.log('Query completed:', toolCallId, additionalData);
+ *   }
+ * );
  *
  * generateText({
  *   model: 'gpt-4o-mini',
  *   prompt: 'What are the venues in San Francisco?',
- *   tools: {localQuery: convertToVercelAiTool(localQueryTool)},
+ *   tools: {localQuery: localQueryTool.toVercelAiTool()},
  * });
  * ```
  *
@@ -49,12 +58,15 @@ import { Feature } from 'geojson';
  *
  * `app/api/chat/route.ts`
  * ```typescript
- * import { localQuery } from '@openassistant/duckdb';
- * import { convertToVercelAiTool } from '@openassistent/utils';
+ * import { LocalQueryTool } from '@openassistant/duckdb';
  * import { streamText } from 'ai';
  *
  * // localQuery tool will be running on the client side
- * const localQueryTool = convertToVercelAiTool(localQuery, {isExecutable: false});
+ * const localQueryTool = new LocalQueryTool(
+ *   'Execute SQL queries against local datasets',
+ *   LocalQueryArgs,
+ *   { /* context */ }
+ * );
  *
  * export async function POST(req: Request) {
  *   // ...
@@ -69,29 +81,23 @@ import { Feature } from 'geojson';
  * `app/page.tsx`
  * ```typescript
  * import { useChat } from 'ai/react';
- * import { localQuery } from '@openassistant/duckdb';
- * import { convertToVercelAiTool } from '@openassistent/utils';
+ * import { LocalQueryTool } from '@openassistant/duckdb';
  *
- * const myLocalQuery: LocalQueryTool = {
- *   ...localQuery,
- *   context: {
- *     ...localQuery.context,
+ * const myLocalQuery = new LocalQueryTool(
+ *   'Execute SQL queries against local datasets',
+ *   LocalQueryArgs,
+ *   {
  *     getValues: async (datasetName: string, variableName: string) => {
  *       // get the values of the variable from your dataset, e.g.
  *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
  *     },
- *   },
- * };
- *
- * const localQueryTool = convertToVercelAiTool(myLocalQuery);
+ *   }
+ * );
  *
  * const { messages, input, handleInputChange, handleSubmit } = useChat({
  *   maxSteps: 20,
- *   onToolCall: async (toolCall) => {
- *      if (toolCall.name === 'localQuery') {
- *        const result = await localQueryTool.execute(toolCall.args, toolCall.options);
- *        return result;
- *      }
+ *   tools: {
+ *     localQuery: myLocalQuery.toVercelAiTool()
  *   }
  * });
  * ```
@@ -130,24 +136,20 @@ import { Feature } from 'geojson';
  * ```
  */
 export class LocalQueryTool extends OpenAssistantTool<typeof LocalQueryArgs> {
-  constructor(
-    context: LocalQueryContext = {
-      getValues: () => {
-        // get the values of the variable from the dataset,
-        // the values will be used to create and plot the histogram
-        throw new Error('getValues() of LocalQueryTool is not implemented');
+  protected readonly defaultDescription = 'Execute SQL queries against local datasets using DuckDB';
+  protected readonly defaultParameters = LocalQueryArgs;
+
+  constructor(options: OpenAssistantToolOptions<typeof LocalQueryArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          // get the values of the variable from the dataset,
+          // the values will be used to create and plot the histogram
+          throw new Error('getValues() of LocalQueryTool is not implemented');
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(
-      `You are a SQL (duckdb) expert. You can help to query users datasets using select query clause.`,
-      LocalQueryArgs,
-      context,
-      component,
-      onToolCompleted
-    );
+    });
   }
 
   async execute(

@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId, z } from '@openassistant/utils';
 import { computeRegression } from './utils';
 import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../types';
 
 /**
- * The scatterplot tool is used to create a scatterplot chart for a given dataset and variables.
+ * The ScatterplotTool class creates scatter plots for given datasets and variables.
+ * This tool extends OpenAssistantTool and provides a class-based approach for creating
+ * interactive scatter plot visualizations using ECharts.
  *
  * **Example user prompts:**
  * - "Can you create a scatter plot of the population and income for each location in dataset myVenues?"
@@ -15,32 +17,33 @@ import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../type
  *
  * @example
  * ```typescript
- * import { scatterplot, ScatterplotTool } from '@openassistant/plots';
- * import { convertToVercelAiTool } from '@openassistant/utils';
+ * import { ScatterplotTool } from '@openassistant/plots';
  * import { generateText } from 'ai';
  *
- * const toolContext = {
- *   getValues: async (datasetName: string, variableName: string) => {
- *     // get the values of the variable from dataset, e.g.
- *     return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ * // Simple usage with defaults
+ * const scatterplotTool = new ScatterplotTool();
+ *
+ * // Or with custom context and callbacks
+ * const scatterplotTool = new ScatterplotTool(
+ *   undefined, // use default description
+ *   undefined, // use default parameters
+ *   {
+ *     getValues: async (datasetName: string, variableName: string) => {
+ *       // get the values of the variable from dataset, e.g.
+ *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ *     },
  *   },
- * };
- *
- * const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
- *   console.log('Tool call completed:', toolCallId, additionalData);
- *   // render the scatterplot using <ScatterplotComponentContainer props={additionalData} />
- * };
- *
- * const scatterplotTool: ScatterplotTool = {
- *   ...scatterplot,
- *   context: toolContext,
- *   onToolCompleted,
- * };
+ *   ScatterplotComponent,
+ *   (toolCallId, additionalData) => {
+ *     console.log('Tool call completed:', toolCallId, additionalData);
+ *     // render the scatterplot using <ScatterplotComponentContainer props={additionalData} />
+ *   }
+ * );
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'What is the relationship between population and income?',
- *   tools: {scatterplot: convertToVercelAiTool(scatterplotTool)},
+ *   tools: {scatterplot: scatterplotTool.toVercelAiTool()},
  * });
  * ```
  *
@@ -56,30 +59,26 @@ import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../type
  * - get the values of **income** from dataset: getValues('myVenues', 'income')
  */
 export class ScatterplotTool extends OpenAssistantTool<typeof ScatterplotArgs> {
-  constructor(
-    context: EChartsToolContext = {
-      getValues: () => {
-        throw new Error('getValues() of ScatterplotTool is not implemented');
+  protected readonly defaultDescription = 'Create scatter plots for data visualization using ECharts';
+  protected readonly defaultParameters = ScatterplotArgs;
+
+  constructor(options: OpenAssistantToolOptions<typeof ScatterplotArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error('getValues() of ScatterplotTool is not implemented');
+        },
+        onSelected: () => {},
+        config: {
+          isDraggable: false,
+          isExpanded: false,
+          theme: 'light',
+          showLoess: false,
+          showRegressionLine: true,
+        },
       },
-      onSelected: () => {},
-      config: {
-        isDraggable: false,
-        isExpanded: false,
-        theme: 'light',
-        showLoess: false,
-        showRegressionLine: true,
-      },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(
-      'create a scatterplot',
-      ScatterplotArgs,
-      context,
-      component,
-      onToolCompleted
-    );
+    });
   }
 
   async execute(

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, z } from '@openassistant/utils';
 
 import { EChartsToolContext } from '../types';
 
@@ -25,9 +25,11 @@ export type VegaLitePlotAdditionalData = {
 };
 
 /**
- * vegaLitePlot Tool
+ * VegaLitePlotTool Class
  * 
- * This tool is used to create a Vega plot from a dataset and variables.
+ * The VegaLitePlotTool class creates Vega-Lite plots from datasets and variables.
+ * This tool extends OpenAssistantTool and provides a class-based approach for creating
+ * interactive visualizations using the Vega-Lite specification language.
  *
  * There are many different plot types in Vega-Lite, you can find the full list of plot types [here](https://vega.github.io/vega-lite/examples/).
  *
@@ -41,53 +43,54 @@ export type VegaLitePlotAdditionalData = {
  *
  * @example
  * ```ts
- * import { vegaLitePlot, VegaLitePlotTool } from '@openassistant/plots';
- * import { convertToVercelAiTool } from '@openassistant/utils';
+ * import { VegaLitePlotTool } from '@openassistant/plots';
  * import { generateText } from 'ai';
  *
- * const vegaLitePlotTool: VegaLitePlotTool = {
- *   ...vegaLitePlot,
- *   context: {
+ * // Simple usage with defaults
+ * const vegaLitePlotTool = new VegaLitePlotTool();
+ *
+ * // Or with custom context and callbacks
+ * const vegaLitePlotTool = new VegaLitePlotTool(
+ *   undefined, // use default description
+ *   undefined, // use default parameters
+ *   {
  *     getValues: async (datasetName, variableName) => {
  *       // get the values of the variable from dataset, e.g.
  *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
  *     },
  *   },
- *   onToolCompleted: (toolCallId, additionalData) => {
+ *   VegaPlotComponent,
+ *   (toolCallId, additionalData) => {
  *     console.log('Tool call completed:', toolCallId, additionalData);
  *     // you can import { VegaPlotComponent } from '@openassistant/vegalite'; 
  *     // render the Vega plot using <VegaPlotComponent props={additionalData} />
- *   },
- * };
+ *   }
+ * );
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Can you create a bar chart of the population for each location in dataset myVenues?',
  *   tools: {
- *     vegaLitePlot: convertToVercelAiTool(vegaLitePlotTool),
+ *     vegaLitePlot: vegaLitePlotTool.toVercelAiTool(),
  *   },
  * });
  * ```
  */
 export class VegaLitePlotTool extends OpenAssistantTool<typeof VegaLitePlotArgs> {
-  constructor(
-    context: EChartsToolContext = {
-      getValues: async () => {
-        throw new Error(
-          'context getValues() not implemented for vegaLitePlot tool'
-        );
+  protected readonly defaultDescription = 'Create Vega-Lite plots from datasets and variables using Vega-Lite specification';
+  protected readonly defaultParameters = VegaLitePlotArgs;
+
+  constructor(options: OpenAssistantToolOptions<typeof VegaLitePlotArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: async () => {
+          throw new Error(
+            'context getValues() not implemented for vegaLitePlot tool'
+          );
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(
-      'Create a plot using vega-lite. Please follow the vegaLite spec format.',
-      VegaLitePlotArgs,
-      context,
-      component,
-      onToolCompleted
-    );
+    });
   }
 
   async execute(

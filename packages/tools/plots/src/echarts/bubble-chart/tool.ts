@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId, z } from '@openassistant/utils';
 import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../types';
 
 /**
- * The bubble chart tool is used to create a bubble chart for a given dataset and variables.
+ * The BubbleChartTool class creates bubble charts for given datasets and variables.
+ * This tool extends OpenAssistantTool and provides a class-based approach for creating
+ * interactive bubble chart visualizations using ECharts.
  *
  * **Example user prompts:**
  * - "Can you create a bubble chart of the population and income for each location in dataset myVenues, and use the size of the bubble to represent the revenue?"
@@ -13,58 +15,55 @@ import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../type
  *
  * @example
  * ```ts
- * import { bubbleChart, BubbleChartTool } from '@openassistant/plots';
- * import { convertToVercelAiTool } from '@openassistant/utils';
+ * import { BubbleChartTool } from '@openassistant/plots';
  * import { generateText } from 'ai';
  *
- * const toolContext = {
- *   getValues: async (datasetName, variableName) => {
- *     return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ * // Simple usage with defaults
+ * const bubbleChartTool = new BubbleChartTool();
+ *
+ * // Or with custom context and callbacks
+ * const bubbleChartTool = new BubbleChartTool(
+ *   undefined, // use default description
+ *   undefined, // use default parameters
+ *   {
+ *     getValues: async (datasetName, variableName) => {
+ *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ *     },
  *   },
- * };
- *
- * const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
- *   console.log('Tool call completed:', toolCallId, additionalData);
- *   // render the bubble chart using <BubbleChartComponentContainer props={additionalData} />
- * };
- *
- * const bubbleChartTool: BubbleChartTool = {
- *   ...bubbleChart,
- *   context: toolContext,
- *   onToolCompleted,
- * };
+ *   BubbleChartComponent,
+ *   (toolCallId, additionalData) => {
+ *     console.log('Tool call completed:', toolCallId, additionalData);
+ *     // render the bubble chart using <BubbleChartComponentContainer props={additionalData} />
+ *   }
+ * );
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Can you create a bubble chart of the population and income for each location in dataset myVenues, and use the size of the bubble to represent the revenue?',
  *   tools: {
- *     bubbleChart: convertToVercelAiTool(bubbleChartTool),
+ *     bubbleChart: bubbleChartTool.toVercelAiTool(),
  *   },
  * });
  * ```
  */
 export class BubbleChartTool extends OpenAssistantTool<typeof BubbleChartArgs> {
-  constructor(
-    context: EChartsToolContext = {
-      getValues: () => {
-        throw new Error('getValues() of BubbleChartTool is not implemented');
+  protected readonly defaultDescription = 'Create bubble charts for data visualization using ECharts';
+  protected readonly defaultParameters = BubbleChartArgs;
+
+  constructor(options: OpenAssistantToolOptions<typeof BubbleChartArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error('getValues() of BubbleChartTool is not implemented');
+        },
+        onSelected: () => {},
+        config: {
+          isDraggable: false,
+          theme: 'light',
+        },
       },
-      onSelected: () => {},
-      config: {
-        isDraggable: false,
-        theme: 'light',
-      },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(
-      'create a bubble chart',
-      BubbleChartArgs,
-      context,
-      component,
-      onToolCompleted
-    );
+    });
   }
 
   async execute(

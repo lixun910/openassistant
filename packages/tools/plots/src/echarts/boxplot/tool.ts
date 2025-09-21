@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId, z } from '@openassistant/utils';
 
 import { BoxplotDataProps, createBoxplot } from './utils';
 import {
@@ -11,7 +11,9 @@ import {
 } from '../../types';
 
 /**
- * The boxplot tool is used to create a box plot for a given dataset and variable.
+ * The BoxplotTool class creates box plots for given datasets and variables.
+ * This tool extends OpenAssistantTool and provides a class-based approach for creating
+ * interactive box plot visualizations using ECharts.
  *
  * **Example user prompts:**
  * - "Can you create a box plot of the revenue per capita for each location in dataset myVenues?"
@@ -19,58 +21,55 @@ import {
  *
  * @example
  * ```typescript
- * import { boxplot, BoxplotTool } from '@openassistant/plots';
- * import { convertToVercelAiTool } from '@openassistant/utils';
+ * import { BoxplotTool } from '@openassistant/plots';
  * import { generateText } from 'ai';
  *
- * const toolContext = {
- *   getValues: async (datasetName: string, variableName: string) => {
- *     // get the values of the variable from dataset, e.g.
- *     return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ * // Simple usage with defaults
+ * const boxplotTool = new BoxplotTool();
+ *
+ * // Or with custom context and callbacks
+ * const boxplotTool = new BoxplotTool(
+ *   undefined, // use default description
+ *   undefined, // use default parameters
+ *   {
+ *     getValues: async (datasetName: string, variableName: string) => {
+ *       // get the values of the variable from dataset, e.g.
+ *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ *     },
  *   },
- * };
- *
- * const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
- *   console.log('Tool call completed:', toolCallId, additionalData);
- *   // render the boxplot using <BoxplotComponentContainer props={additionalData} />
- * };
- *
- * const boxplotTool: BoxplotTool = {
- *   ...boxplot,
- *   context: toolContext,
- *   onToolCompleted,
- * };
+ *   BoxplotComponent,
+ *   (toolCallId, additionalData) => {
+ *     console.log('Tool call completed:', toolCallId, additionalData);
+ *     // render the boxplot using <BoxplotComponentContainer props={additionalData} />
+ *   }
+ * );
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Can you create a box plot of the revenue per capita for each location in dataset myVenues?',
  *   tools: {
- *     boxplot: convertToVercelAiTool(boxplotTool),
+ *     boxplot: boxplotTool.toVercelAiTool(),
  *   },
  * });
  * ```
  */
 export class BoxplotTool extends OpenAssistantTool<typeof BoxplotArgs> {
-  constructor(
-    context: EChartsToolContext = {
-      getValues: () => {
-        throw new Error('getValues() of BoxplotTool is not implemented');
+  protected readonly defaultDescription = 'Create box plots for data visualization using ECharts';
+  protected readonly defaultParameters = BoxplotArgs;
+
+  constructor(options: OpenAssistantToolOptions<typeof BoxplotArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error('getValues() of BoxplotTool is not implemented');
+        },
+        onSelected: () => {},
+        config: {
+          isDraggable: false,
+        },
       },
-      onSelected: () => {},
-      config: {
-        isDraggable: false,
-      },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(
-      'create a boxplot chart',
-      BoxplotArgs,
-      context,
-      component,
-      onToolCompleted
-    );
+    });
   }
 
   async execute(
