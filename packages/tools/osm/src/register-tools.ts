@@ -2,10 +2,10 @@
 // Copyright contributors to the openassistant project
 
 export interface OsmToolContext {
-  getGeometries?: (datasetName: string) => Promise<any>;
+  getGeometries?: (datasetName: string) => Promise<unknown>;
 }
 
-export function isOsmToolContext(context: any): context is OsmToolContext {
+export function isOsmToolContext(context: unknown): context is OsmToolContext {
   return context && typeof context.getGeometries === 'function';
 }
 
@@ -13,6 +13,6 @@ export interface MapboxToolContext {
   getMapboxToken: () => string;
 }
 
-export function isMapboxToolContext(context: any): context is MapboxToolContext {
+export function isMapboxToolContext(context: unknown): context is MapboxToolContext {
   return context && typeof context.getMapboxToken === 'function';
 }

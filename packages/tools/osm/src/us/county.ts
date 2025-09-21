@@ -6,7 +6,6 @@ import {
   cacheData,
   generateId,
   getCachedData,
-  extendedTool,
 } from '@openassistant/utils';
 import { githubRateLimiter } from '../utils/rateLimiter';
 
