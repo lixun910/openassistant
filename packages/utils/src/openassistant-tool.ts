@@ -84,7 +84,15 @@ export abstract class OpenAssistantTool<Params extends ZodTypeAny> {
       // Convert the OpenAssistant tool to Vercel AI SDK v5 tool format
       return tool({
         description: this.description,
-        parameters: this.parameters, // Vercel AI SDK v5 still uses 'parameters' for backward compatibility
+        inputSchema: this.parameters, // Vercel AI SDK v5 uses 'inputSchema' instead of 'parameters'
+        outputSchema: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            result: { type: 'string' },
+            error: { type: 'string', optional: true }
+          }
+        },
         execute: async (args: any, options: any) => {
           const { toolCallId } = options;
           try {
@@ -99,7 +107,10 @@ export abstract class OpenAssistantTool<Params extends ZodTypeAny> {
               this.onToolCompleted(toolCallId, additionalData);
             }
 
-            return llmResult;
+            return {
+              success: true,
+              result: llmResult
+            };
           } catch (error) {
             console.error(`Execute tool failed: ${error}`);
             return {
