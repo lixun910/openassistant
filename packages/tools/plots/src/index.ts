@@ -18,6 +18,5 @@ export * from './echarts/pcp/utils';
 export * from './echarts/bubble-chart/tool';
 
 export * from './types';
-export * from './register-tools';
 
 export * from './vegalite/tool';

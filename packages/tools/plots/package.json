@@ -32,7 +32,6 @@
   ],
   "dependencies": {
     "@openassistant/utils": "workspace:*",
-    "@openassistant/tools-shared": "workspace:*",
     "d3-array": "^3.2.4",
     "jstat": "^1.9.6",
     "simple-statistics": "^7.8.7",
