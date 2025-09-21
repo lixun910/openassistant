@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool, generateId } from '@openassistant/utils';
-import { z } from 'zod';
+import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
 
 import { BoxplotDataProps, createBoxplot } from './utils';
 import {
@@ -51,54 +50,57 @@ import {
  * });
  * ```
  */
-export const boxplot = extendedTool<
-  // parameters of the tool
-  BoxplotToolArgs,
-  // return type of the tool
-  BoxplotLlmResult,
-  // additional data of the tool
-  BoxplotAdditionalData,
-  // type of the context
-  EChartsToolContext
->({
-  description: 'create a boxplot chart',
-  parameters: z.object({
-    datasetName: z.string().describe('The name of the dataset.'),
-    variableNames: z
-      .array(z.string())
-      .describe('The names of the variables to use in the chart.'),
-    boundIQR: z
-      .number()
-      .optional()
-      .describe(
-        'The bound of the Interquartile Range (IQR). The default value is 1.5'
-      ),
-  }),
-  execute: executeBoxplot,
-  context: {
-    getValues: () => {
-      throw new Error('getValues() of BoxplotTool is not implemented');
+export class BoxplotTool extends OpenAssistantTool<typeof BoxplotArgs> {
+  constructor(
+    context: EChartsToolContext = {
+      getValues: () => {
+        throw new Error('getValues() of BoxplotTool is not implemented');
+      },
+      onSelected: () => {},
+      config: {
+        isDraggable: false,
+      },
     },
-    onSelected: () => {},
-    config: {
-      isDraggable: false,
-    },
-  },
+    component?: React.ReactNode,
+    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
+  ) {
+    super(
+      'create a boxplot chart',
+      BoxplotArgs,
+      context,
+      component,
+      onToolCompleted
+    );
+  }
+
+  async execute(
+    params: z.infer<typeof BoxplotArgs>,
+    options?: { context?: Record<string, unknown> }
+  ): Promise<ExecuteBoxplotResult> {
+    return executeBoxplot(params, options);
+  }
+}
+
+export const BoxplotArgs = z.object({
+  datasetName: z.string().describe('The name of the dataset.'),
+  variableNames: z
+    .array(z.string())
+    .describe('The names of the variables to use in the chart.'),
+  boundIQR: z
+    .number()
+    .optional()
+    .describe(
+      'The bound of the Interquartile Range (IQR). The default value is 1.5'
+    ),
 });
 
-/**
- * The type of the boxplot tool, which contains the following properties:
- *
- * - description: The description of the tool.
- * - parameters: The parameters of the tool.
- * - execute: The function that will be called when the tool is executed.
- * - context: The context of the tool.
- * - component: The component that will be used to render the tool.
- *
- * The implementation of the tool is defined in {@link boxplot}.
- */
-export type BoxplotTool = typeof boxplot;
+// For backward compatibility, create a default instance
+export const boxplot = new BoxplotTool();
 
+// Export the class as the main type
+export type { BoxplotTool };
+
+// Legacy type for backward compatibility
 export type BoxplotToolArgs = z.ZodObject<{
   datasetName: z.ZodString;
   variableNames: z.ZodArray<z.ZodString>;
@@ -139,9 +141,10 @@ export type ExecuteBoxplotResult = {
 };
 
 async function executeBoxplot(
-  { datasetName, variableNames, boundIQR = 1.5 },
-  options
+  params: z.infer<typeof BoxplotArgs>,
+  options?: { context?: Record<string, unknown> }
 ): Promise<ExecuteBoxplotResult> {
+  const { datasetName, variableNames, boundIQR = 1.5 } = params;
   try {
     if (!isEChartsToolContext(options.context)) {
       throw new Error('Invalid context');
