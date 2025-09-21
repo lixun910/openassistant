@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { generateId, OpenAssistantTool } from '@openassistant/utils';
+import { generateId, OpenAssistantTool, OpenAssistantToolOptions } from '@openassistant/utils';
 import { isSearchAPIToolContext, SearchAPIToolContext } from './register-tools';
 
 // Types for SearchAPI response
@@ -158,18 +158,15 @@ export class WebSearchTool extends OpenAssistantTool<typeof WebSearchArgs> {
   protected readonly defaultDescription = 'Search the web using Google search engine via SearchAPI';
   protected readonly defaultParameters = WebSearchArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof WebSearchArgs,
-    context: SearchAPIToolContext = {
-      getSearchAPIKey: () => {
-        throw new Error('getSearchAPIKey not implemented.');
+  constructor(options: OpenAssistantToolOptions<typeof WebSearchArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getSearchAPIKey: () => {
+          throw new Error('getSearchAPIKey not implemented.');
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

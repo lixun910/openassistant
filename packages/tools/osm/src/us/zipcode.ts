@@ -3,6 +3,7 @@
 
 import {
   OpenAssistantTool,
+  OpenAssistantToolOptions,
   cacheData,
   generateId,
   getCachedData,
@@ -88,14 +89,11 @@ export class GetUsZipcodeGeojsonTool extends OpenAssistantTool<typeof GetUsZipco
   protected readonly defaultDescription = 'Get the GeoJSON data of one or more United States zipcodes';
   protected readonly defaultParameters = GetUsZipcodeGeojsonArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof GetUsZipcodeGeojsonArgs,
-    context: object = {},
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof GetUsZipcodeGeojsonArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {},
+    });
   }
 
   async execute(

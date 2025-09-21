@@ -4,6 +4,7 @@
 import { z } from 'zod';
 import {
   OpenAssistantTool,
+  OpenAssistantToolOptions,
   cacheData,
   generateId,
   getCachedData,
@@ -91,14 +92,11 @@ export class GetUsCountyGeojsonTool extends OpenAssistantTool<typeof GetUsCounty
   protected readonly defaultDescription = 'Get GeoJSON data for all counties in a US state by its state code';
   protected readonly defaultParameters = GetUsCountyGeojsonArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof GetUsCountyGeojsonArgs,
-    context: object = {},
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof GetUsCountyGeojsonArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {},
+    });
   }
 
   async execute(

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId, z } from '@openassistant/utils';
 import { Table as ArrowTable, tableFromArrays } from 'apache-arrow';
 import { getDuckDB } from './query';
 import {
@@ -139,20 +139,17 @@ export class LocalQueryTool extends OpenAssistantTool<typeof LocalQueryArgs> {
   protected readonly defaultDescription = 'Execute SQL queries against local datasets using DuckDB';
   protected readonly defaultParameters = LocalQueryArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof LocalQueryArgs,
-    context: LocalQueryContext = {
-      getValues: () => {
-        // get the values of the variable from the dataset,
-        // the values will be used to create and plot the histogram
-        throw new Error('getValues() of LocalQueryTool is not implemented');
+  constructor(options: OpenAssistantToolOptions<typeof LocalQueryArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          // get the values of the variable from the dataset,
+          // the values will be used to create and plot the histogram
+          throw new Error('getValues() of LocalQueryTool is not implemented');
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(
