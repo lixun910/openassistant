@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { z } from 'zod';
-import { OpenAssistantTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
 import { RateLimiter } from './utils/rateLimiter';
 
 // Create a single instance to be shared across all calls
@@ -67,8 +66,7 @@ export class GeocodingTool extends OpenAssistantTool<typeof GeocodingArgs> {
   }
 
   async execute(
-    params: z.infer<typeof GeocodingArgs>,
-    options?: { context?: Record<string, unknown> }
+    params: z.infer<typeof GeocodingArgs>
   ): Promise<{
     llmResult: GeocodingLlmResult;
     additionalData?: GeocodingAdditionalData;

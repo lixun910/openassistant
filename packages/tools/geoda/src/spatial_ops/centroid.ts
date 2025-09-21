@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId } from '@openassistant/utils';
-import { z } from 'zod';
+import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
 import { getCentroids, SpatialGeometry } from '@geoda/core';
 import { Feature, Geometry } from 'geojson';
 

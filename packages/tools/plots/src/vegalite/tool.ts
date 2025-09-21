@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool } from '@openassistant/utils';
-import { z } from 'zod';
+import { OpenAssistantTool, z } from '@openassistant/utils';
 
 import { EChartsToolContext } from '../types';
 
@@ -150,7 +149,7 @@ export class VegaLitePlotTool extends OpenAssistantTool<typeof VegaLitePlotArgs>
           plotType: 'vega-lite',
         },
       };
-    } catch (error) {
+    } catch {
       return {
         llmResult: {
           success: false,

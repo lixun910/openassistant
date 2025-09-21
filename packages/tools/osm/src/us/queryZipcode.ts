@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { z } from 'zod';
-import { cacheData, getCachedData, OpenAssistantTool } from '@openassistant/utils';
+import { cacheData, getCachedData, OpenAssistantTool, z } from '@openassistant/utils';
 import { githubRateLimiter } from '../utils/rateLimiter';
 
 export type QueryZipcodeFunctionArgs = z.ZodObject<{
@@ -81,8 +80,7 @@ export class QueryUSZipcodesTool extends OpenAssistantTool<typeof QueryUSZipcode
   }
 
   async execute(
-    params: z.infer<typeof QueryUSZipcodesArgs>,
-    options?: { context?: Record<string, unknown> }
+    params: z.infer<typeof QueryUSZipcodesArgs>
   ): Promise<ExecuteQueryUSZipcodesResult> {
     try {
       const { mapBounds } = params;

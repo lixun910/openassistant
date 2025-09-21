@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { z } from 'zod';
 import {
   cacheData,
   generateId,
   getCachedData,
   OpenAssistantTool,
+  z,
 } from '@openassistant/utils';
 import { githubRateLimiter } from '../utils/rateLimiter';
 
@@ -91,8 +91,7 @@ export class GetUsStateGeojsonTool extends OpenAssistantTool<typeof GetUsStateGe
   }
 
   async execute(
-    params: z.infer<typeof GetUsStateGeojsonArgs>,
-    options?: { context?: Record<string, unknown> }
+    params: z.infer<typeof GetUsStateGeojsonArgs>
   ): Promise<ExecuteGetUsStateGeojsonResult> {
     try {
       const { stateNames } = params;
