@@ -9,6 +9,8 @@ export * from './geojson';
 export * from './format';
 export * from './tool-output-manager';
 export * from './conversation-cache';
+export * from './convert-to-vercel-ai-tool';
+export * from './convert-from-vercel-ai-tool';
 
 export function generateId() {
   // generate a random id with 10 characters

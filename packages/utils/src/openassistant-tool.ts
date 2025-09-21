@@ -75,8 +75,45 @@ export abstract class OpenAssistantTool<Params extends ZodTypeAny> {
    * This method requires the "ai" package to be available at runtime.
    */
   public toVercelAiTool() {
-    // This will be implemented by the consuming package
-    throw new Error('toVercelAiTool() must be implemented by the consuming package with the "ai" dependency.');
+    // Check if the 'ai' package is available
+    try {
+      // Try to import the Tool type from the 'ai' package
+      const ai = eval('require')('ai');
+      const Tool = ai.Tool;
+      
+      // Convert the OpenAssistant tool to Vercel AI tool format
+      const vercelTool: any = {
+        description: this.description,
+        parameters: this.parameters,
+        execute: async (args: any, options: any) => {
+          const { toolCallId } = options;
+          try {
+            const result = await this.execute(args, { 
+              ...options, 
+              context: { ...this.context, ...options.context } 
+            });
+
+            const { additionalData, llmResult } = result;
+
+            if (additionalData && toolCallId && this.onToolCompleted) {
+              this.onToolCompleted(toolCallId, additionalData);
+            }
+
+            return llmResult;
+          } catch (error) {
+            console.error(`Execute tool failed: ${error}`);
+            return {
+              success: false,
+              error: `Execute tool failed: ${error}`,
+            };
+          }
+        },
+      };
+
+      return vercelTool;
+    } catch (error) {
+      throw new Error('toVercelAiTool() requires the "ai" package to be installed. Please install it with: npm install ai');
+    }
   }
 
   /**
