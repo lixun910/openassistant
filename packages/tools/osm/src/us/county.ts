@@ -3,15 +3,22 @@
 
 import { z } from 'zod';
 import {
+  OpenAssistantTool,
   cacheData,
   generateId,
   getCachedData,
 } from '@openassistant/utils';
 import { githubRateLimiter } from '../utils/rateLimiter';
 
-export type GetUsCountyGeojsonFunctionArgs = z.ZodObject<{
-  fipsCodes: z.ZodArray<z.ZodString>;
-}>;
+export const GetUsCountyGeojsonArgs = z.object({
+  fipsCodes: z.array(
+    z
+      .string()
+      .describe(
+        'The 5-digit FIPS code of a United States county (e.g., 01001 for Autauga County, Alabama)'
+      )
+  ),
+});
 
 export type GetUsCountyGeojsonLlmResult = {
   success: boolean;
@@ -32,7 +39,7 @@ export type ExecuteGetUsCountyGeojsonResult = {
 };
 
 /**
- * getUsCountyGeojson Tool
+ * GetUsCountyGeojsonTool
  *
  * This tool can be used to get the GeoJSON data of one or more United States counties using the Github repository: https://github.com/hyperknot/country-levels-export
  *
@@ -52,47 +59,52 @@ export type ExecuteGetUsCountyGeojsonResult = {
  *
  * @example
  * ```typescript
- * import { getUsCountyGeojson, GetUsCountyGeojsonTool } from "@openassistant/osm";
- * import { convertToVercelAiTool, ToolCache } from '@openassistant/utils';
+ * import { GetUsCountyGeojsonTool } from "@openassistant/osm";
+ * import { ToolCache } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
- * // you can use ToolCache to save the county geojson dataset for later use
- * const toolResultCache = ToolCache.getInstance();
+ * // Simple usage with defaults
+ * const countyTool = new GetUsCountyGeojsonTool();
  *
- * const countyTool: GetUsCountyGeojsonTool = {
- *   ...getUsCountyGeojson,
- *   onToolCompleted: (toolCallId, additionalData) => {
+ * // Or with custom callbacks
+ * const toolResultCache = ToolCache.getInstance();
+ * const countyTool = new GetUsCountyGeojsonTool(
+ *   undefined, // use default description
+ *   undefined, // use default parameters
+ *   {}, // context
+ *   undefined, // component
+ *   (toolCallId, additionalData) => {
  *     toolResultCache.addDataset(toolCallId, additionalData);
- *   },
- * };
+ *   }
+ * );
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'What are the counties in Texas?',
  *   tools: {
- *     county: convertToVercelAiTool(countyTool),
+ *     county: countyTool.toVercelAiTool(),
  *   },
  * });
  * ```
  */
-export const getUsCountyGeojson = extendedTool<
-  GetUsCountyGeojsonFunctionArgs,
-  GetUsCountyGeojsonLlmResult,
-  GetUsCountyGeojsonAdditionalData,
-  object
->({
-  description:
-    'Get GeoJSON data for all counties in a US state by its state code',
-  parameters: z.object({
-    fipsCodes: z.array(
-      z
-        .string()
-        .describe(
-          'The 5-digit FIPS code of a United States county (e.g., 01001 for Autauga County, Alabama)'
-        )
-    ),
-  }),
-  execute: async (args): Promise<ExecuteGetUsCountyGeojsonResult> => {
+export class GetUsCountyGeojsonTool extends OpenAssistantTool<typeof GetUsCountyGeojsonArgs> {
+  protected readonly defaultDescription = 'Get GeoJSON data for all counties in a US state by its state code';
+  protected readonly defaultParameters = GetUsCountyGeojsonArgs;
+
+  constructor(
+    description?: string,
+    parameters?: typeof GetUsCountyGeojsonArgs,
+    context: object = {},
+    component?: React.ReactNode,
+    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
+  ) {
+    super(description, parameters, context, component, onToolCompleted);
+  }
+
+  async execute(
+    args: z.infer<typeof GetUsCountyGeojsonArgs>,
+    options?: { context?: Record<string, unknown> }
+  ): Promise<ExecuteGetUsCountyGeojsonResult> {
     try {
       const { fipsCodes } = args;
       const features: GeoJSON.Feature[] = [];
@@ -149,8 +161,5 @@ export const getUsCountyGeojson = extendedTool<
         },
       };
     }
-  },
-  context: {},
-});
-
-export type GetUsCountyGeojsonTool = typeof getUsCountyGeojson;
+  }
+}

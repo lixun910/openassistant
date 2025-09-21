@@ -2,6 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import {
+  OpenAssistantTool,
   cacheData,
   generateId,
   getCachedData,
@@ -10,9 +11,11 @@ import { z } from 'zod';
 import zips from 'zip3';
 import { githubRateLimiter } from '../utils/rateLimiter';
 
-export type GetUsZipcodeGeojsonFunctionArgs = z.ZodObject<{
-  zipcodes: z.ZodArray<z.ZodString>;
-}>;
+export const GetUsZipcodeGeojsonArgs = z.object({
+  zipcodes: z.array(
+    z.string().describe('The 5-digit zipcode of a United States')
+  ),
+});
 
 export type GetUsZipcodeGeojsonLlmResult = {
   success: boolean;
@@ -33,7 +36,7 @@ export type ExecuteGetUsZipcodeGeojsonResult = {
 };
 
 /**
- * getUsZipcodeGeojson Tool
+ * GetUsZipcodeGeojsonTool
  *
  * This tool can be used to get the GeoJSON data of one or more United States zipcodes from the Github repository: https://github.com/greencoder/us-zipcode-to-geojson*
  *
@@ -52,43 +55,53 @@ export type ExecuteGetUsZipcodeGeojsonResult = {
  *
  * @example
  * ```typescript
- * import { getUsZipcodeGeojson, GetUsZipcodeGeojsonTool } from "@openassistant/osm";
- * import { convertToVercelAiTool, ToolCache } from '@openassistant/utils';
+ * import { GetUsZipcodeGeojsonTool } from "@openassistant/osm";
+ * import { ToolCache } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
- * // you can use ToolCache to save the zipcode geojson dataset for later use
- * const toolResultCache = ToolCache.getInstance();
+ * // Simple usage with defaults
+ * const zipcodeTool = new GetUsZipcodeGeojsonTool();
  *
- * const zipcodeTool: GetUsZipcodeGeojsonTool = {
- *   ...getUsZipcodeGeojson,
- *   onToolCompleted: (toolCallId, additionalData) => {
+ * // Or with custom callbacks
+ * const toolResultCache = ToolCache.getInstance();
+ * const zipcodeTool = new GetUsZipcodeGeojsonTool(
+ *   undefined, // use default description
+ *   undefined, // use default parameters
+ *   {}, // context
+ *   undefined, // component
+ *   (toolCallId, additionalData) => {
  *     toolResultCache.addDataset(toolCallId, additionalData);
- *   },
- * };
+ *   }
+ * );
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Get all zipcodes in California',
  *   tools: {
- *     zipcode: convertToVercelAiTool(zipcodeTool),
+ *     zipcode: zipcodeTool.toVercelAiTool(),
  *   },
  * });
  * ```
  *
  */
-export const getUsZipcodeGeojson = extendedTool<
-  GetUsZipcodeGeojsonFunctionArgs,
-  GetUsZipcodeGeojsonLlmResult,
-  GetUsZipcodeGeojsonAdditionalData,
-  object
->({
-  description: 'Get the GeoJSON data of one or more United States zipcodes',
-  parameters: z.object({
-    zipcodes: z.array(
-      z.string().describe('The 5-digit zipcode of a United States')
-    ),
-  }),
-  execute: async (args): Promise<ExecuteGetUsZipcodeGeojsonResult> => {
+export class GetUsZipcodeGeojsonTool extends OpenAssistantTool<typeof GetUsZipcodeGeojsonArgs> {
+  protected readonly defaultDescription = 'Get the GeoJSON data of one or more United States zipcodes';
+  protected readonly defaultParameters = GetUsZipcodeGeojsonArgs;
+
+  constructor(
+    description?: string,
+    parameters?: typeof GetUsZipcodeGeojsonArgs,
+    context: object = {},
+    component?: React.ReactNode,
+    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
+  ) {
+    super(description, parameters, context, component, onToolCompleted);
+  }
+
+  async execute(
+    args: z.infer<typeof GetUsZipcodeGeojsonArgs>,
+    options?: { context?: Record<string, unknown> }
+  ): Promise<ExecuteGetUsZipcodeGeojsonResult> {
     try {
       const { zipcodes } = args;
       const features: GeoJSON.Feature[] = [];
@@ -147,8 +160,5 @@ export const getUsZipcodeGeojson = extendedTool<
         },
       };
     }
-  },
-  context: {},
-});
-
-export type GetUsZipcodeGeojsonTool = typeof getUsZipcodeGeojson;
+  }
+}
