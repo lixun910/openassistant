@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId, z } from '@openassistant/utils';
 import { RateLimiter } from './utils/rateLimiter';
 
 // Create a single instance to be shared across all calls
@@ -69,14 +69,11 @@ export class GeocodingTool extends OpenAssistantTool<typeof GeocodingArgs> {
   protected readonly defaultDescription = 'Convert addresses to geographic coordinates using OpenStreetMap Nominatim';
   protected readonly defaultParameters = GeocodingArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof GeocodingArgs,
-    context: GeocodingToolContext = {},
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof GeocodingArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {},
+    });
   }
 
   async execute(

@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { OpenAssistantTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId } from '@openassistant/utils';
 import { createHistogramBins } from './utils';
 import {
   EChartsToolContext,
@@ -53,24 +53,21 @@ export class HistogramTool extends OpenAssistantTool<typeof HistogramArgs> {
   protected readonly defaultDescription = 'Create histogram charts for data visualization';
   protected readonly defaultParameters = HistogramArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof HistogramArgs,
-    context: EChartsToolContext = {
-      getValues: () => {
-        throw new Error('getValues() of HistogramTool is not implemented');
+  constructor(options: OpenAssistantToolOptions<typeof HistogramArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error('getValues() of HistogramTool is not implemented');
+        },
+        onSelected: () => {},
+        config: {
+          isDraggable: false,
+          isExpanded: false,
+          theme: 'light',
+        },
       },
-      onSelected: () => {},
-      config: {
-        isDraggable: false,
-        isExpanded: false,
-        theme: 'light',
-      },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

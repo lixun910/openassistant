@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { getCartogram } from '@geoda/core';
-import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId, z } from '@openassistant/utils';
 import { isSpatialToolContext } from '../utils';
 import { Feature } from 'geojson';
 import { SpatialToolContext } from '../types';
@@ -68,17 +68,14 @@ export class CartogramTool extends OpenAssistantTool<typeof CartogramArgs> {
   protected readonly defaultDescription = 'Create a dorling cartogram from given geometries and a variable';
   protected readonly defaultParameters = CartogramArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof CartogramArgs,
-    context: SpatialToolContext = {
-      getGeometries: async () => null,
-      getValues: async () => [],
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof CartogramArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getGeometries: async () => null,
+        getValues: async () => [],
+      },
+    });
   }
 
   async execute(

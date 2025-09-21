@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, z } from '@openassistant/utils';
 import { getArea } from '@geoda/core';
 import { SpatialToolContext } from '../types';
 import { isSpatialToolContext } from '../utils';
@@ -90,16 +90,13 @@ export class AreaTool extends OpenAssistantTool<typeof AreaArgs> {
   protected readonly defaultDescription = 'Calculate area of geometries in a GeoJSON dataset';
   protected readonly defaultParameters = AreaArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof AreaArgs,
-    context: SpatialToolContext = {
-      getGeometries: async () => null,
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof AreaArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getGeometries: async () => null,
+      },
+    });
   }
 
   async execute(
