@@ -5,7 +5,7 @@ import {
   cacheData,
   generateId,
   getCachedData,
-  extendedTool,
+  OpenAssistantTool,
 } from '@openassistant/utils';
 import { z } from 'zod';
 import zips from 'zip3';

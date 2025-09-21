@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { extendedTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, generateId } from '@openassistant/utils';
 import {
   ParallelCoordinateDataProps,
   processParallelCoordinateData,
@@ -54,36 +54,52 @@ import {
  * });
  * ```
  */
-export const pcp = extendedTool<
-  PCPFunctionArgs,
-  PCPLlmResult,
-  PCPAdditionalData,
-  EChartsToolContext
->({
-  description: 'create a parallel coordinates plot',
-  parameters: z.object({
-    datasetName: z.string().describe('The name of the dataset.'),
-    variableNames: z
-      .array(z.string())
-      .describe(
-        'Make sure the user provide at least two variables to create a PCP.'
-      ),
-  }),
-  execute: executePCP,
-  context: {
-    getValues: () => {
-      throw new Error('getValues() of PCPTool is not implemented');
+export class PCPTool extends OpenAssistantTool<typeof PCPArgs> {
+  constructor(
+    context: EChartsToolContext = {
+      getValues: () => {
+        throw new Error('getValues() of PCPTool is not implemented');
+      },
+      onSelected: () => {},
+      config: {
+        isDraggable: false,
+        isExpanded: false,
+        theme: 'light',
+      },
     },
-    onSelected: () => {},
-    config: {
-      isDraggable: false,
-      isExpanded: false,
-      theme: 'light',
-    },
-  },
+    component?: React.ReactNode,
+    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
+  ) {
+    super(
+      'create a parallel coordinates plot',
+      PCPArgs,
+      context,
+      component,
+      onToolCompleted
+    );
+  }
+
+  async execute(
+    params: z.infer<typeof PCPArgs>,
+    options?: { context?: Record<string, unknown> }
+  ): Promise<ExecutePCPResult> {
+    return executePCP(params, options);
+  }
+}
+
+export const PCPArgs = z.object({
+  datasetName: z.string().describe('The name of the dataset.'),
+  variableNames: z
+    .array(z.string())
+    .describe(
+      'Make sure the user provide at least two variables to create a PCP.'
+    ),
 });
 
-export type PCPTool = typeof pcp;
+// For backward compatibility, create a default instance
+export const pcp = new PCPTool();
+
+export type { PCPTool };
 
 export type PCPFunctionArgs = z.ZodObject<{
   datasetName: z.ZodString;

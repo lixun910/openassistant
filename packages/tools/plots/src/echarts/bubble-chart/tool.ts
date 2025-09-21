@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { extendedTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, generateId } from '@openassistant/utils';
 import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../types';
 
 /**
@@ -44,36 +44,52 @@ import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../type
  * });
  * ```
  */
-export const bubbleChart = extendedTool<
-  BubbleChartToolArgs,
-  BubbleChartLlmResult,
-  BubbleChartAdditionalData,
-  EChartsToolContext
->({
-  description: 'create a bubble chart',
-  parameters: z.object({
-    datasetName: z.string(),
-    variableX: z.string(),
-    variableY: z.string(),
-    variableSize: z
-      .string()
-      .describe('The name of the variable to use for bubble size.'),
-    variableColor: z.string().optional(),
-  }),
-  execute: executeBubbleChart,
-  context: {
-    getValues: () => {
-      throw new Error('getValues() of BubbleChartTool is not implemented');
+export class BubbleChartTool extends OpenAssistantTool<typeof BubbleChartArgs> {
+  constructor(
+    context: EChartsToolContext = {
+      getValues: () => {
+        throw new Error('getValues() of BubbleChartTool is not implemented');
+      },
+      onSelected: () => {},
+      config: {
+        isDraggable: false,
+        theme: 'light',
+      },
     },
-    onSelected: () => {},
-    config: {
-      isDraggable: false,
-      theme: 'light',
-    },
-  },
+    component?: React.ReactNode,
+    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
+  ) {
+    super(
+      'create a bubble chart',
+      BubbleChartArgs,
+      context,
+      component,
+      onToolCompleted
+    );
+  }
+
+  async execute(
+    params: z.infer<typeof BubbleChartArgs>,
+    options?: { context?: Record<string, unknown> }
+  ): Promise<ExecuteBubbleChartResult> {
+    return executeBubbleChart(params, options);
+  }
+}
+
+export const BubbleChartArgs = z.object({
+  datasetName: z.string(),
+  variableX: z.string(),
+  variableY: z.string(),
+  variableSize: z
+    .string()
+    .describe('The name of the variable to use for bubble size.'),
+  variableColor: z.string().optional(),
 });
 
-export type BubbleChartTool = typeof bubbleChart;
+// For backward compatibility, create a default instance
+export const bubbleChart = new BubbleChartTool();
+
+export type { BubbleChartTool };
 
 export type BubbleChartToolArgs = z.ZodObject<{
   datasetName: z.ZodString;

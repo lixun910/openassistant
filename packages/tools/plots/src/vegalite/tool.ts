@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool } from '@openassistant/utils';
+import { OpenAssistantTool } from '@openassistant/utils';
 import { z } from 'zod';
 
 import { EChartsToolContext } from '../types';
-
-export type VegaLitePlotTool = typeof vegaLitePlot;
 
 export type VegaLitePlotToolArgs = z.ZodObject<{
   datasetName: z.ZodString;
@@ -72,29 +70,37 @@ export type VegaLitePlotAdditionalData = {
  * });
  * ```
  */
-export const vegaLitePlot = extendedTool<
-  VegaLitePlotToolArgs,
-  VegaLitePlotLlmResult,
-  VegaLitePlotAdditionalData,
-  EChartsToolContext
->({
-  description:
-    'Create a plot using vega-lite. Please follow the vegaLite spec format.',
-  parameters: z.object({
-    datasetName: z.string(),
-    variableNames: z.array(z.string()),
-    vegaLiteSpec: z.string().describe(
-      `The Vega-Lite spec to use to create the plot.
-IMPORTANT: Use 'data-placeholder' as a placeholder to refer to the inline data.
-Example format: {"data": data-placeholder, "mark": "bar", "encoding": {...}, "$schema"}
-Use the following settings to avoid unnecessary axis range expansion for both x and y axes:
-- scale.zero: false on the axis avoids forcing the axis to start at zero.
-`
-    ),
-  }),
-  execute: async ({ datasetName, variableNames, vegaLiteSpec }, options) => {
+export class VegaLitePlotTool extends OpenAssistantTool<typeof VegaLitePlotArgs> {
+  constructor(
+    context: EChartsToolContext = {
+      getValues: async () => {
+        throw new Error(
+          'context getValues() not implemented for vegaLitePlot tool'
+        );
+      },
+    },
+    component?: React.ReactNode,
+    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
+  ) {
+    super(
+      'Create a plot using vega-lite. Please follow the vegaLite spec format.',
+      VegaLitePlotArgs,
+      context,
+      component,
+      onToolCompleted
+    );
+  }
+
+  async execute(
+    params: z.infer<typeof VegaLitePlotArgs>,
+    options?: { context?: Record<string, unknown> }
+  ): Promise<{
+    llmResult: VegaLitePlotLlmResult;
+    additionalData?: VegaLitePlotAdditionalData;
+  }> {
     try {
       const { getValues } = options?.context as EChartsToolContext;
+      const { datasetName, variableNames, vegaLiteSpec } = params;
 
       const data = {};
       await Promise.all(
@@ -135,28 +141,41 @@ Use the following settings to avoid unnecessary axis range expansion for both x 
         llmResult: {
           success: true,
           vegaLiteSpec,
-          result: 'Successfully created Vega-Lite plot',
+          plotType: 'vega-lite',
         },
         additionalData: {
           vegaLiteSpec: vegaLiteSpecWithData,
           datasetName,
           variableNames,
+          plotType: 'vega-lite',
         },
       };
     } catch (error) {
       return {
         llmResult: {
           success: false,
-          result: `Failed to create Vega-Lite plot: ${error}`,
+          vegaLiteSpec: '',
+          plotType: 'vega-lite',
         },
       };
     }
-  },
-  context: {
-    getValues: async () => {
-      throw new Error(
-        'context getValues() not implemented for vegaLitePlot tool'
-      );
-    },
-  },
+  }
+}
+
+export const VegaLitePlotArgs = z.object({
+  datasetName: z.string(),
+  variableNames: z.array(z.string()),
+  vegaLiteSpec: z.string().describe(
+    `The Vega-Lite spec to use to create the plot.
+IMPORTANT: Use 'data-placeholder' as a placeholder to refer to the inline data.
+Example format: {"data": data-placeholder, "mark": "bar", "encoding": {...}, "$schema"}
+Use the following settings to avoid unnecessary axis range expansion for both x and y axes:
+- scale.zero: false on the axis avoids forcing the axis to start at zero.
+`
+  ),
 });
+
+// For backward compatibility, create a default instance
+export const vegaLitePlot = new VegaLitePlotTool();
+
+export type { VegaLitePlotTool };
