@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { extendedTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, generateId } from '@openassistant/utils';
 import { RateLimiter } from './utils/rateLimiter';
 
 // Create a single instance to be shared across all calls
@@ -51,25 +51,30 @@ export type GeocodingAdditionalData = {
  * });
  * ```
  */
-export const geocoding = extendedTool<
-  GeocodingFunctionArgs,
-  GeocodingLlmResult,
-  GeocodingAdditionalData,
-  GeocodingToolContext
->({
-  description:
-    'Geocode an address to get the latitude and longitude of the address',
-  parameters: z.object({
-    address: z.string().describe('The address to geocode'),
-  }),
-  execute: async (
-    args
+export class GeocodingTool extends OpenAssistantTool<typeof GeocodingArgs> {
+  constructor(
+    context: GeocodingToolContext = {},
+    component?: React.ReactNode,
+    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
+  ) {
+    super(
+      'Geocode an address to get the latitude and longitude of the address',
+      GeocodingArgs,
+      context,
+      component,
+      onToolCompleted
+    );
+  }
+
+  async execute(
+    params: z.infer<typeof GeocodingArgs>,
+    options?: { context?: Record<string, unknown> }
   ): Promise<{
     llmResult: GeocodingLlmResult;
     additionalData?: GeocodingAdditionalData;
-  }> => {
+  }> {
     try {
-      const { address } = args;
+      const { address } = params;
 
       // Use the global rate limiter before making the API call
       await nominatimRateLimiter.waitForNextCall();
@@ -159,11 +164,17 @@ export const geocoding = extendedTool<
         },
       };
     }
-  },
-  context: {},
+  }
+}
+
+export const GeocodingArgs = z.object({
+  address: z.string().describe('The address to geocode'),
 });
 
-export type GeocodingTool = typeof geocoding;
+// For backward compatibility, create a default instance
+export const geocoding = new GeocodingTool();
+
+export type { GeocodingTool };
 
 export type ExecuteGeocodingResult = {
   llmResult: {
