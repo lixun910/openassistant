@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { generateId, extendedTool } from '@openassistant/utils';
+import { generateId, OpenAssistantTool } from '@openassistant/utils';
 import { isSearchAPIToolContext, SearchAPIToolContext } from './register-tools';
 
 // Types for SearchAPI response
@@ -149,51 +149,90 @@ export type ExecuteWebSearchResult = {
  * });
  * ```
  */
-export const webSearch = extendedTool<
-  WebSearchFunctionArgs,
-  WebSearchLlmResult,
-  WebSearchAdditionalData,
-  SearchAPIToolContext
->({
-  description: 'Search the web using Google search engine via SearchAPI.',
-  parameters: z.object({
-    query: z
-      .string()
-      .describe(
-        'The search query to perform (e.g., "artificial intelligence", "latest news")'
-      ),
-    engine: z
-      .string()
-      .describe('The search engine to use (default: google)')
-      .optional(),
-    device: z
-      .string()
-      .describe('The device type for search results (default: desktop)')
-      .optional(),
-    google_domain: z
-      .string()
-      .describe('The Google domain to use (default: google.com)')
-      .optional(),
-    hl: z
-      .string()
-      .describe('The language for search results (default: en)')
-      .optional(),
-    gl: z
-      .string()
-      .describe('The country for search results (default: us)')
-      .optional(),
-    num: z
-      .number()
-      .min(1)
-      .max(20)
-      .describe('Number of search results to return (1-20, default: 10)')
-      .optional(),
-  }),
-  execute: async (args, options): Promise<ExecuteWebSearchResult> => {
-    console.log(
-      '🔍 webSearch.execute called with args:',
-      JSON.stringify(args, null, 2)
+export class WebSearchTool extends OpenAssistantTool<typeof WebSearchArgs> {
+  constructor(
+    context: SearchAPIToolContext = {
+      getSearchAPIKey: () => {
+        throw new Error('getSearchAPIKey not implemented.');
+      },
+    },
+    component?: React.ReactNode,
+    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
+  ) {
+    super(
+      'Search the web using Google search engine via SearchAPI.',
+      WebSearchArgs,
+      context,
+      component,
+      onToolCompleted
     );
+  }
+
+  async execute(
+    params: z.infer<typeof WebSearchArgs>,
+    options?: { context?: Record<string, unknown> }
+  ): Promise<ExecuteWebSearchResult> {
+    return executeWebSearch(params, options);
+  }
+}
+
+export const WebSearchArgs = z.object({
+  query: z
+    .string()
+    .describe(
+      'The search query to perform (e.g., "artificial intelligence", "latest news")'
+    ),
+  engine: z
+    .string()
+    .describe('The search engine to use (default: google)')
+    .optional(),
+  device: z
+    .string()
+    .describe('The device type for search results (default: desktop)')
+    .optional(),
+  google_domain: z
+    .string()
+    .describe('The Google domain to use (default: google.com)')
+    .optional(),
+  hl: z
+    .string()
+    .describe('The language for search results (default: en)')
+    .optional(),
+  gl: z
+    .string()
+    .describe('The country for search results (default: us)')
+    .optional(),
+  num: z
+    .number()
+    .min(1)
+    .max(20)
+    .describe('Number of search results to return (1-20, default: 10)')
+    .optional(),
+});
+
+// For backward compatibility, create a default instance
+export const webSearch = new WebSearchTool();
+
+// Export the class as the main type
+export type { WebSearchTool };
+
+async function executeWebSearch(
+  params: z.infer<typeof WebSearchArgs>,
+  options?: { context?: Record<string, unknown> }
+): Promise<ExecuteWebSearchResult> {
+  const {
+    query,
+    engine = 'google',
+    device = 'desktop',
+    google_domain = 'google.com',
+    hl = 'en',
+    gl = 'us',
+    num = 10,
+  } = params;
+  console.log(
+    '🔍 webSearch.execute called with args:',
+    JSON.stringify(params, null, 2)
+  );
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -346,14 +385,10 @@ export const webSearch = extendedTool<
         },
       };
     }
-  },
-  context: {
-    getSearchAPIKey: () => {
-      throw new Error('getSearchAPIKey not implemented.');
-    },
-  },
-});
+  }
+}
 
+// Legacy type for backward compatibility
 export type WebSearchTool = typeof webSearch;
 
 export type WebSearchToolContext = {
