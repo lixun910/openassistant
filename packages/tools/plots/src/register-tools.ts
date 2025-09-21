@@ -4,12 +4,12 @@
 import { OnToolCompleted } from '@openassistant/utils';
 import { createToolRegistry } from '@openassistant/tools-shared';
 
-import { boxplot } from './echarts/boxplot/tool';
-import { bubbleChart } from './echarts/bubble-chart/tool';
-import { histogram } from './echarts/histogram/tool';
-import { pcp } from './echarts/pcp/tool';
-import { scatterplot } from './echarts/scatterplot/tool';
-import { vegaLitePlot } from './vegalite/tool';
+import { boxplot, BoxplotTool } from './echarts/boxplot/tool';
+import { bubbleChart, BubbleChartTool } from './echarts/bubble-chart/tool';
+import { histogram, HistogramTool } from './echarts/histogram/tool';
+import { pcp, PCPTool } from './echarts/pcp/tool';
+import { scatterplot, ScatterplotTool } from './echarts/scatterplot/tool';
+import { vegaLitePlot, VegaLitePlotTool } from './vegalite/tool';
 import { GetValues, OnSelected } from './types';
 
 // export the enum of tool names, so users can use it to check if a tool is available
@@ -57,3 +57,13 @@ export function getPlotsTools(
 ) {
   return toolRegistry.createAllTools(toolContext, onToolCompleted, isExecutable);
 }
+
+// Export tool classes for direct usage
+export { 
+  BoxplotTool, 
+  BubbleChartTool, 
+  HistogramTool, 
+  PCPTool, 
+  ScatterplotTool, 
+  VegaLitePlotTool 
+};

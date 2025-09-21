@@ -1,18 +1,21 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { localQuery } from './tool';
+import { localQuery, LocalQueryTool } from './tool';
+import { mergeTables, MergeTablesTool } from './merge';
 import { OnToolCompleted } from '@openassistant/utils';
 import { LocalQueryContext } from './types';
-import { createToolRegistry, ToolError, ToolErrorCodes } from '@openassistant/tools-shared';
+import { createToolRegistry } from '@openassistant/tools-shared';
 
 // export the enum of tool names, so users can use it to check if a tool is available
 export enum DuckDBToolNames {
   localQuery = 'localQuery',
+  mergeTables = 'mergeTables',
 }
 
 const toolRegistry = createToolRegistry({
   localQuery,
+  mergeTables,
 });
 
 export const tools = toolRegistry.tools;
@@ -36,3 +39,6 @@ export function getDuckDBTools(
 ) {
   return toolRegistry.createAllTools(toolContext, onToolCompleted, isExecutable);
 }
+
+// Export tool classes for direct usage
+export { LocalQueryTool, MergeTablesTool };
