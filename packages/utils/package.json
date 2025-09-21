@@ -15,13 +15,13 @@
     }
   },
   "dependencies": {
-    "zod": "^3.25.76",
-    "react": "^18.3.1"
+    "react": "^18.3.1",
+    "zod": "^3.25.76"
   },
   "peerDependencies": {
-    "ai": "*",
+    "@anthropic-ai/claude-code": "*",
     "@langchain/core": "*",
-    "@anthropic-ai/claude-code": "*"
+    "ai": "*"
   },
   "publishConfig": {
     "access": "public"

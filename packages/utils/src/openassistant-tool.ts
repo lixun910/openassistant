@@ -21,17 +21,17 @@ export const z = {
   infer: <T>(schema: T): T => schema,
 };
 
-export type ToolExecutionOptions = {
+export type OpenAssistantToolExecutionOptions = {
   toolCallId: string;
   abortSignal?: AbortSignal;
 };
 
-export type OnToolCompleted = (
+export type OpenAssistantOnToolCompleted = (
   toolCallId: string,
   additionalData?: unknown
 ) => void;
 
-export type ExecuteFunctionResult<
+export type OpenAssistantExecuteFunctionResult<
   RETURN_TYPE = never,
   ADDITIONAL_DATA = never,
 > = {
@@ -44,14 +44,14 @@ export abstract class OpenAssistantTool<Params extends ZodTypeAny> {
   parameters: Params;
   context: Record<string, unknown>;
   component?: any; // React component - using any to avoid React dependency
-  onToolCompleted?: OnToolCompleted;
+  onToolCompleted?: OpenAssistantOnToolCompleted;
 
   constructor(
     description: string,
     parameters: Params,
     context: Record<string, unknown> = {},
     component?: any,
-    onToolCompleted?: OnToolCompleted
+    onToolCompleted?: OpenAssistantOnToolCompleted
   ) {
     this.description = description;
     this.parameters = parameters;
@@ -67,8 +67,8 @@ export abstract class OpenAssistantTool<Params extends ZodTypeAny> {
    */
   abstract execute(
     params: any, // z.infer<Params> - simplified for now
-    options?: ToolExecutionOptions & { context?: Record<string, unknown> }
-  ): Promise<ExecuteFunctionResult>;
+    options?: OpenAssistantToolExecutionOptions & { context?: Record<string, unknown> }
+  ): Promise<OpenAssistantExecuteFunctionResult>;
 
   /**
    * Convert this tool to a Vercel AI SDK v5 compatible tool.
