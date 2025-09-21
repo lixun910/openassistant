@@ -77,14 +77,14 @@ export abstract class OpenAssistantTool<Params extends ZodTypeAny> {
   public toVercelAiTool() {
     // Check if the 'ai' package is available
     try {
-      // Try to import the Tool type from the 'ai' package
+      // Try to import the tool function from the 'ai' package
       const ai = eval('require')('ai');
-      const Tool = ai.Tool;
+      const { tool } = ai;
       
-      // Convert the OpenAssistant tool to Vercel AI tool format
-      const vercelTool: any = {
+      // Convert the OpenAssistant tool to Vercel AI SDK v5 tool format
+      return tool({
         description: this.description,
-        parameters: this.parameters,
+        parameters: this.parameters, // Vercel AI SDK v5 still uses 'parameters' for backward compatibility
         execute: async (args: any, options: any) => {
           const { toolCallId } = options;
           try {
@@ -108,9 +108,7 @@ export abstract class OpenAssistantTool<Params extends ZodTypeAny> {
             };
           }
         },
-      };
-
-      return vercelTool;
+      });
     } catch (error) {
       throw new Error('toVercelAiTool() requires the "ai" package to be installed. Please install it with: npm install ai');
     }
