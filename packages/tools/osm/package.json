@@ -29,7 +29,6 @@
   ],
   "dependencies": {
     "@openassistant/utils": "workspace:*",
-    "@openassistant/tools-shared": "workspace:*",
     "zip3": "^1.0.4",
     "zod": "^3.25.76"
   },
