@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId } from '@openassistant/utils';
 import { z } from 'zod';
 import {
   LinearRegressionResult,
@@ -105,18 +105,15 @@ Note:
   `;
   protected readonly defaultParameters = SpatialRegressionArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof SpatialRegressionArgs,
-    context: SpatialRegressionFunctionContext = {
-      getValues: () => {
-        throw new Error('getValues not implemented.');
+  constructor(options: OpenAssistantToolOptions<typeof SpatialRegressionArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error('getValues not implemented.');
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

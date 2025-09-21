@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId } from '@openassistant/utils';
 import {
   CheckGeometryType,
   SpatialGeometry,
@@ -136,24 +136,21 @@ IMPORTANT:
 2. joinVariables should come from the right dataset.`;
   protected readonly defaultParameters = SpatialJoinArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof SpatialJoinArgs,
-    context: SpatialJoinFunctionContext = {
-      getGeometries: () => {
-        throw new Error('getGeometries() of SpatialJoinTool is not implemented');
+  constructor(options: OpenAssistantToolOptions<typeof SpatialJoinArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getGeometries: () => {
+          throw new Error('getGeometries() of SpatialJoinTool is not implemented');
+        },
+        getValues: () => {
+          throw new Error('getValues() of SpatialJoinTool is not implemented');
+        },
+        saveAsDataset: () => {
+          throw new Error('saveAsDataset() of SpatialJoinTool is not implemented');
+        },
       },
-      getValues: () => {
-        throw new Error('getValues() of SpatialJoinTool is not implemented');
-      },
-      saveAsDataset: () => {
-        throw new Error('saveAsDataset() of SpatialJoinTool is not implemented');
-      },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

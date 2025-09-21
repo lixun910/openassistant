@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId } from '@openassistant/utils';
 import { z } from 'zod';
 import {
   localMoran,
@@ -149,18 +149,15 @@ export class LisaTool extends OpenAssistantTool<typeof LisaArgs> {
   protected readonly defaultDescription = 'Apply local indicators of spatial association (LISA) statistics to identify local clusters and spatial outliers.';
   protected readonly defaultParameters = LisaArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof LisaArgs,
-    context: LisaFunctionContext = {
-      getValues: () => {
-        throw new Error('getValues() of LisaTool is not implemented');
+  constructor(options: OpenAssistantToolOptions<typeof LisaArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error('getValues() of LisaTool is not implemented');
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

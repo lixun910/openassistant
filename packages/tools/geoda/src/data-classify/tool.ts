@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions } from '@openassistant/utils';
 import { z } from 'zod';
 import {
   equalIntervalBreaks,
@@ -118,18 +118,15 @@ export class DataClassifyTool extends OpenAssistantTool<typeof DataClassifyArgs>
   protected readonly defaultDescription = 'Classify the data into k bins or categories, and return k-1 or k (for unique values) break values.';
   protected readonly defaultParameters = DataClassifyArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof DataClassifyArgs,
-    context: DataClassifyFunctionContext = {
-      getValues: () => {
-        throw new Error('getValues() of DataClassifyTool is not implemented');
+  constructor(options: OpenAssistantToolOptions<typeof DataClassifyArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error('getValues() of DataClassifyTool is not implemented');
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

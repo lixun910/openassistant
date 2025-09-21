@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, z } from '@openassistant/utils';
 
 import { EChartsToolContext } from '../types';
 

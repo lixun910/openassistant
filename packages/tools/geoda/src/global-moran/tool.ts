@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions } from '@openassistant/utils';
 import { z } from 'zod';
 import { WeightsMeta } from '@geoda/core';
 import { spatialLag } from '@geoda/lisa';
@@ -122,18 +122,15 @@ export class GlobalMoranTool extends OpenAssistantTool<typeof GlobalMoranArgs> {
   protected readonly defaultDescription = "Calculate Global Moran's I for a given variable";
   protected readonly defaultParameters = GlobalMoranArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof GlobalMoranArgs,
-    context: MoranScatterPlotFunctionContext = {
-      getValues: () => {
-        throw new Error('getValues not implemented.');
+  constructor(options: OpenAssistantToolOptions<typeof GlobalMoranArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error('getValues not implemented.');
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

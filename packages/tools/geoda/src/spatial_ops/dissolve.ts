@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId } from '@openassistant/utils';
 import { z } from 'zod';
 import { spatialDissolve } from '@geoda/core';
 import { Feature, Geometry } from 'geojson';
@@ -113,16 +113,13 @@ export class DissolveTool extends OpenAssistantTool<typeof DissolveArgs> {
   protected readonly defaultDescription = 'Dissolve geometries by merging neighboring geometries into a single geometry.';
   protected readonly defaultParameters = DissolveArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof DissolveArgs,
-    context: SpatialToolContext = {
-      getGeometries: async () => null,
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof DissolveArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getGeometries: async () => null,
+      },
+    });
   }
   async execute(
     args: z.infer<typeof DissolveArgs>,

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions } from '@openassistant/utils';
 import { z } from 'zod';
 import { getLength } from '@geoda/core';
 import { isSpatialToolContext } from '../utils';
@@ -80,16 +80,13 @@ export class LengthTool extends OpenAssistantTool<typeof LengthArgs> {
   protected readonly defaultDescription = 'Calculate length of geometries';
   protected readonly defaultParameters = LengthArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof LengthArgs,
-    context: SpatialToolContext = {
-      getGeometries: async () => null,
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof LengthArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getGeometries: async () => null,
+      },
+    });
   }
 
   async execute(

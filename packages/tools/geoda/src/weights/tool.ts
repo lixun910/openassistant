@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, z } from '@openassistant/utils';
 import { createWeights, WeightsMeta, CreateWeightsProps } from '@geoda/core';
 import { WeightsProps, GetGeometries } from '../types';
 
@@ -131,20 +131,17 @@ export class SpatialWeightsTool extends OpenAssistantTool<typeof SpatialWeightsA
   protected readonly defaultDescription = 'Create spatial weights matrices for spatial analysis';
   protected readonly defaultParameters = SpatialWeightsArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof SpatialWeightsArgs,
-    context: SpatialWeightsFunctionContext = {
-      getGeometries: () => {
-        throw new Error(
-          'getGeometries() of SpatialWeightsTool is not implemented'
-        );
+  constructor(options: OpenAssistantToolOptions<typeof SpatialWeightsArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getGeometries: () => {
+          throw new Error(
+            'getGeometries() of SpatialWeightsTool is not implemented'
+          );
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId } from '@openassistant/utils';
 import { calculateRates } from '@geoda/core';
 import { z } from 'zod';
 
@@ -48,18 +48,15 @@ export class RateTool extends OpenAssistantTool<typeof RateArgs> {
   protected readonly defaultDescription = 'Calculate the rates from a base variable and an event variable.';
   protected readonly defaultParameters = RateArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof RateArgs,
-    context: RateContext = {
-      getValues: () => {
-        throw new Error('getValues not implemented.');
+  constructor(options: OpenAssistantToolOptions<typeof RateArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error('getValues not implemented.');
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

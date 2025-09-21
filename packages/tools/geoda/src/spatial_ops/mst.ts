@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { getMinimumSpanningTree } from '@geoda/core';
-import { OpenAssistantTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId } from '@openassistant/utils';
 import { z } from 'zod';
 
 import { SpatialToolContext } from '../types';
@@ -68,16 +68,13 @@ export class MinimumSpanningTreeTool extends OpenAssistantTool<typeof MinimumSpa
   protected readonly defaultDescription = 'Generate the minimum spanning tree';
   protected readonly defaultParameters = MinimumSpanningTreeArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof MinimumSpanningTreeArgs,
-    context: SpatialToolContext = {
-      getGeometries: async () => null,
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof MinimumSpanningTreeArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getGeometries: async () => null,
+      },
+    });
   }
 
   async execute(

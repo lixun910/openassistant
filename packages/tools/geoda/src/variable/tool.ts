@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId, z } from '@openassistant/utils';
 
 import {
   deviationFromMean,
@@ -111,20 +111,17 @@ export class StandardizeVariableTool extends OpenAssistantTool<typeof Standardiz
   protected readonly defaultDescription = 'Standardize the data of a variable using one of the following methods: deviation from mean, standardize MAD, range adjust, range standardize, standardize (Z-score)';
   protected readonly defaultParameters = StandardizeVariableArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof StandardizeVariableArgs,
-    context: StandardizeVariableToolContext = {
-      getValues: () => {
-        throw new Error(
-          'getValues() of StandardizeVariableTool is not implemented'
-        );
+  constructor(options: OpenAssistantToolOptions<typeof StandardizeVariableArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error(
+            'getValues() of StandardizeVariableTool is not implemented'
+          );
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

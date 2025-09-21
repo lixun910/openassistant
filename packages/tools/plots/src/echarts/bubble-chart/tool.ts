@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId, z } from '@openassistant/utils';
 import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../types';
 
 /**
@@ -50,23 +50,20 @@ export class BubbleChartTool extends OpenAssistantTool<typeof BubbleChartArgs> {
   protected readonly defaultDescription = 'Create bubble charts for data visualization using ECharts';
   protected readonly defaultParameters = BubbleChartArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof BubbleChartArgs,
-    context: EChartsToolContext = {
-      getValues: () => {
-        throw new Error('getValues() of BubbleChartTool is not implemented');
+  constructor(options: OpenAssistantToolOptions<typeof BubbleChartArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error('getValues() of BubbleChartTool is not implemented');
+        },
+        onSelected: () => {},
+        config: {
+          isDraggable: false,
+          theme: 'light',
+        },
       },
-      onSelected: () => {},
-      config: {
-        isDraggable: false,
-        theme: 'light',
-      },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

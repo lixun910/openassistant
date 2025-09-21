@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { getThiessenPolygons } from '@geoda/core';
-import { OpenAssistantTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId } from '@openassistant/utils';
 import { z } from 'zod';
 
 import { SpatialToolContext } from '../types';
@@ -67,16 +67,13 @@ export class ThiessenPolygonsTool extends OpenAssistantTool<typeof ThiessenPolyg
   protected readonly defaultDescription = 'Generate thiessen polygons or voronoi diagrams';
   protected readonly defaultParameters = ThiessenPolygonsArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof ThiessenPolygonsArgs,
-    context: SpatialToolContext = {
-      getGeometries: async () => null,
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof ThiessenPolygonsArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getGeometries: async () => null,
+      },
+    });
   }
 
   async execute(

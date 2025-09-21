@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId, z } from '@openassistant/utils';
 
 import { BoxplotDataProps, createBoxplot } from './utils';
 import {
@@ -57,22 +57,19 @@ export class BoxplotTool extends OpenAssistantTool<typeof BoxplotArgs> {
   protected readonly defaultDescription = 'Create box plots for data visualization using ECharts';
   protected readonly defaultParameters = BoxplotArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof BoxplotArgs,
-    context: EChartsToolContext = {
-      getValues: () => {
-        throw new Error('getValues() of BoxplotTool is not implemented');
+  constructor(options: OpenAssistantToolOptions<typeof BoxplotArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error('getValues() of BoxplotTool is not implemented');
+        },
+        onSelected: () => {},
+        config: {
+          isDraggable: false,
+        },
       },
-      onSelected: () => {},
-      config: {
-        isDraggable: false,
-      },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

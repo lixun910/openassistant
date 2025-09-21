@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions } from '@openassistant/utils';
 import { z } from 'zod';
 import { getPerimeter } from '@geoda/core';
 import { SpatialToolContext } from '../types';
@@ -83,16 +83,13 @@ export class PerimeterTool extends OpenAssistantTool<typeof PerimeterArgs> {
   protected readonly defaultDescription = 'Calculate perimeter of geometries';
   protected readonly defaultParameters = PerimeterArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof PerimeterArgs,
-    context: SpatialToolContext = {
-      getGeometries: async () => null,
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof PerimeterArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getGeometries: async () => null,
+      },
+    });
   }
 
   async execute(

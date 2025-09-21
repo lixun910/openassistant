@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId } from '@openassistant/utils';
 import { z } from 'zod';
 import {
   Feature,
@@ -196,16 +196,13 @@ export class GridTool extends OpenAssistantTool<typeof GridArgs> {
   protected readonly defaultDescription = 'Create a grid of polygons that divides a map boundary into rows and columns. The map boundary can be the boundary of a given dataset or the current map view bounds.';
   protected readonly defaultParameters = GridArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof GridArgs,
-    context: SpatialToolContext = {
-      getGeometries: async () => null,
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof GridArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getGeometries: async () => null,
+      },
+    });
   }
   async execute(
     args: z.infer<typeof GridArgs>,
