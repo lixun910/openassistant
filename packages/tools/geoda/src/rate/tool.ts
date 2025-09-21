@@ -151,27 +151,8 @@ export const rate = extendedTool<
         },
       };
     }
-  },
-});
-
-export type RateFunctionArgs = z.ZodObject<{
-  datasetName: z.ZodString;
-  baseVariableName: z.ZodString;
-  eventVariableName: z.ZodString;
-  rateMethod: z.ZodEnum<
-    [
-      'Raw Rates',
-      'Excess Risk',
-      'Empirical Bayes',
-      'Spatial Rates',
-      'Spatial Empirical Bayes',
-      'EB Rate Standardization',
-    ]
-  >;
-  weightsID: z.ZodOptional<z.ZodString>;
-  saveData: z.ZodOptional<z.ZodBoolean>;
-  outputRateVariableName: z.ZodOptional<z.ZodString>;
-}>;
+  }
+}
 
 export type RateLlmResult = {
   success: boolean;
@@ -194,5 +175,3 @@ export function isRateContext(context: unknown): context is RateContext {
     typeof context === 'object' && context !== null && 'getValues' in context
   );
 }
-
-export type RateTool = typeof rate;
