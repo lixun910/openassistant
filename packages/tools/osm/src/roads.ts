@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { OpenAssistantTool, generateId, getBoundsFromGeoJSON } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId, getBoundsFromGeoJSON } from '@openassistant/utils';
 import { RateLimiter } from './utils/rateLimiter';
 import { isOsmToolContext, OsmToolContext } from './register-tools';
 
@@ -122,18 +122,15 @@ export class RoadsTool extends OpenAssistantTool<typeof RoadsArgs> {
   protected readonly defaultDescription = 'Query road networks from OpenStreetMap based on boundary and road type';
   protected readonly defaultParameters = RoadsArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof RoadsArgs,
-    context: OsmToolContext = {
-      getGeometries: () => {
-        throw new Error('getGeometries not implemented.');
+  constructor(options: OpenAssistantToolOptions<typeof RoadsArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getGeometries: () => {
+          throw new Error('getGeometries not implemented.');
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

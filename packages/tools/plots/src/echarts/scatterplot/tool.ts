@@ -62,26 +62,23 @@ export class ScatterplotTool extends OpenAssistantTool<typeof ScatterplotArgs> {
   protected readonly defaultDescription = 'Create scatter plots for data visualization using ECharts';
   protected readonly defaultParameters = ScatterplotArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof ScatterplotArgs,
-    context: EChartsToolContext = {
-      getValues: () => {
-        throw new Error('getValues() of ScatterplotTool is not implemented');
+  constructor(options: OpenAssistantToolOptions<typeof ScatterplotArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error('getValues() of ScatterplotTool is not implemented');
+        },
+        onSelected: () => {},
+        config: {
+          isDraggable: false,
+          isExpanded: false,
+          theme: 'light',
+          showLoess: false,
+          showRegressionLine: true,
+        },
       },
-      onSelected: () => {},
-      config: {
-        isDraggable: false,
-        isExpanded: false,
-        theme: 'light',
-        showLoess: false,
-        showRegressionLine: true,
-      },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

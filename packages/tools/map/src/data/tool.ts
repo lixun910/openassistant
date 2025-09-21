@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId } from '@openassistant/utils';
 import { MapToolContext } from '../register-tools';
 import { z } from 'zod';
 
@@ -86,14 +86,11 @@ export class DownloadMapDataTool extends OpenAssistantTool<typeof DownloadMapDat
   protected readonly defaultDescription = 'Download map data from a url';
   protected readonly defaultParameters = DownloadMapDataArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof DownloadMapDataArgs,
-    context: MapToolContext = {},
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof DownloadMapDataArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {},
+    });
   }
 
   async execute(

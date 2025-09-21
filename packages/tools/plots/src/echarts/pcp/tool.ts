@@ -60,24 +60,21 @@ export class PCPTool extends OpenAssistantTool<typeof PCPArgs> {
   protected readonly defaultDescription = 'Create parallel coordinates plots for data visualization using ECharts';
   protected readonly defaultParameters = PCPArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof PCPArgs,
-    context: EChartsToolContext = {
-      getValues: () => {
-        throw new Error('getValues() of PCPTool is not implemented');
+  constructor(options: OpenAssistantToolOptions<typeof PCPArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: () => {
+          throw new Error('getValues() of PCPTool is not implemented');
+        },
+        onSelected: () => {},
+        config: {
+          isDraggable: false,
+          isExpanded: false,
+          theme: 'light',
+        },
       },
-      onSelected: () => {},
-      config: {
-        isDraggable: false,
-        isExpanded: false,
-        theme: 'light',
-      },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

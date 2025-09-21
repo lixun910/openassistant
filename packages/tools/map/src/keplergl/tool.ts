@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { generateId, OpenAssistantTool } from '@openassistant/utils';
+import { generateId, OpenAssistantTool, OpenAssistantToolOptions } from '@openassistant/utils';
 import { z } from 'zod';
 import {
   FileCacheItem,
@@ -140,14 +140,11 @@ For geojson datasets:
 Proceed directly with map creation unless user specifically asks for guidance on variable selection.`;
   protected readonly defaultParameters = KeplerGlArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof KeplerGlArgs,
-    context: MapToolContext = {},
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof KeplerGlArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {},
+    });
   }
 
   async execute(

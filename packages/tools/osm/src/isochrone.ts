@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { generateId, OpenAssistantTool } from '@openassistant/utils';
+import { generateId, OpenAssistantTool, OpenAssistantToolOptions } from '@openassistant/utils';
 import { FeatureCollection } from 'geojson';
 import { isMapboxToolContext, MapboxToolContext } from './register-tools';
 import { mapboxRateLimiter } from './utils/rateLimiter';
@@ -137,18 +137,15 @@ export class IsochroneTool extends OpenAssistantTool<typeof IsochroneArgs> {
   protected readonly defaultDescription = 'Get isochrone polygons showing reachable areas within a given time limit from a starting point using Mapbox Isochrone API';
   protected readonly defaultParameters = IsochroneArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof IsochroneArgs,
-    context: MapboxToolContext = {
-      getMapboxToken: () => {
-        throw new Error('getMapboxToken not implemented.');
+  constructor(options: OpenAssistantToolOptions<typeof IsochroneArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getMapboxToken: () => {
+          throw new Error('getMapboxToken not implemented.');
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

@@ -80,20 +80,17 @@ export class VegaLitePlotTool extends OpenAssistantTool<typeof VegaLitePlotArgs>
   protected readonly defaultDescription = 'Create Vega-Lite plots from datasets and variables using Vega-Lite specification';
   protected readonly defaultParameters = VegaLitePlotArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof VegaLitePlotArgs,
-    context: EChartsToolContext = {
-      getValues: async () => {
-        throw new Error(
-          'context getValues() not implemented for vegaLitePlot tool'
-        );
+  constructor(options: OpenAssistantToolOptions<typeof VegaLitePlotArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {
+        getValues: async () => {
+          throw new Error(
+            'context getValues() not implemented for vegaLitePlot tool'
+          );
+        },
       },
-    },
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+    });
   }
 
   async execute(

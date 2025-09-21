@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, getBoundsFromGeoJSON } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, getBoundsFromGeoJSON } from '@openassistant/utils';
 import { z } from 'zod';
 
 import { isMapToolContext, MapToolContext } from '../register-tools';
@@ -124,14 +124,11 @@ export class LeafletTool extends OpenAssistantTool<typeof LeafletToolArgs> {
 `;
   protected readonly defaultParameters = LeafletToolArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof LeafletToolArgs,
-    context: MapToolContext = {},
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof LeafletToolArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {},
+    });
   }
 
   async execute(

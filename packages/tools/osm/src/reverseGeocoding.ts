@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { OpenAssistantTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId } from '@openassistant/utils';
 import { RateLimiter } from './utils/rateLimiter';
 
 // Create a single instance to be shared across all calls
@@ -62,14 +62,11 @@ export class ReverseGeocodingTool extends OpenAssistantTool<typeof ReverseGeocod
   protected readonly defaultDescription = 'Reverse geocode coordinates to get the address and location information for a given latitude and longitude';
   protected readonly defaultParameters = ReverseGeocodingArgs;
 
-  constructor(
-    description?: string,
-    parameters?: typeof ReverseGeocodingArgs,
-    context: ReverseGeocodingToolContext = {},
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(description, parameters, context, component, onToolCompleted);
+  constructor(options: OpenAssistantToolOptions<typeof ReverseGeocodingArgs> = {}) {
+    super({
+      ...options,
+      context: options.context || {},
+    });
   }
 
   async execute(
