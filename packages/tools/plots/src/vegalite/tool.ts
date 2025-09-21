@@ -25,9 +25,11 @@ export type VegaLitePlotAdditionalData = {
 };
 
 /**
- * vegaLitePlot Tool
+ * VegaLitePlotTool Class
  * 
- * This tool is used to create a Vega plot from a dataset and variables.
+ * The VegaLitePlotTool class creates Vega-Lite plots from datasets and variables.
+ * This tool extends OpenAssistantTool and provides a class-based approach for creating
+ * interactive visualizations using the Vega-Lite specification language.
  *
  * There are many different plot types in Vega-Lite, you can find the full list of plot types [here](https://vega.github.io/vega-lite/examples/).
  *
@@ -41,30 +43,31 @@ export type VegaLitePlotAdditionalData = {
  *
  * @example
  * ```ts
- * import { vegaLitePlot, VegaLitePlotTool } from '@openassistant/plots';
- * import { convertToVercelAiTool } from '@openassistant/utils';
+ * import { VegaLitePlotTool } from '@openassistant/plots';
  * import { generateText } from 'ai';
  *
- * const vegaLitePlotTool: VegaLitePlotTool = {
- *   ...vegaLitePlot,
- *   context: {
+ * const vegaLitePlotTool = new VegaLitePlotTool(
+ *   'Create Vega-Lite plots from datasets and variables',
+ *   VegaLitePlotArgs,
+ *   {
  *     getValues: async (datasetName, variableName) => {
  *       // get the values of the variable from dataset, e.g.
  *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
  *     },
  *   },
- *   onToolCompleted: (toolCallId, additionalData) => {
+ *   undefined, // component
+ *   (toolCallId, additionalData) => {
  *     console.log('Tool call completed:', toolCallId, additionalData);
  *     // you can import { VegaPlotComponent } from '@openassistant/vegalite'; 
  *     // render the Vega plot using <VegaPlotComponent props={additionalData} />
- *   },
- * };
+ *   }
+ * );
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Can you create a bar chart of the population for each location in dataset myVenues?',
  *   tools: {
- *     vegaLitePlot: convertToVercelAiTool(vegaLitePlotTool),
+ *     vegaLitePlot: vegaLitePlotTool.toVercelAiTool(),
  *   },
  * });
  * ```

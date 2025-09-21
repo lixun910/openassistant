@@ -11,12 +11,13 @@ import {
 } from '../../types';
 
 /**
- * The histogram tool is used to create a histogram chart for a given dataset and variable.
+ * The HistogramTool class creates histogram charts for given datasets and variables.
+ * This tool extends OpenAssistantTool and provides a class-based approach for creating
+ * interactive histogram visualizations using ECharts.
  *
  * @example
  * ```typescript
- * import { histogram, HistogramTool } from '@openassistant/plots';
- * import { convertToVercelAiTool } from '@openassistant/utils';
+ * import { HistogramTool } from '@openassistant/plots';
  * import { generateText } from 'ai';
  *
  * const toolContext = {
@@ -31,17 +32,19 @@ import {
  *   // render the histogram using <HistogramComponentContainer props={additionalData} />
  * };
  *
- * const histogramTool: HistogramTool = {
- *   ...histogram,
- *   context: toolContext,
- *   onToolCompleted,
- * };
+ * const histogramTool = new HistogramTool(
+ *   'Create histogram charts for data visualization',
+ *   HistogramArgs,
+ *   toolContext,
+ *   HistogramComponent,
+ *   onToolCompleted
+ * );
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Can you create a histogram of the revenue per capita for each location in dataset myVenues?',
  *   tools: {
- *     histogram: convertToVercelAiTool(histogramTool),
+ *     histogram: histogramTool.toVercelAiTool(),
  *   },
  * });
  * ```

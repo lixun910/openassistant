@@ -11,7 +11,9 @@ import {
 } from '../../types';
 
 /**
- * The boxplot tool is used to create a box plot for a given dataset and variable.
+ * The BoxplotTool class creates box plots for given datasets and variables.
+ * This tool extends OpenAssistantTool and provides a class-based approach for creating
+ * interactive box plot visualizations using ECharts.
  *
  * **Example user prompts:**
  * - "Can you create a box plot of the revenue per capita for each location in dataset myVenues?"
@@ -19,8 +21,7 @@ import {
  *
  * @example
  * ```typescript
- * import { boxplot, BoxplotTool } from '@openassistant/plots';
- * import { convertToVercelAiTool } from '@openassistant/utils';
+ * import { BoxplotTool } from '@openassistant/plots';
  * import { generateText } from 'ai';
  *
  * const toolContext = {
@@ -35,17 +36,19 @@ import {
  *   // render the boxplot using <BoxplotComponentContainer props={additionalData} />
  * };
  *
- * const boxplotTool: BoxplotTool = {
- *   ...boxplot,
- *   context: toolContext,
- *   onToolCompleted,
- * };
+ * const boxplotTool = new BoxplotTool(
+ *   'Create box plots for data visualization',
+ *   BoxplotArgs,
+ *   toolContext,
+ *   BoxplotComponent,
+ *   onToolCompleted
+ * );
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Can you create a box plot of the revenue per capita for each location in dataset myVenues?',
  *   tools: {
- *     boxplot: convertToVercelAiTool(boxplotTool),
+ *     boxplot: boxplotTool.toVercelAiTool(),
  *   },
  * });
  * ```

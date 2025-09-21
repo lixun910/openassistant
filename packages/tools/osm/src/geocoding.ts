@@ -26,9 +26,11 @@ export type GeocodingAdditionalData = {
 };
 
 /**
- * ## Geocoding Tool
+ * ## GeocodingTool Class
  *
- * This tool converts addresses into geographic coordinates (latitude and longitude) using OpenStreetMap's Nominatim service.
+ * The GeocodingTool class converts addresses into geographic coordinates (latitude and longitude)
+ * using OpenStreetMap's Nominatim service. This tool extends OpenAssistantTool and provides
+ * a class-based approach for geocoding functionality.
  *
  * Example user prompts:
  * - "Find the coordinates for 123 Main Street, New York"
@@ -37,15 +39,19 @@ export type GeocodingAdditionalData = {
  *
  * @example
  * ```typescript
- * import { geocoding, GeocodingTool } from "@openassistant/osm";
- * import { convertToVercelAiTool } from '@openassistant/utils';
+ * import { GeocodingTool } from "@openassistant/osm";
  * import { generateText } from 'ai';
+ *
+ * const geocodingTool = new GeocodingTool(
+ *   'Convert addresses to geographic coordinates using OpenStreetMap Nominatim',
+ *   GeocodingFunctionArgs
+ * );
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'What are the coordinates of the Eiffel Tower?',
  *   tools: {
- *     geocoding: convertToVercelAiTool(geocoding),
+ *     geocoding: geocodingTool.toVercelAiTool(),
  *   },
  * });
  * ```

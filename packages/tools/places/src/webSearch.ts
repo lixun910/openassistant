@@ -109,10 +109,11 @@ export type ExecuteWebSearchResult = {
 };
 
 /**
- * ## Web Search Tool
+ * ## WebSearchTool Class
  *
- * This tool performs web searches using the SearchAPI with Google search engine. It takes a query string
- * and returns structured search results that can be used by LLMs and saved as JSON datasets.
+ * The WebSearchTool class performs web searches using the SearchAPI with Google search engine.
+ * This tool extends OpenAssistantTool and provides a class-based approach for web search
+ * functionality that returns structured search results for LLMs and can save data as JSON datasets.
  *
  * Example user prompts:
  * - "Search for information about artificial intelligence"
@@ -123,28 +124,30 @@ export type ExecuteWebSearchResult = {
  *
  * @example
  * ```typescript
- * import { webSearch, WebSearchTool } from "@openassistant/places";
- * import { convertToVercelAiTool, ToolCache } from '@openassistant/utils';
+ * import { WebSearchTool } from "@openassistant/places";
+ * import { ToolCache } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
  * // you can use ToolCache to save the web search dataset for later use
  * const toolResultCache = ToolCache.getInstance();
  *
- * const webSearchTool: WebSearchTool = {
- *   ...webSearch,
- *   toolContext: {
+ * const webSearchTool = new WebSearchTool(
+ *   'Search the web using Google search engine via SearchAPI',
+ *   WebSearchArgs,
+ *   {
  *     getSearchAPIKey: () => process.env.SEARCH_API_KEY!,
  *   },
- *   onToolCompleted: (toolCallId, additionalData) => {
+ *   undefined, // component
+ *   (toolCallId, additionalData) => {
  *     toolResultCache.addDataset(toolCallId, additionalData);
- *   },
- * };
+ *   }
+ * );
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Search for information about artificial intelligence',
  *   tools: {
- *     webSearch: convertToVercelAiTool(webSearchTool),
+ *     webSearch: webSearchTool.toVercelAiTool(),
  *   },
  * });
  * ```

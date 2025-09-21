@@ -40,6 +40,10 @@ export type ExecuteFunction<
   }
 ) => PromiseLike<ExecuteFunctionResult<RETURN_TYPE, ADDITIONAL_DATA>>;
 
+/**
+ * @deprecated Use OpenAssistantTool class instead. This type will be removed in a future version.
+ * @see OpenAssistantTool
+ */
 export type ExtendedTool<
   PARAMETERS extends Parameters = never,
   RETURN_TYPE = never,
@@ -54,6 +58,10 @@ export type ExtendedTool<
   onToolCompleted?: OnToolCompleted;
 };
 
+/**
+ * @deprecated Use OpenAssistantTool class instead. This function will be removed in a future version.
+ * @see OpenAssistantTool
+ */
 export function extendedTool<
   PARAMETERS extends Parameters = never,
   RETURN_TYPE = never,
