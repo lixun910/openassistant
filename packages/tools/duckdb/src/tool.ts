@@ -5,7 +5,6 @@ import { OpenAssistantTool, generateId, z } from '@openassistant/utils';
 import { Table as ArrowTable, tableFromArrays } from 'apache-arrow';
 import { getDuckDB } from './query';
 import {
-  LocalQueryAdditionalData,
   LocalQueryArgs,
   LocalQueryContext,
   LocalQueryResult,

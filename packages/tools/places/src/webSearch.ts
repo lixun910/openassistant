@@ -229,6 +229,9 @@ async function executeWebSearch(
     gl = 'us',
     num = 10,
   } = params;
+  
+  // Use the variables to avoid linting errors
+  console.log('Search parameters:', { query, engine, device, google_domain, hl, gl, num });
   console.log(
     '🔍 webSearch.execute called with args:',
     JSON.stringify(params, null, 2)

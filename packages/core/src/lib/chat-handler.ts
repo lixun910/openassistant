@@ -93,7 +93,7 @@ export class ChatHandler {
       system: this.instructions,
       messages: this.messageHistory as CoreMessage[],
       tools: combinedTools,
-      onFinish: async ({ text, toolCalls, response }) => {
+      onFinish: async ({ text, toolCalls }) => {
         // handle server side tool calls
         const toolInvocations: ToolCall<string, unknown>[] = [];
 
