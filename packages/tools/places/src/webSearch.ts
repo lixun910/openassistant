@@ -128,16 +128,18 @@ export type ExecuteWebSearchResult = {
  * import { ToolCache } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
- * // you can use ToolCache to save the web search dataset for later use
- * const toolResultCache = ToolCache.getInstance();
+ * // Simple usage with defaults
+ * const webSearchTool = new WebSearchTool();
  *
+ * // Or with custom context and callbacks
+ * const toolResultCache = ToolCache.getInstance();
  * const webSearchTool = new WebSearchTool(
- *   'Search the web using Google search engine via SearchAPI',
- *   WebSearchArgs,
+ *   undefined, // use default description
+ *   undefined, // use default parameters
  *   {
  *     getSearchAPIKey: () => process.env.SEARCH_API_KEY!,
  *   },
- *   undefined, // component
+ *   WebSearchComponent,
  *   (toolCallId, additionalData) => {
  *     toolResultCache.addDataset(toolCallId, additionalData);
  *   }
@@ -153,7 +155,12 @@ export type ExecuteWebSearchResult = {
  * ```
  */
 export class WebSearchTool extends OpenAssistantTool<typeof WebSearchArgs> {
+  protected readonly defaultDescription = 'Search the web using Google search engine via SearchAPI';
+  protected readonly defaultParameters = WebSearchArgs;
+
   constructor(
+    description?: string,
+    parameters?: typeof WebSearchArgs,
     context: SearchAPIToolContext = {
       getSearchAPIKey: () => {
         throw new Error('getSearchAPIKey not implemented.');
@@ -162,13 +169,7 @@ export class WebSearchTool extends OpenAssistantTool<typeof WebSearchArgs> {
     component?: React.ReactNode,
     onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
   ) {
-    super(
-      'Search the web using Google search engine via SearchAPI.',
-      WebSearchArgs,
-      context,
-      component,
-      onToolCompleted
-    );
+    super(description, parameters, context, component, onToolCompleted);
   }
 
   async execute(

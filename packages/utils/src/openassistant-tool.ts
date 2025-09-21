@@ -46,15 +46,19 @@ export abstract class OpenAssistantTool<Params extends ZodTypeAny> {
   component?: any; // React component - using any to avoid React dependency
   onToolCompleted?: OpenAssistantOnToolCompleted;
 
+  // Abstract properties that subclasses must define
+  protected abstract readonly defaultDescription: string;
+  protected abstract readonly defaultParameters: Params;
+
   constructor(
-    description: string,
-    parameters: Params,
+    description?: string,
+    parameters?: Params,
     context: Record<string, unknown> = {},
     component?: any,
     onToolCompleted?: OpenAssistantOnToolCompleted
   ) {
-    this.description = description;
-    this.parameters = parameters;
+    this.description = description || this.defaultDescription;
+    this.parameters = parameters || this.defaultParameters;
     this.context = context;
     this.component = component;
     this.onToolCompleted = onToolCompleted;

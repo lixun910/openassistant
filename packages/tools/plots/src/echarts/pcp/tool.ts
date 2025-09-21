@@ -13,7 +13,9 @@ import {
 } from '../../types';
 
 /**
- * The PCP tool is used to create a parallel coordinates plot for a given dataset and variables.
+ * The PCPTool class creates parallel coordinates plots for given datasets and variables.
+ * This tool extends OpenAssistantTool and provides a class-based approach for creating
+ * interactive parallel coordinate visualizations using ECharts.
  *
  * **Example user prompts:**
  * - "Can you create a PCP of the population and income for each location in dataset myVenues?"
@@ -22,39 +24,45 @@ import {
  *
  * @example
  * ```typescript
- * import { pcp, PCPTool } from '@openassistant/plots';
- * import { convertToVercelAiTool } from '@openassistant/utils';
+ * import { PCPTool } from '@openassistant/plots';
  * import { generateText } from 'ai';
  *
- * const toolContext = {
- *   getValues: async (datasetName, variableName) => {
- *     // get the values of the variable from dataset, e.g.
- *     return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ * // Simple usage with defaults
+ * const pcpTool = new PCPTool();
+ *
+ * // Or with custom context and callbacks
+ * const pcpTool = new PCPTool(
+ *   undefined, // use default description
+ *   undefined, // use default parameters
+ *   {
+ *     getValues: async (datasetName, variableName) => {
+ *       // get the values of the variable from dataset, e.g.
+ *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ *     },
  *   },
- * };
- *
- * const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
- *   console.log('Tool call completed:', toolCallId, additionalData);
- *   // render the PCP using <ParallelCoordinateComponentContainer props={additionalData} />
- * };
- *
- * const pcpTool: PCPTool = {
- *   ...pcp,
- *   context: toolContext,
- *   onToolCompleted,
- * };
+ *   ParallelCoordinateComponent,
+ *   (toolCallId, additionalData) => {
+ *     console.log('Tool call completed:', toolCallId, additionalData);
+ *     // render the PCP using <ParallelCoordinateComponentContainer props={additionalData} />
+ *   }
+ * );
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Can you create a PCP of the population and income?',
  *   tools: {
- *     pcp: convertToVercelAiTool(pcpTool),
+ *     pcp: pcpTool.toVercelAiTool(),
  *   },
  * });
  * ```
  */
 export class PCPTool extends OpenAssistantTool<typeof PCPArgs> {
+  protected readonly defaultDescription = 'Create parallel coordinates plots for data visualization using ECharts';
+  protected readonly defaultParameters = PCPArgs;
+
   constructor(
+    description?: string,
+    parameters?: typeof PCPArgs,
     context: EChartsToolContext = {
       getValues: () => {
         throw new Error('getValues() of PCPTool is not implemented');
@@ -69,13 +77,7 @@ export class PCPTool extends OpenAssistantTool<typeof PCPArgs> {
     component?: React.ReactNode,
     onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
   ) {
-    super(
-      'create a parallel coordinates plot',
-      PCPArgs,
-      context,
-      component,
-      onToolCompleted
-    );
+    super(description, parameters, context, component, onToolCompleted);
   }
 
   async execute(

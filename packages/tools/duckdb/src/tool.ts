@@ -28,14 +28,22 @@ import { Feature } from 'geojson';
  * import { LocalQueryTool } from '@openassistant/duckdb';
  * import { generateText } from 'ai';
  *
+ * // Simple usage with defaults
+ * const localQueryTool = new LocalQueryTool();
+ *
+ * // Or with custom context and callbacks
  * const localQueryTool = new LocalQueryTool(
- *   'Execute SQL queries against local datasets',
- *   LocalQueryArgs,
+ *   undefined, // use default description
+ *   undefined, // use default parameters
  *   {
  *     getValues: async (datasetName: string, variableName: string) => {
  *       // get the values of the variable from your dataset, e.g.
  *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
  *     },
+ *   },
+ *   LocalQueryComponent,
+ *   (toolCallId, additionalData) => {
+ *     console.log('Query completed:', toolCallId, additionalData);
  *   }
  * );
  *
@@ -128,7 +136,12 @@ import { Feature } from 'geojson';
  * ```
  */
 export class LocalQueryTool extends OpenAssistantTool<typeof LocalQueryArgs> {
+  protected readonly defaultDescription = 'Execute SQL queries against local datasets using DuckDB';
+  protected readonly defaultParameters = LocalQueryArgs;
+
   constructor(
+    description?: string,
+    parameters?: typeof LocalQueryArgs,
     context: LocalQueryContext = {
       getValues: () => {
         // get the values of the variable from the dataset,
@@ -139,13 +152,7 @@ export class LocalQueryTool extends OpenAssistantTool<typeof LocalQueryArgs> {
     component?: React.ReactNode,
     onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
   ) {
-    super(
-      `You are a SQL (duckdb) expert. You can help to query users datasets using select query clause.`,
-      LocalQueryArgs,
-      context,
-      component,
-      onToolCompleted
-    );
+    super(description, parameters, context, component, onToolCompleted);
   }
 
   async execute(

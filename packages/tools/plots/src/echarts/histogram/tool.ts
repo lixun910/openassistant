@@ -20,24 +20,24 @@ import {
  * import { HistogramTool } from '@openassistant/plots';
  * import { generateText } from 'ai';
  *
- * const toolContext = {
- *   getValues: async (datasetName: string, variableName: string) => {
- *     // get the values of the variable from dataset, e.g.
- *     return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
- *   },
- * };
+ * // Simple usage with defaults
+ * const histogramTool = new HistogramTool();
  *
- * const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
- *   console.log('Tool call completed:', toolCallId, additionalData);
- *   // render the histogram using <HistogramComponentContainer props={additionalData} />
- * };
- *
+ * // Or with custom context and callbacks
  * const histogramTool = new HistogramTool(
- *   'Create histogram charts for data visualization',
- *   HistogramArgs,
- *   toolContext,
+ *   undefined, // use default description
+ *   undefined, // use default parameters
+ *   {
+ *     getValues: async (datasetName: string, variableName: string) => {
+ *       // get the values of the variable from dataset, e.g.
+ *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ *     },
+ *   },
  *   HistogramComponent,
- *   onToolCompleted
+ *   (toolCallId, additionalData) => {
+ *     console.log('Tool call completed:', toolCallId, additionalData);
+ *     // render the histogram using <HistogramComponentContainer props={additionalData} />
+ *   }
  * );
  *
  * generateText({
@@ -50,7 +50,12 @@ import {
  * ```
  */
 export class HistogramTool extends OpenAssistantTool<typeof HistogramArgs> {
+  protected readonly defaultDescription = 'Create histogram charts for data visualization';
+  protected readonly defaultParameters = HistogramArgs;
+
   constructor(
+    description?: string,
+    parameters?: typeof HistogramArgs,
     context: EChartsToolContext = {
       getValues: () => {
         throw new Error('getValues() of HistogramTool is not implemented');
@@ -65,13 +70,7 @@ export class HistogramTool extends OpenAssistantTool<typeof HistogramArgs> {
     component?: React.ReactNode,
     onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
   ) {
-    super(
-      'create a histogram',
-      HistogramArgs,
-      context,
-      component,
-      onToolCompleted
-    );
+    super(description, parameters, context, component, onToolCompleted);
   }
 
   async execute(

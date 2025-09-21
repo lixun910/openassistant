@@ -46,16 +46,20 @@ export type VegaLitePlotAdditionalData = {
  * import { VegaLitePlotTool } from '@openassistant/plots';
  * import { generateText } from 'ai';
  *
+ * // Simple usage with defaults
+ * const vegaLitePlotTool = new VegaLitePlotTool();
+ *
+ * // Or with custom context and callbacks
  * const vegaLitePlotTool = new VegaLitePlotTool(
- *   'Create Vega-Lite plots from datasets and variables',
- *   VegaLitePlotArgs,
+ *   undefined, // use default description
+ *   undefined, // use default parameters
  *   {
  *     getValues: async (datasetName, variableName) => {
  *       // get the values of the variable from dataset, e.g.
  *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
  *     },
  *   },
- *   undefined, // component
+ *   VegaPlotComponent,
  *   (toolCallId, additionalData) => {
  *     console.log('Tool call completed:', toolCallId, additionalData);
  *     // you can import { VegaPlotComponent } from '@openassistant/vegalite'; 
@@ -73,7 +77,12 @@ export type VegaLitePlotAdditionalData = {
  * ```
  */
 export class VegaLitePlotTool extends OpenAssistantTool<typeof VegaLitePlotArgs> {
+  protected readonly defaultDescription = 'Create Vega-Lite plots from datasets and variables using Vega-Lite specification';
+  protected readonly defaultParameters = VegaLitePlotArgs;
+
   constructor(
+    description?: string,
+    parameters?: typeof VegaLitePlotArgs,
     context: EChartsToolContext = {
       getValues: async () => {
         throw new Error(
@@ -84,13 +93,7 @@ export class VegaLitePlotTool extends OpenAssistantTool<typeof VegaLitePlotArgs>
     component?: React.ReactNode,
     onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
   ) {
-    super(
-      'Create a plot using vega-lite. Please follow the vegaLite spec format.',
-      VegaLitePlotArgs,
-      context,
-      component,
-      onToolCompleted
-    );
+    super(description, parameters, context, component, onToolCompleted);
   }
 
   async execute(

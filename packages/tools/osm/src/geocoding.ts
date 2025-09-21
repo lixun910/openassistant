@@ -42,9 +42,18 @@ export type GeocodingAdditionalData = {
  * import { GeocodingTool } from "@openassistant/osm";
  * import { generateText } from 'ai';
  *
+ * // Simple usage with defaults
+ * const geocodingTool = new GeocodingTool();
+ *
+ * // Or with custom context and callbacks
  * const geocodingTool = new GeocodingTool(
- *   'Convert addresses to geographic coordinates using OpenStreetMap Nominatim',
- *   GeocodingFunctionArgs
+ *   undefined, // use default description
+ *   undefined, // use default parameters
+ *   { /* custom context */ },
+ *   GeocodingComponent,
+ *   (toolCallId, additionalData) => {
+ *     console.log('Geocoding completed:', toolCallId, additionalData);
+ *   }
  * );
  *
  * generateText({
@@ -57,18 +66,17 @@ export type GeocodingAdditionalData = {
  * ```
  */
 export class GeocodingTool extends OpenAssistantTool<typeof GeocodingArgs> {
+  protected readonly defaultDescription = 'Convert addresses to geographic coordinates using OpenStreetMap Nominatim';
+  protected readonly defaultParameters = GeocodingArgs;
+
   constructor(
+    description?: string,
+    parameters?: typeof GeocodingArgs,
     context: GeocodingToolContext = {},
     component?: React.ReactNode,
     onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
   ) {
-    super(
-      'Geocode an address to get the latitude and longitude of the address',
-      GeocodingArgs,
-      context,
-      component,
-      onToolCompleted
-    );
+    super(description, parameters, context, component, onToolCompleted);
   }
 
   async execute(

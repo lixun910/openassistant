@@ -24,24 +24,24 @@ import {
  * import { BoxplotTool } from '@openassistant/plots';
  * import { generateText } from 'ai';
  *
- * const toolContext = {
- *   getValues: async (datasetName: string, variableName: string) => {
- *     // get the values of the variable from dataset, e.g.
- *     return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
- *   },
- * };
+ * // Simple usage with defaults
+ * const boxplotTool = new BoxplotTool();
  *
- * const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
- *   console.log('Tool call completed:', toolCallId, additionalData);
- *   // render the boxplot using <BoxplotComponentContainer props={additionalData} />
- * };
- *
+ * // Or with custom context and callbacks
  * const boxplotTool = new BoxplotTool(
- *   'Create box plots for data visualization',
- *   BoxplotArgs,
- *   toolContext,
+ *   undefined, // use default description
+ *   undefined, // use default parameters
+ *   {
+ *     getValues: async (datasetName: string, variableName: string) => {
+ *       // get the values of the variable from dataset, e.g.
+ *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ *     },
+ *   },
  *   BoxplotComponent,
- *   onToolCompleted
+ *   (toolCallId, additionalData) => {
+ *     console.log('Tool call completed:', toolCallId, additionalData);
+ *     // render the boxplot using <BoxplotComponentContainer props={additionalData} />
+ *   }
  * );
  *
  * generateText({
@@ -54,7 +54,12 @@ import {
  * ```
  */
 export class BoxplotTool extends OpenAssistantTool<typeof BoxplotArgs> {
+  protected readonly defaultDescription = 'Create box plots for data visualization using ECharts';
+  protected readonly defaultParameters = BoxplotArgs;
+
   constructor(
+    description?: string,
+    parameters?: typeof BoxplotArgs,
     context: EChartsToolContext = {
       getValues: () => {
         throw new Error('getValues() of BoxplotTool is not implemented');
@@ -67,13 +72,7 @@ export class BoxplotTool extends OpenAssistantTool<typeof BoxplotArgs> {
     component?: React.ReactNode,
     onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
   ) {
-    super(
-      'create a boxplot chart',
-      BoxplotArgs,
-      context,
-      component,
-      onToolCompleted
-    );
+    super(description, parameters, context, component, onToolCompleted);
   }
 
   async execute(
