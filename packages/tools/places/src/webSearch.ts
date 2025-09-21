@@ -214,7 +214,7 @@ export const WebSearchArgs = z.object({
 export const webSearch = new WebSearchTool();
 
 // Export the class as the main type
-export type { WebSearchTool };
+export type { WebSearchTool as WebSearchToolClass };
 
 async function executeWebSearch(
   params: z.infer<typeof WebSearchArgs>,
@@ -237,18 +237,9 @@ async function executeWebSearch(
     JSON.stringify(params, null, 2)
   );
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
-    try {
-      const {
-        query,
-        engine = 'google',
-        device = 'desktop',
-        google_domain = 'google.com',
-        hl = 'en',
-        gl = 'us',
-        num = 10,
-      } = args;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  try {
 
       console.log('📋 Parsed arguments:');
       console.log('  - query:', query);
@@ -391,7 +382,7 @@ async function executeWebSearch(
   }
 
 // Legacy type for backward compatibility
-export type WebSearchTool = typeof webSearch;
+export type WebSearchToolInstance = typeof webSearch;
 
 export type WebSearchToolContext = {
   getSearchAPIKey: () => string;
