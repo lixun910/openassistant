@@ -31,7 +31,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^2.0.0",
     "@ai-sdk/react": "^2.0.0",
-    "@ai-sdk/ui-utils": "^2.0.0",
+    "@ai-sdk/ui-utils": "^1.2.11",
     "@langchain/core": "^0.3.38",
     "ai": "^5.0.0",
     "openai": "^4.93.0",

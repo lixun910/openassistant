@@ -376,7 +376,6 @@ async function executeGeotagging(
       };
     }
   }
-}
 
 // Legacy type for backward compatibility
 export type GeotaggingTool = typeof geotagging;
