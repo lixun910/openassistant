@@ -39,7 +39,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@ai-sdk/ui-utils": "^2.0.0",
+    "@ai-sdk/ui-utils": "^1.2.11",
     "@heroui/react": "^2.7.8",
     "@heroui/use-clipboard": "^2.1.8",
     "@iconify/react": "^5.1.0",

@@ -386,7 +386,6 @@ async function executeWebSearch(
       };
     }
   }
-}
 
 // Legacy type for backward compatibility
 export type WebSearchTool = typeof webSearch;
