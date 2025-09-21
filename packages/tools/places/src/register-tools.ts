@@ -3,9 +3,9 @@
 
 import { OnToolCompleted } from '@openassistant/utils';
 import { createToolRegistry } from '@openassistant/tools-shared';
-import { placeSearch } from './placeSearch';
-import { geotagging } from './geoTagging';
-import { webSearch } from './webSearch';
+import { placeSearch, PlaceSearchTool } from './placeSearch';
+import { geotagging, GeotaggingTool } from './geoTagging';
+import { webSearch, WebSearchTool } from './webSearch';
 
 // export the enum of tool names, so users can use it to check if a tool is available
 export enum PlacesToolNames {
@@ -114,4 +114,7 @@ export function getPlacesTools(
   isExecutable: boolean = true
 ) {
   return toolRegistry.createAllTools(toolContext, onToolCompleted, isExecutable);
-} 
+}
+
+// Export tool classes for direct usage
+export { PlaceSearchTool, GeotaggingTool, WebSearchTool }; 
