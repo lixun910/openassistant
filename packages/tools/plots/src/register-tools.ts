@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { getTool, OnToolCompleted } from '@openassistant/utils';
+import { OnToolCompleted } from '@openassistant/utils';
+import { createToolRegistry } from '@openassistant/tools-shared';
 
 import { boxplot } from './echarts/boxplot/tool';
 import { bubbleChart } from './echarts/bubble-chart/tool';
@@ -26,16 +27,17 @@ export type ToolContext = {
   onSelected?: OnSelected;
 };
 
-export function registerTools() {
-  return {
-    boxplot,
-    bubbleChart,
-    histogram,
-    pcp,
-    scatterplot,
-    vegaLitePlot,
-  };
-}
+const toolRegistry = createToolRegistry({
+  boxplot,
+  bubbleChart,
+  histogram,
+  pcp,
+  scatterplot,
+  vegaLitePlot,
+});
+
+export const tools = toolRegistry.tools;
+export const registerTools = toolRegistry.registerTools;
 
 export function getPlotsTool(
   toolName: string,
@@ -45,17 +47,7 @@ export function getPlotsTool(
     isExecutable?: boolean;
   }
 ) {
-  const tool = registerTools()[toolName];
-  if (!tool) {
-    throw new Error(`Tool "${toolName}" not found`);
-  }
-  return getTool({
-    tool,
-    options: {
-      ...options,
-      isExecutable: options.isExecutable ?? true,
-    },
-  });
+  return toolRegistry.createTool(toolName, options);
 }
 
 export function getPlotsTools(
@@ -63,17 +55,5 @@ export function getPlotsTools(
   onToolCompleted: OnToolCompleted,
   isExecutable: boolean = true
 ) {
-  const tools = registerTools();
-
-  // return Record<string, ToolResult>
-  const toolsResult = Object.fromEntries(
-    Object.keys(tools).map((key) => {
-      return [
-        key,
-        getPlotsTool(key, { toolContext, onToolCompleted, isExecutable }),
-      ];
-    })
-  );
-
-  return toolsResult;
+  return toolRegistry.createAllTools(toolContext, onToolCompleted, isExecutable);
 }

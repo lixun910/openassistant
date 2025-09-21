@@ -36,6 +36,7 @@
     "@loaders.gl/schema": "^4.3.3",
     "@openassistant/plots": "workspace:*",
     "@openassistant/utils": "workspace:*",
+    "@openassistant/tools-shared": "workspace:*",
     "@turf/bbox": "^7.2.0",
     "zod": "^3.25.76"
   },

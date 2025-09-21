@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { getTool, OnToolCompleted } from '@openassistant/utils';
+import { OnToolCompleted } from '@openassistant/utils';
+import { createToolRegistry } from '@openassistant/tools-shared';
 import { getUsStateGeojson } from './us/state';
 import { getUsCountyGeojson } from './us/county';
 import { getUsZipcodeGeojson } from './us/zipcode';
@@ -51,19 +52,20 @@ export function isMapboxToolContext(
   );
 }
 
-export function registerTools() {
-  return {
-    getUsStateGeojson,
-    getUsCountyGeojson,
-    getUsZipcodeGeojson,
-    queryUSZipcodes,
-    geocoding,
-    reverseGeocoding,
-    routing,
-    isochrone,
-    roads,
-  };
-}
+const toolRegistry = createToolRegistry({
+  getUsStateGeojson,
+  getUsCountyGeojson,
+  getUsZipcodeGeojson,
+  queryUSZipcodes,
+  geocoding,
+  reverseGeocoding,
+  routing,
+  isochrone,
+  roads,
+});
+
+export const tools = toolRegistry.tools;
+export const registerTools = toolRegistry.registerTools;
 
 /**
  * Get a single OSM tool.
@@ -115,17 +117,7 @@ export function getOsmTool(
     isExecutable?: boolean;
   }
 ) {
-  const tool = registerTools()[toolName];
-  if (!tool) {
-    throw new Error(`Tool "${toolName}" not found`);
-  }
-  return getTool({
-    tool,
-    options: {
-      ...options,
-      isExecutable: options?.isExecutable ?? true,
-    },
-  });
+  return toolRegistry.createTool(toolName, options);
 }
 
 /**
@@ -141,16 +133,5 @@ export function getOsmTools(
   onToolCompleted: OnToolCompleted,
   isExecutable: boolean = true
 ) {
-  const tools = registerTools();
-
-  const toolsResult = Object.fromEntries(
-    Object.keys(tools).map((key) => {
-      return [
-        key,
-        getOsmTool(key, { toolContext, onToolCompleted, isExecutable }),
-      ];
-    })
-  );
-
-  return toolsResult;
+  return toolRegistry.createAllTools(toolContext, onToolCompleted, isExecutable);
 }

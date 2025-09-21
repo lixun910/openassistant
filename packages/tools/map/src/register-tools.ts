@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { getTool, OnToolCompleted } from '@openassistant/utils';
+import { OnToolCompleted } from '@openassistant/utils';
+import { createToolRegistry } from '@openassistant/tools-shared';
 
 import { keplergl } from './keplergl/tool';
 import { leaflet } from './leaflet/tool';
@@ -14,13 +15,14 @@ export enum MapToolNames {
   downloadMapData = 'downloadMapData',
 }
 
-export function registerTools() {
-  return {
-    [MapToolNames.keplergl]: keplergl,
-    [MapToolNames.leaflet]: leaflet,
-    [MapToolNames.downloadMapData]: downloadMapData,
-  };
-}
+const toolRegistry = createToolRegistry({
+  [MapToolNames.keplergl]: keplergl,
+  [MapToolNames.leaflet]: leaflet,
+  [MapToolNames.downloadMapData]: downloadMapData,
+});
+
+export const tools = toolRegistry.tools;
+export const registerTools = toolRegistry.registerTools;
 
 export type MapToolContext = {
   getDataset?: GetDataset;
@@ -134,17 +136,7 @@ export function getMapTool(
     isExecutable?: boolean;
   }
 ) {
-  const tool = registerTools()[toolName];
-  if (!tool) {
-    throw new Error(`Tool "${toolName}" not found`);
-  }
-  return getTool({
-    tool,
-    options: {
-      ...options,
-      isExecutable: options?.isExecutable ?? true,
-    },
-  });
+  return toolRegistry.createTool(toolName, options);
 }
 
 /**
@@ -160,15 +152,5 @@ export function getMapTools(
   onToolCompleted: OnToolCompleted,
   isExecutable: boolean = true
 ) {
-  const tools = registerTools();
-
-  const toolsResult = Object.fromEntries(
-    Object.keys(tools).map((key) => {
-      return [
-        key,
-        getMapTool(key, { toolContext, onToolCompleted, isExecutable }),
-      ];
-    })
-  );
-  return toolsResult;
+  return toolRegistry.createAllTools(toolContext, onToolCompleted, isExecutable);
 }

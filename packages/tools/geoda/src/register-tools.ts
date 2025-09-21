@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { getTool, OnToolCompleted } from '@openassistant/utils';
+import { OnToolCompleted } from '@openassistant/utils';
+import { createToolRegistry } from '@openassistant/tools-shared';
 import { SpatialToolContext } from './types';
 
 import { dataClassify } from './data-classify/tool';
@@ -18,6 +19,10 @@ import { dissolve } from './spatial_ops/dissolve';
 import { grid } from './spatial_ops/grid';
 import { length } from './spatial_ops/length';
 import { perimeter } from './spatial_ops/perimeter';
+import { thiessenPolygons } from './spatial_ops/thiessenPolygons';
+import { minimumSpanningTree } from './spatial_ops/mst';
+import { cartogram } from './spatial_ops/cartogram';
+import { rate } from './rate/tool';
 
 // export the enum of tool names, so users can use it to check if a tool is available
 export enum GeoDaToolNames {
@@ -35,9 +40,13 @@ export enum GeoDaToolNames {
   grid = 'grid',
   length = 'length',
   perimeter = 'perimeter',
+  thiessenPolygons = 'thiessenPolygons',
+  minimumSpanningTree = 'minimumSpanningTree',
+  cartogram = 'cartogram',
+  rate = 'rate',
 }
 
-export const tools = {
+const toolRegistry = createToolRegistry({
   dataClassify,
   lisa,
   globalMoran,
@@ -52,7 +61,14 @@ export const tools = {
   grid,
   length,
   perimeter,
-};
+  thiessenPolygons,
+  minimumSpanningTree,
+  cartogram,
+  rate,
+});
+
+export const tools = toolRegistry.tools;
+export const registerTools = toolRegistry.registerTools;
 
 /**
  * Get a single GeoDa tool.
@@ -66,17 +82,7 @@ export function getGeoDaTool(
     isExecutable?: boolean;
   }
 ) {
-  const tool = tools[toolName];
-  if (!tool) {
-    throw new Error(`Tool "${toolName}" not found`);
-  }
-  return getTool({
-    tool,
-    options: {
-      ...options,
-      isExecutable: options?.isExecutable ?? true,
-    },
-  });
+  return toolRegistry.createTool(toolName, options);
 }
 
 export function getGeoDaTools(
@@ -84,18 +90,5 @@ export function getGeoDaTools(
   onToolCompleted: OnToolCompleted,
   isExecutable: boolean = true
 ) {
-  const toolsResult = Object.fromEntries(
-    Object.keys(tools).map((key) => {
-      return [
-        key,
-        getGeoDaTool(key, {
-          toolContext,
-          onToolCompleted,
-          isExecutable,
-        }),
-      ];
-    })
-  );
-
-  return toolsResult;
+  return toolRegistry.createAllTools(toolContext, onToolCompleted, isExecutable);
 }
