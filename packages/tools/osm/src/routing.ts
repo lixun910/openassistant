@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { z } from 'zod';
 import { FeatureCollection } from 'geojson';
-import { generateId, OpenAssistantTool } from '@openassistant/utils';
+import { generateId, OpenAssistantTool, z } from '@openassistant/utils';
 import { isMapboxToolContext, MapboxToolContext } from './register-tools';
 import { mapboxRateLimiter } from './utils/rateLimiter';
 

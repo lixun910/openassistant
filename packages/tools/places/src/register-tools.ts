@@ -3,10 +3,10 @@
 
 export interface FoursquareToolContext {
   getFsqToken: () => string;
-  getGeometries?: (datasetName: string) => Promise<any>;
+  getGeometries?: (datasetName: string) => Promise<unknown>;
 }
 
-export function isFoursquareToolContext(context: any): context is FoursquareToolContext {
+export function isFoursquareToolContext(context: unknown): context is FoursquareToolContext {
   return context && typeof context.getFsqToken === 'function';
 }
 
@@ -14,6 +14,6 @@ export interface SearchAPIToolContext {
   getSearchAPIKey: () => string;
 }
 
-export function isSearchAPIToolContext(context: any): context is SearchAPIToolContext {
+export function isSearchAPIToolContext(context: unknown): context is SearchAPIToolContext {
   return context && typeof context.getSearchAPIKey === 'function';
 }
