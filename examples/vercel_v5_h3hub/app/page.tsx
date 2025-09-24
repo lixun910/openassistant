@@ -12,7 +12,7 @@ import {
   h3Cell,
   h3CellToChildren,
   h3CellsFromPolygon,
-} from '@openassistant/h3hub';
+} from '@openassistant/h3';
 import { polygonToCells } from 'h3-js';
 import { createOpenAI } from '@ai-sdk/openai';
 import {
@@ -107,7 +107,7 @@ export default function Home() {
   };
 
   function convertToVercelTool(
-    oaTool: OpenAssistantTool,
+    oaTool: any,
     context: unknown,
     onToolCompleted: (toolCallId: string, additionalData: unknown) => void
   ): Tool {

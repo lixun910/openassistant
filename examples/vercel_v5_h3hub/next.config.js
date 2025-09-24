@@ -31,7 +31,7 @@ module.exports = withBundleAnalyzer({
       config.resolve.alias = {
         ...config.resolve.alias,
         // Map workspace packages to their source files for debugging
-        '@openassistant/h3hub': require('path').resolve(__dirname, '../../packages/tools/h3hub/src'),
+        '@openassistant/h3': require('path').resolve(__dirname, '../../packages/tools/h3/src'),
         '@openassistant/utils': require('path').resolve(__dirname, '../../packages/utils/src'),
         '@openassistant/osm': require('path').resolve(__dirname, '../../packages/tools/osm/src'),
       };
