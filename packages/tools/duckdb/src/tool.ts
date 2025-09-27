@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, OpenAssistantToolOptions, generateId, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, generateId, OpenAssistantToolExecutionOptions, OpenAssistantExecuteFunctionResult } from '@openassistant/utils';
+import { z } from 'zod';
 import { Table as ArrowTable, tableFromArrays } from 'apache-arrow';
 import { getDuckDB } from './query';
 import {
-  LocalQueryArgs,
   LocalQueryContext,
-  LocalQueryResult,
+  LocalQueryLlmResult,
+  LocalQueryAdditionalData,
 } from './types';
-import { convertArrowRowToObject } from './merge';
+import { convertArrowRowToObject } from './mergeTool';
 import { Feature } from 'geojson';
 
 /**
@@ -26,114 +27,42 @@ import { Feature } from 'geojson';
  * ### Example
  * ```typescript
  * import { LocalQueryTool } from '@openassistant/duckdb';
- * import { generateText } from 'ai';
+ * import { generateText, tool } from 'ai';
  *
- * // Simple usage with defaults
- * const localQueryTool = new LocalQueryTool();
- *
- * // Or with custom context and callbacks
- * const localQueryTool = new LocalQueryTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
- *     getValues: async (datasetName: string, variableName: string) => {
- *       // get the values of the variable from your dataset, e.g.
- *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
- *     },
- *   },
- *   LocalQueryComponent,
- *   (toolCallId, additionalData) => {
- *     console.log('Query completed:', toolCallId, additionalData);
- *   }
- * );
- *
- * generateText({
- *   model: 'gpt-4o-mini',
- *   prompt: 'What are the venues in San Francisco?',
- *   tools: {localQuery: localQueryTool.toVercelAiTool()},
- * });
- * ```
- *
- * ### Example with useChat
- *
- * `app/api/chat/route.ts`
- * ```typescript
- * import { LocalQueryTool } from '@openassistant/duckdb';
- * import { streamText } from 'ai';
- *
- * // localQuery tool will be running on the client side
- * const localQueryTool = new LocalQueryTool(
- *   'Execute SQL queries against local datasets',
- *   LocalQueryArgs,
- *   { } // context
- * );
- *
- * export async function POST(req: Request) {
- *   // ...
- *   const result = streamText({
- *     model: openai('gpt-4o-mini'),
- *     messages: messages,
- *     tools: {localQuery: localQueryTool},
- *   });
- * }
- * ```
- *
- * `app/page.tsx`
- * ```typescript
- * import { useChat } from 'ai/react';
- * import { LocalQueryTool } from '@openassistant/duckdb';
- *
- * const myLocalQuery = new LocalQueryTool(
- *   'Execute SQL queries against local datasets',
- *   LocalQueryArgs,
- *   {
- *     getValues: async (datasetName: string, variableName: string) => {
- *       // get the values of the variable from your dataset, e.g.
- *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
- *     },
- *   }
- * );
- *
- * const { messages, input, handleInputChange, handleSubmit } = useChat({
- *   maxSteps: 20,
- *   tools: {
- *     localQuery: myLocalQuery.toVercelAiTool()
- *   }
- * });
- * ```
- *
- * ### Example with `@openassistant/ui`
- *
- * ```typescript
- * import { localQuery } from '@openassistant/duckdb';
- * import { convertToVercelAiTool } from '@openassistent/utils';
- *
- * const localQueryTool: LocalQueryTool = {
- *   ...localQuery,
- *   context: {
- *     ...localQuery.context,
- *     getValues: async (datasetName: string, variableName: string) => {
- *       // get the values of the variable from your dataset, e.g.
- *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
- *     },
- *   },
+ * // Sample dataset for demonstration
+ * const SAMPLE_DATASETS = {
+ *   venues: [
+ *     { name: 'Golden Gate Park', city: 'San Francisco', rating: 4.5 },
+ *     { name: 'Fisherman\'s Wharf', city: 'San Francisco', rating: 4.2 },
+ *     { name: 'Alcatraz Island', city: 'San Francisco', rating: 4.7 },
+ *   ]
  * };
  *
- *  export function App() {
- *    return (
- *      <AiAssistant
- *        apiKey={process.env.OPENAI_API_KEY || ''}
- *        modelProvider="openai"
- *        model="gpt-4o"
- *        welcomeMessage="Hello! I'm your assistant."
- *        instructions={instructions}
- *        tools={{localQuery: localQueryTool}}
- *        useMarkdown={true}
- *        theme="dark"
- *      />
- *    );
- *  }
+ * // Create tool with custom context
+ * const localQueryTool = new LocalQueryTool({
+ *   context: {
+ *     getValues: async (datasetName: string, variableName: string) => {
+ *       // Get the values of the variable from your dataset
+ *       const dataset = SAMPLE_DATASETS[datasetName];
+ *       if (!dataset) {
+ *         throw new Error(`Dataset '${datasetName}' not found`);
+ *       }
+ *       return dataset.map((item) => item[variableName]);
+ *     },
+ *   },
+ *   onToolCompleted: (toolCallId, additionalData) => {
+ *     console.log('Query completed:', toolCallId, additionalData);
+ *   },
+ * });
+ *
+ * // Use with Vercel AI SDK
+ * const result = await generateText({
+ *   model: 'gpt-4.1',
+ *   prompt: 'What are the venues in San Francisco?',
+ *   tools: { localQuery: localQueryTool.toVercelAiTool(tool) },
+ * });
  * ```
+ *
  */
 export class LocalQueryTool extends OpenAssistantTool<typeof LocalQueryArgs> {
   protected getDefaultDescription(): string {
@@ -159,8 +88,8 @@ export class LocalQueryTool extends OpenAssistantTool<typeof LocalQueryArgs> {
 
   async execute(
     params: z.infer<typeof LocalQueryArgs>,
-    options?: { context?: Record<string, unknown> }
-  ): Promise<LocalQueryResult> {
+    options?: OpenAssistantToolExecutionOptions & { context?: Record<string, unknown> }
+  ): Promise<OpenAssistantExecuteFunctionResult<LocalQueryLlmResult, LocalQueryAdditionalData>> {
     return executeLocalQuery(params, options);
   }
 }
@@ -184,16 +113,13 @@ export const LocalQueryArgs = z.object({
     ),
 });
 
-// For backward compatibility, create a default instance
-export const localQuery = new LocalQueryTool();
-
 async function executeLocalQuery(
   { datasetName, variableNames, sql, dbTableName },
-  options
-): Promise<LocalQueryResult> {
+  options?: OpenAssistantToolExecutionOptions & { context?: Record<string, unknown> }
+): Promise<OpenAssistantExecuteFunctionResult<LocalQueryLlmResult, LocalQueryAdditionalData>> {
   try {
     const { getValues, getDuckDB: getUserDuckDB } =
-      options.context as LocalQueryContext;
+      options?.context as LocalQueryContext;
 
     // get values for each variable
     const columnData = {};
@@ -301,5 +227,3 @@ async function executeLocalQuery(
   }
 }
 
-// Export the class as the main type
-export type { LocalQueryTool };

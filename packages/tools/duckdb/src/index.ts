@@ -2,6 +2,6 @@
 // Copyright contributors to the openassistant project
 
 export * from './tool';
-export * from './merge';
+export * from './mergeTool';
 export * from './types';
 export * from './query';
