@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, OpenAssistantToolOptions } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, OpenAssistantToolExecutionOptions, OpenAssistantExecuteFunctionResult } from '@openassistant/utils';
 import { z } from 'zod';
 import {
   equalIntervalBreaks,
@@ -136,11 +136,8 @@ export class DataClassifyTool extends OpenAssistantTool<typeof DataClassifyArgs>
 
   async execute(
     args: z.infer<typeof DataClassifyArgs>,
-    options?: { context?: Record<string, unknown> }
-  ): Promise<{
-    llmResult: DataClassifyLlmResult;
-    additionalData?: DataClassifyAdditionalData;
-  }> {
+    options?: OpenAssistantToolExecutionOptions & { context?: Record<string, unknown> }
+  ): Promise<OpenAssistantExecuteFunctionResult<DataClassifyLlmResult, DataClassifyAdditionalData>> {
     return executeDataClassify(args, options);
   }
 }
@@ -177,10 +174,10 @@ function isDataClassifyContext(
   );
 }
 
-export type ExecuteDataClassifyResult = {
-  llmResult: DataClassifyLlmResult;
-  additionalData?: DataClassifyAdditionalData;
-};
+export type ExecuteDataClassifyResult = OpenAssistantExecuteFunctionResult<
+  DataClassifyLlmResult,
+  DataClassifyAdditionalData
+>;
 
 async function executeDataClassify(
   args,

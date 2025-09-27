@@ -1,25 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-// Define Zod types locally to avoid dependency issues
-export type ZodTypeAny = any;
-export type ZodSchema = any;
-
-// Simple zod-like object for basic validation
-export const z = {
-  object: (schema: Record<string, any>) => schema,
-  string: () => ({ type: 'string' }),
-  number: () => ({ type: 'number' }),
-  boolean: () => ({ type: 'boolean' }),
-  array: (item: any) => ({ type: 'array', items: item }),
-  optional: (schema: any) => ({ ...schema, optional: true }),
-  describe: (schema: any, description: string) => ({ ...schema, description }),
-  min: (schema: any, min: number) => ({ ...schema, min }),
-  max: (schema: any, max: number) => ({ ...schema, max }),
-  default: (schema: any, defaultValue: any) => ({ ...schema, default: defaultValue }),
-  enum: (values: string[]) => ({ type: 'enum', values }),
-  infer: <T>(schema: T): T => schema,
-};
+import { z, type ZodTypeAny } from 'zod';
 
 export type OpenAssistantToolExecutionOptions = {
   toolCallId: string;
@@ -43,7 +25,7 @@ export type OpenAssistantToolOptions<Params extends ZodTypeAny> = {
   description?: string;
   parameters?: Params;
   context?: Record<string, unknown>;
-  component?: any; // React component - using any to avoid React dependency
+  component?: unknown; // React component - keep unknown to avoid React dependency
   onToolCompleted?: OpenAssistantOnToolCompleted;
 };
 
@@ -51,7 +33,7 @@ export abstract class OpenAssistantTool<Params extends ZodTypeAny> {
   description: string;
   parameters: Params;
   context: Record<string, unknown>;
-  component?: any; // React component - using any to avoid React dependency
+  component?: unknown; // React component - keep unknown to avoid React dependency
   onToolCompleted?: OpenAssistantOnToolCompleted;
 
   // Abstract methods that subclasses must implement
@@ -72,37 +54,46 @@ export abstract class OpenAssistantTool<Params extends ZodTypeAny> {
    * @param options - Optional tool call options (Vercel or custom).
    */
   abstract execute(
-    params: any, // z.infer<Params> - simplified for now
+    params: z.infer<Params>,
     options?: OpenAssistantToolExecutionOptions & { context?: Record<string, unknown> }
   ): Promise<OpenAssistantExecuteFunctionResult>;
 
   /**
    * Convert this tool to a Vercel AI SDK v5 compatible tool.
    * This method requires the "ai" package to be available at runtime.
+   * @param toolFactory - The Vercel AI SDK v5 tool factory (e.g., `tool` from 'ai')
    */
-  public toVercelAiTool() {
-    // Check if the 'ai' package is available
-    try {
-      // Try to import the tool function from the 'ai' package
-      const ai = eval('require')('ai');
-      const { tool } = ai;
-      
-      // Convert the OpenAssistant tool to Vercel AI SDK v5 tool format
-      return tool({
+  public toVercelAiTool(toolFactory: (config: {
+    description?: string;
+    inputSchema: ZodTypeAny;
+    outputSchema: ZodTypeAny;
+    execute: (
+      args: unknown,
+      options: OpenAssistantToolExecutionOptions & { context?: Record<string, unknown> }
+    ) => Promise<unknown>;
+  }) => unknown) {
+    if (!toolFactory) {
+      throw new Error(
+        'toVercelAiTool() requires a Vercel AI SDK v5 tool factory. Pass it as a parameter (e.g., `tool` from "ai").'
+      );
+    }
+
+    // Convert the OpenAssistant tool to Vercel AI SDK v5 tool format via injected factory
+    return toolFactory({
         description: this.description,
-        inputSchema: this.parameters, // Vercel AI SDK v5 uses 'inputSchema' instead of 'parameters'
-        outputSchema: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            result: { type: 'string' },
-            error: { type: 'string', optional: true }
-          }
-        },
-        execute: async (args: any, options: any) => {
+        inputSchema: this.parameters, // Vercel AI SDK v5 uses 'inputSchema'
+        outputSchema: z.object({
+          success: z.boolean(),
+          result: z.string(),
+          error: z.string().optional()
+        }),
+        execute: async (
+          args: unknown,
+          options: OpenAssistantToolExecutionOptions & { context?: Record<string, unknown> }
+        ) => {
           const { toolCallId } = options;
           try {
-            const result = await this.execute(args, { 
+            const result = await this.execute(args as z.infer<Params>, { 
               ...options, 
               context: { ...this.context, ...options.context } 
             });
@@ -125,25 +116,78 @@ export abstract class OpenAssistantTool<Params extends ZodTypeAny> {
             };
           }
         },
-      });
-    } catch (error) {
-      throw new Error('toVercelAiTool() requires the "ai" package to be installed. Please install it with: npm install ai');
-    }
+    });
   }
 
   /**
    * Convert this tool to a LangChain-compatible tool.
    * This method requires the "@langchain/core/tools" package to be available at runtime.
+   * @param toolFactory - The LangChain tool factory (e.g., `tool` from '@langchain/core/tools')
    */
-  public toLangchainTool() {
-    throw new Error('toLangchainTool() must be implemented by the consuming package with the "@langchain/core/tools" dependency.');
+  public toLangchainTool(toolFactory: (config: {
+    name?: string;
+    description?: string;
+    schema: ZodTypeAny;
+    func: (
+      input: unknown,
+      config?: unknown
+    ) => Promise<unknown>;
+  }) => unknown) {
+    if (!toolFactory) {
+      throw new Error(
+        'toLangchainTool() requires a LangChain 0.3.x tool factory. Pass it as a parameter (e.g., `tool` from "@langchain/core/tools").'
+      );
+    }
+
+    // LangChain 0.3.x structured tool via injected factory
+    return toolFactory({
+      // Name is optional; downstream can assign one or use keys.
+      description: this.description,
+      schema: this.parameters,
+      func: async (args: unknown) => {
+        try {
+          const result = await this.execute(args as z.infer<Params>, {
+            toolCallId: 'langchain',
+            context: { ...this.context },
+          } as OpenAssistantToolExecutionOptions & { context?: Record<string, unknown> });
+
+          const { additionalData, llmResult } = result;
+
+          if (additionalData && this.onToolCompleted) {
+            // LangChain may not surface a toolCallId, so we use a placeholder
+            this.onToolCompleted('langchain', additionalData);
+          }
+
+          // LangChain tools typically return a string or JSON-serializable object
+          return llmResult as unknown;
+        } catch (error) {
+          // Propagate error as a thrown exception for LangChain to handle
+          throw new Error(`Execute tool failed: ${error}`);
+        }
+      },
+    });
   }
 
   /**
    * Convert this tool to an Anthropic Claude-compatible tool.
-   * This method requires the "@anthropic-ai/claude-code" package to be available at runtime.
+   * This method requires the "@anthropic-ai/sdk" package to be available at runtime.
+   * @param toolFactory - The Anthropic tool factory (e.g., `tool` from '@anthropic-ai/sdk')
    */
-  public toAnthropicTool() {
-    throw new Error('toAnthropicTool() must be implemented by the consuming package with the "@anthropic-ai/claude-code" dependency.');
+  public toAnthropicTool(toolFactory: (config: {
+    name?: string;
+    description?: string;
+    inputSchema: ZodTypeAny;
+  }) => unknown) {
+    if (!toolFactory) {
+      throw new Error(
+        'toAnthropicTool() requires an Anthropic tool factory. Pass it as a parameter (e.g., `tool` from "@anthropic-ai/sdk").'
+      );
+    }
+
+    // Anthropic tool via injected factory
+    return toolFactory({
+      description: this.description,
+      inputSchema: this.parameters,
+    });
   }
 }

@@ -1,12 +1,13 @@
 # @openassistant/duckdb
 
-This package provides several tools for querying your data using DuckDB in browser.
+This package provides several tools for querying and merging your data using DuckDB in the browser environment.
 
 ## Features
 
 | Tool Name                                       | Description                                                                  |
 | ----------------------------------------------- | ---------------------------------------------------------------------------- |
 | [localQuery](/docs/duckdb/variables/localQuery) | Query any data that has been loaded in your application using user's prompt. |
+| [mergeTables](/docs/duckdb/variables/mergeTables) | Merge two datasets (tables) using DuckDB SQL queries with horizontal or vertical merging. |
 | [dbQuery](/docs/duckdb/variables/dbQuery)       | Query any database that you want to query.                                   |
 
 ## Installation
@@ -17,60 +18,92 @@ npm install @openassistant/duckdb @openassistant/utils ai
 
 ## Quick Start
 
-Suppose you have a dataset in your application, the data could be loaded from a csv/json/parquet/xml file. For this example, we will use the `SAMPLE_DATASETS` in `dataset.ts` to simulate the data.
+Suppose you have datasets in your application, the data could be loaded from a csv/json/parquet/xml file. For this example, we will use the `SAMPLE_DATASETS` to simulate the data.
 
 ```ts
 export const SAMPLE_DATASETS = {
-  myVenues: [
+  venues: [
     {
-      index: 0,
-      location: 'New York',
-      latitude: 40.7128,
-      longitude: -74.006,
+      id: 1,
+      name: 'Golden Gate Park',
+      city: 'San Francisco',
+      latitude: 37.7694,
+      longitude: -122.4862,
+      rating: 4.5,
       revenue: 12500000,
-      population: 8400000,
     },
-    ...
+    {
+      id: 2,
+      name: 'Fisherman\'s Wharf',
+      city: 'San Francisco',
+      latitude: 37.8081,
+      longitude: -122.4177,
+      rating: 4.2,
+      revenue: 8500000,
+    },
+    // ... more venues
+  ],
+  users: [
+    { id: 1, name: 'John', city: 'San Francisco', age: 28 },
+    { id: 2, name: 'Jane', city: 'San Francisco', age: 32 },
+    // ... more users
   ],
 };
 ```
 
-Share the meta data of your dataset in the system prompt, so the LLM can understand which datasets are available to use when creating a map.
+Share the meta data of your datasets in the system prompt, so the LLM can understand which datasets are available to use when creating queries or merging data.
 
 :::note
 The meta data is good enough for the AI assistant. Don't put the entire dataset in the context, and there is no need to share your dataset with the LLM models. This also helps to keep your dataset private.
 :::
 
 ```js
-const systemPrompt = `You can help users to create a map from a dataset.
+const systemPrompt = `You can help users to query and analyze datasets.
 Please always confirm the function calling and its arguments with the user.
 
-Here is the dataset are available for function calling:
-DatasetName: myVenues
-Fields: location, longitude, latitude, revenue, population`;
+Here are the datasets available for function calling:
+DatasetName: venues
+Fields: id, name, city, latitude, longitude, rating, revenue
+
+DatasetName: users  
+Fields: id, name, city, age`;
 ```
 
 ### localQuery Tool
 
+The LocalQueryTool class executes SQL queries against local datasets using DuckDB. This tool provides a class-based approach for database operations in the browser environment.
+
+:::note
+This tool should be executed in Browser environment for now.
+:::
+
 ```typescript
-import { localQuery, LocalQueryTool } from '@openassistent/duckdb';
+import { LocalQueryTool } from '@openassistant/duckdb';
 import { convertToVercelAiTool } from '@openassistant/utils';
 import { generateText } from 'ai';
 
-const localQueryTool: LocalQueryTool = {
-  ...localQuery,
+// Create tool with custom context
+const localQueryTool = new LocalQueryTool({
   context: {
-    ...localQuery.context,
-    getValues: (datasetName: string, variableName: string) => {
-      return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+    getValues: async (datasetName: string, variableName: string) => {
+      // Get the values of the variable from your dataset
+      const dataset = SAMPLE_DATASETS[datasetName];
+      if (!dataset) {
+        throw new Error(`Dataset '${datasetName}' not found`);
+      }
+      return dataset.map((item) => item[variableName]);
     },
   },
-};
+  onToolCompleted: (toolCallId, additionalData) => {
+    console.log('Query completed:', toolCallId, additionalData);
+  },
+});
 
-generateText({
+// Use with Vercel AI SDK
+const result = await generateText({
   model: openai('gpt-4o-mini', { apiKey: key }),
   system: systemPrompt,
-  prompt: 'what is the average revenue of the venues in dataset myVenues?',
+  prompt: 'What is the average revenue of venues in San Francisco?',
   tools: {
     localQuery: convertToVercelAiTool(localQueryTool),
   },
@@ -138,37 +171,73 @@ const { messages, input, handleInputChange, handleSubmit } = useChat({
 });
 ```
 
-### Use the tool with @openassistant/ui
+### mergeTables Tool
 
-Here is an example of using @openassistant/ui to query the data using the localQuery tool and display the result in a QueryResult component.
+The MergeTablesTool class merges two datasets (tables) using DuckDB SQL queries. This tool provides functionality for both horizontal and vertical merging operations in the browser environment.
+
+:::note
+This tool should be executed in Browser environment for now.
+:::
+
+#### Horizontal Merge (JOIN)
+
+Merges tables side by side based on a common key column.
 
 ```typescript
-import { localQuery } from '@openassistant/duckdb';
-import { convertToVercelAiTool } from '@openassistent/utils';
+import { MergeTablesTool } from '@openassistant/duckdb';
+import { convertToVercelAiTool } from '@openassistant/utils';
+import { generateText } from 'ai';
 
-const localQueryTool: LocalQueryTool = {
-  ...localQuery,
+// Create tool with custom context
+const mergeTablesTool = new MergeTablesTool({
   context: {
-    ...localQuery.context,
     getValues: async (datasetName: string, variableName: string) => {
-      // get the values of the variable from your dataset, e.g.
-      return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+      const dataset = SAMPLE_DATASETS[datasetName];
+      if (!dataset) {
+        throw new Error(`Dataset '${datasetName}' not found`);
+      }
+      return dataset.map((item) => item[variableName]);
     },
   },
-};
+  onToolCompleted: (toolCallId, additionalData) => {
+    console.log('Merge completed:', toolCallId, additionalData);
+  },
+});
 
-export function App() {
-  return (
-    <AiAssistant
-      apiKey={process.env.OPENAI_API_KEY || ''}
-      modelProvider="openai"
-      model="gpt-4o"
-      welcomeMessage="Hello! I'm your assistant."
-      instructions={systemPrompt}
-      tools={{localQuery: localQueryTool}}
-      useMarkdown={true}
-      theme="dark"
-    />
-  );
-}
+// Use with Vercel AI SDK
+const result = await generateText({
+  model: openai('gpt-4o-mini', { apiKey: key }),
+  system: systemPrompt,
+  prompt: 'Merge venues and users tables by city to see user preferences for venues',
+  tools: {
+    mergeTables: convertToVercelAiTool(mergeTablesTool),
+  },
+});
 ```
+
+#### Vertical Merge (UNION)
+
+Combines tables with the same columns by stacking them vertically.
+
+```typescript
+// Example for vertical merge
+const result = await generateText({
+  model: openai('gpt-4o-mini', { apiKey: key }),
+  system: systemPrompt,
+  prompt: 'Combine two user datasets from different sources',
+  tools: {
+    mergeTables: convertToVercelAiTool(mergeTablesTool),
+  },
+});
+```
+
+#### Merge Types
+
+- **Horizontal Merge**: Joins tables on a common key column
+  - Example SQL: `SELECT A.id, A.name, A.revenue, B.age FROM venues A JOIN users B USING (city)`
+- **Vertical Merge**: Combines tables with same columns
+  - Example SQL: `SELECT id, name, city FROM venues UNION ALL SELECT id, name, city FROM users`
+
+:::note
+The `mergeTables` tool is not executable on server side since it requires rendering the table on the client side (in the browser). You need to use it on client, similar to the localQuery tool.
+:::
