@@ -58,6 +58,7 @@ import { Feature } from 'geojson';
  * // Use with Vercel AI SDK
  * const result = await generateText({
  *   model: 'gpt-4.1',
+ *   system: 'You are a helpful assistant that can answer questions and help with tasks. The following datasets are available for tools: \nDatasetName: venues, \nFields: name, city, rating',
  *   prompt: 'What are the venues in San Francisco?',
  *   tools: { localQuery: localQueryTool.toVercelAiTool(tool) },
  * });

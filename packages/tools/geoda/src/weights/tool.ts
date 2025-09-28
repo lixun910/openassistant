@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, OpenAssistantToolOptions, z } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, OpenAssistantToolExecutionOptions, OpenAssistantExecuteFunctionResult } from '@openassistant/utils';
+import { z } from 'zod';
 import { createWeights, WeightsMeta, CreateWeightsProps } from '@geoda/core';
 import { WeightsProps, GetGeometries } from '../types';
 
@@ -40,8 +41,11 @@ export type SpatialWeightsAdditionalData = {
   weightsId: string;
 } & {
   [id: string]: {
-    weights: number[][];
-    weightsMeta: WeightsMeta;
+    type: 'weights';
+    content: {
+      weights: number[][];
+      weightsMeta: WeightsMeta;
+    };
   };
 };
 
@@ -68,32 +72,24 @@ export type SpatialWeightsAdditionalData = {
  * Example code:
  * ```typescript
  * import { SpatialWeightsTool } from '@openassistant/geoda';
- * import { generateText } from 'ai';
+ * import { generateText, tool } from 'ai';
  *
  * // Simple usage with defaults
  * const spatialWeightsTool = new SpatialWeightsTool();
  *
- * // Or with custom context and callbacks
- * const spatialWeightsTool = new SpatialWeightsTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
- *     getGeometries: (datasetName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
- *     },
- *   },
- *   SpatialWeightsComponent,
- *   (toolCallId, additionalData) => {
- *     console.log(toolCallId, additionalData);
- *     // do something like save the weights result in additionalData
- *   }
- * );
+* // Or with custom context
+* const spatialWeightsTool = new SpatialWeightsTool({
+*   context: {
+*     getGeometries: (datasetName) =>
+*       SAMPLE_DATASETS[datasetName].map((item) => item.geometry),
+*   },
+* });
  *
- * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
- *   prompt: 'Create a queen contiguity weights matrix for these counties',
- *   tools: {spatialWeights: spatialWeightsTool.toVercelAiTool()},
- * });
+* const out = await generateText({
+*   model: openai('gpt-4.1', { apiKey: process.env.OPENAI_API_KEY }),
+*   prompt: 'Create a queen contiguity weights for regions',
+*   tools: { spatialWeights: spatialWeightsTool.toVercelAiTool(tool) },
+* });
  * ```
  */
 export const SpatialWeightsArgs = z.object({
@@ -151,9 +147,90 @@ export class SpatialWeightsTool extends OpenAssistantTool<typeof SpatialWeightsA
 
   async execute(
     args: z.infer<typeof SpatialWeightsArgs>,
-    options?: { context?: Record<string, unknown> }
-  ): Promise<ExecuteSpatialWeightsResult> {
-    return executeSpatialWeights(args, options);
+    options?: OpenAssistantToolExecutionOptions & { context?: Record<string, unknown> }
+  ): Promise<OpenAssistantExecuteFunctionResult<SpatialWeightsLlmResult, SpatialWeightsAdditionalData>> {
+    if (!isSpatialWeightsArgs(args)) {
+      throw new Error('Invalid arguments for spatialWeights tool');
+    }
+
+    if (!options?.context || !isSpatialWeightsContext(options.context)) {
+      throw new Error('Invalid context for spatialWeights tool');
+    }
+
+    const {
+      datasetName,
+      type,
+      k,
+      orderOfContiguity,
+      includeLowerOrder,
+      precisionThreshold,
+      distanceThreshold,
+      isMile,
+      useCentroids,
+      mapBounds,
+    } = args;
+    const { getGeometries } = options.context;
+    const geometries = await getGeometries(datasetName);
+
+    if (!geometries) {
+      throw new Error(
+        `Error: geometries are empty. Please implement the getGeometries() context function.`
+      );
+    }
+
+    const weightsProps: CreateWeightsProps = {
+      weightsType: type,
+      k,
+      isQueen: type === 'queen',
+      distanceThreshold,
+      isMile,
+      useCentroids,
+      precisionThreshold,
+      orderOfContiguity,
+      includeLowerOrder,
+      geometries,
+    };
+
+    const id = getWeightsId(datasetName, weightsProps, mapBounds);
+
+    let w: { weightsMeta: WeightsMeta; weights: number[][] } | null = null;
+
+    const existingWeightData = globalWeightsData[id];
+    if (existingWeightData) {
+      w = {
+        weightsMeta: existingWeightData.weightsMeta,
+        weights: existingWeightData.weights,
+      };
+    } else {
+      const result = await createWeights(weightsProps);
+      w = {
+        weightsMeta: result.weightsMeta,
+        weights: result.weights,
+      };
+    }
+    w!.weightsMeta.id = id;
+
+    globalWeightsData[id] = {
+      datasetId: datasetName,
+      ...w!,
+    };
+
+    return {
+      llmResult: {
+        success: true,
+        result: `Weights created successfully and the weights are saved using weightsId: ${id}.`,
+      },
+      additionalData: {
+        weightsId: id,
+        [id]: {
+          type: 'weights',
+          content: {
+            weights: w!.weights,
+            weightsMeta: w!.weightsMeta,
+          },
+        },
+      },
+    };
   }
 }
 
@@ -228,99 +305,7 @@ function isSpatialWeightsContext(
   );
 }
 
-async function executeSpatialWeights(
-  args,
-  options
-): Promise<ExecuteSpatialWeightsResult> {
-  if (!isSpatialWeightsArgs(args)) {
-    throw new Error('Invalid arguments for spatialWeights tool');
-  }
-
-  if (!isSpatialWeightsContext(options.context)) {
-    throw new Error('Invalid context for spatialWeights tool');
-  }
-
-  const {
-    datasetName,
-    type,
-    k,
-    orderOfContiguity,
-    includeLowerOrder,
-    precisionThreshold,
-    distanceThreshold,
-    isMile,
-    useCentroids,
-    mapBounds,
-  } = args;
-  const { getGeometries } = options.context;
-  const geometries = await getGeometries(datasetName);
-
-  if (!geometries) {
-    throw new Error(
-      `Error: geometries are empty. Please implement the getGeometries() context function.`
-    );
-  }
-
-  const weightsProps: CreateWeightsProps = {
-    weightsType: type,
-    k,
-    isQueen: type === 'queen',
-    distanceThreshold,
-    isMile,
-    useCentroids,
-    precisionThreshold,
-    orderOfContiguity,
-    includeLowerOrder,
-    geometries,
-  };
-
-  const id = getWeightsId(datasetName, weightsProps, mapBounds);
-
-  let w: { weightsMeta: WeightsMeta; weights: number[][] } | null = null;
-
-  // check if the weights already exist in the global variable
-  const existingWeightData = globalWeightsData[id];
-  if (existingWeightData) {
-    w = {
-      weightsMeta: existingWeightData.weightsMeta,
-      weights: existingWeightData.weights,
-    };
-  } else {
-    // create the weights if it does not exist
-    const result = await createWeights(weightsProps);
-    w = {
-      weightsMeta: result.weightsMeta,
-      weights: result.weights,
-    };
-  }
-  // set the id to the weights meta
-  w.weightsMeta.id = id;
-
-  // cache the weights to the global variable, so that it can be reused across tool calls e.g. lisa, spatial regression
-  globalWeightsData[id] = {
-    datasetId: datasetName,
-    ...w,
-  };
-
-  return {
-    llmResult: {
-      success: true,
-      weightsId: id,
-      weightsMeta: w.weightsMeta,
-      result: `Weights created successfully and the weights are saved using weightsId: ${id}.`,
-    },
-    additionalData: {
-      weightsId: id,
-      [id]: {
-        type: 'weights',
-        content: {
-          weights: w.weights,
-          weightsMeta: w.weightsMeta,
-        },
-      },
-    },
-  };
-}
+// (previous executeSpatialWeights helper removed; logic now inlined in execute())
 
 export function getWeightsId(
   datasetId: string,

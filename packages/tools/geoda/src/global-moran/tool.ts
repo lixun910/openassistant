@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, OpenAssistantToolOptions } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantToolOptions, OpenAssistantToolExecutionOptions, OpenAssistantExecuteFunctionResult } from '@openassistant/utils';
 import { z } from 'zod';
 import { WeightsMeta } from '@geoda/core';
 import { spatialLag } from '@geoda/lisa';
@@ -53,70 +53,40 @@ export type MoranScatterPlotFunctionContext = {
 };
 
 /**
- * ## GlobalMoranTool
- * 
- * This tool is used to calculate Global Moran's I for a given variable to check if the variable is spatially clustered or dispersed.
+ * ## GlobalMoranTool Class
  *
- * ### Example user prompts
+ * Computes Global Moran's I to assess spatial autocorrelation of a numeric variable.
  *
- * - "Is the population data spatially clustered or dispersed?"
- * - "Is there a spatial autocorrelation in the population data?"
- * - "What is the Global Moran's I for the population data?"
+ * ### Notes
+ * - Use together with the `spatialWeights` tool. Provide a `weightsId` (returned by `spatialWeights`)
+ *   so cached weights can be retrieved for the computation.
  *
- * **Example user prompts:**
- * - "Is the population data spatially clustered or dispersed?"
- * - "Is there a spatial autocorrelation in the population data?"
- * - "What is the Global Moran's I for the population data?"
+ * ### Parameters
+ * - `datasetName` (string): Source dataset id/name
+ * - `variableName` (string): Numeric variable to analyze
+ * - `weightsId` (string, optional): ID of precomputed spatial weights (from `spatialWeights`)
  *
- * :::note
- * The global Moran's I tool should always be used with the spatialWeights tool. The LLM models know how to use the spatialWeights tool for the Moran scatterplot analysis.
- * :::
+ * ### Result
+ * Returns `{ success, globalMoranI?, result?, error? }`; `additionalData` contains
+ * `datasetName`, `variableName`, `values`, `lagValues`, `regression`, and `slope`.
  *
  * @example
  * ```typescript
- * import { GlobalMoranTool, SpatialWeightsTool } from "@openassistant/geoda";
+ * import { GlobalMoranTool, SpatialWeightsTool } from '@openassistant/geoda';
+ * import { generateText, tool } from 'ai';
  *
- * // Simple usage with defaults
- * const spatialWeightsTool = new SpatialWeightsTool();
- * const moranTool = new GlobalMoranTool();
+ * const weightsTool = new SpatialWeightsTool({ // provide getGeometries here });
+ * const moranTool = new GlobalMoranTool({ // provide getValues here });
  *
- * // Or with custom context
- * const spatialWeightsTool = new SpatialWeightsTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
- *     getGeometries: async (datasetName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
- *     },
- *   }
- * );
- *
- * const moranTool = new GlobalMoranTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
- *     getValues: async (datasetName, variableName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
- *     },
- *   }
- * );
- *
- * const result = await generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
- *   prompt: 'Can you calculate the Global Moran\'s I for the population data?',
+ * const out = await generateText({
+ *   model: openai('gpt-4.1', { apiKey: process.env.OPENAI_API_KEY }),
+ *   prompt: "Compute Global Moran's I for population",
  *   tools: {
- *     globalMoran: moranTool.toVercelAiTool(),
- *     spatialWeights: spatialWeightsTool.toVercelAiTool(),
+ *     spatialWeights: weightsTool.toVercelAiTool(tool),
+ *     globalMoran: moranTool.toVercelAiTool(tool),
  *   },
  * });
  * ```
- *
- * :::tip
- * You can use the `MoranScatterPlotToolComponent` React component from the `@openassistant/components` package to visualize the Moran scatterplot using
- * the `additionalData` object returned by the tool.
- * :::
- *
- * For a more complete example, see the [Geoda Tools Example using Next.js + Vercel AI SDK](https://github.com/openassistant/openassistant/tree/main/examples/vercel_geoda_example).
  */
 export class GlobalMoranTool extends OpenAssistantTool<typeof GlobalMoranArgs> {
   protected getDefaultDescription(): string {
@@ -140,22 +110,82 @@ export class GlobalMoranTool extends OpenAssistantTool<typeof GlobalMoranArgs> {
 
   async execute(
     args: z.infer<typeof GlobalMoranArgs>,
-    options?: { context?: Record<string, unknown> }
-  ): Promise<{
-    llmResult: MoranScatterPlotLlmResult;
-    additionalData?: MoranScatterPlotAdditionalData;
-  }> {
-    return executeGlobalMoran(args, options);
+    options?: OpenAssistantToolExecutionOptions & { context?: Record<string, unknown> }
+  ): Promise<OpenAssistantExecuteFunctionResult<MoranScatterPlotLlmResult, MoranScatterPlotAdditionalData>> {
+    try {
+      if (!isGlobalMoranArgs(args)) {
+        throw new Error('Invalid arguments for globalMoran tool');
+      }
+
+      if (!options?.context || !isGlobalMoranContext(options.context)) {
+        throw new Error('Invalid context for globalMoran tool');
+      }
+
+      const { datasetName, variableName, weightsId } = args;
+      const { getValues } = options.context;
+
+      const values = (await getValues(datasetName, variableName)) as number[];
+
+      // get the weights
+      let weights: number[][] | null = null;
+      let weightsMeta: WeightsMeta | null = null;
+
+      if (!weights && weightsId) {
+        const existingWeights = getCachedWeightsById(weightsId);
+        if (existingWeights) {
+          weights = existingWeights.weights;
+          weightsMeta = existingWeights.weightsMeta;
+        }
+      }
+
+      if (!weightsId) {
+        throw new Error('weightsId is required. Please run the spatialWeights tool first.');
+      }
+
+      if (!weights || !weightsMeta) {
+        throw new Error(
+          "Weights can not be found or created. Can not calculate Global Moran's I without weights."
+        );
+      }
+
+      const lagValues = (await spatialLag(values, weights)) as number[];
+      const regression = await simpleLinearRegression(values as number[], lagValues as number[]);
+      const slope = regression.slope;
+
+      return {
+        llmResult: {
+          success: true,
+          globalMoranI: slope,
+          result: `Global Moran's I is ${slope} for ${variableName} with ${weightsMeta.type} weights ${weightsId}.`,
+        },
+        additionalData: {
+          datasetName,
+          variableName,
+          values,
+          lagValues,
+          regression,
+          slope,
+        },
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        llmResult: {
+          success: false,
+          error: error instanceof Error ? error.message : String(error),
+        },
+      };
+    }
   }
 }
 
-type GlobalMoranArgs = {
+type GlobalMoranToolArgs = {
   datasetName: string;
   variableName: string;
   weightsId?: string;
 };
 
-export function isGlobalMoranArgs(args: unknown): args is GlobalMoranArgs {
+export function isGlobalMoranArgs(args: unknown): args is GlobalMoranToolArgs {
   return (
     typeof args === 'object' &&
     args !== null &&
@@ -188,83 +218,4 @@ function isGlobalMoranContext(
   );
 }
 
-async function executeGlobalMoran(
-  args,
-  options
-): Promise<{
-  llmResult: MoranScatterPlotLlmResult;
-  additionalData?: MoranScatterPlotAdditionalData;
-}> {
-  try {
-    if (!isGlobalMoranArgs(args)) {
-      throw new Error('Invalid arguments for globalMoran tool');
-    }
-
-    if (options.context && !isGlobalMoranContext(options.context)) {
-      throw new Error('Invalid context for globalMoran tool');
-    }
-
-    const { datasetName, variableName, weightsId } = args;
-    const { getValues } = options.context;
-
-    // get the values of the variable
-    const values = await getValues(datasetName, variableName);
-
-    // get the weights
-    let weights: number[][] | null = null;
-    let weightsMeta: WeightsMeta | null = null;
-
-    if (options.previousExecutionOutput) {
-      // check if weightsId can be retrived from previousExecutionOutput
-      options.previousExecutionOutput.forEach((output) => {
-        if (isWeightsOutputData(output.data)) {
-          weights = output.data.weights;
-          weightsMeta = output.data.weightsMeta;
-        }
-      });
-    }
-
-    if (!weights && weightsId) {
-      // get weights from cache inside openassistant/geoda module
-      const existingWeights = getCachedWeightsById(weightsId);
-      if (existingWeights) {
-        weights = existingWeights.weights;
-        weightsMeta = existingWeights.weightsMeta;
-      }
-    }
-
-    if (!weights || !weightsMeta || !weightsId) {
-      throw new Error(
-        "Weights can not be found or created. Can not calculate Global Moran's I without weights."
-      );
-    }
-
-    const lagValues = await spatialLag(values, weights);
-    const regression = await simpleLinearRegression(values, lagValues);
-    const slope = regression.slope;
-
-    return {
-      llmResult: {
-        success: true,
-        globalMoranI: slope,
-        result: `Global Moran's I is ${slope} for ${variableName} with ${weightsMeta.type} weights ${weightsId}.`,
-      },
-      additionalData: {
-        datasetName,
-        variableName,
-        values,
-        lagValues,
-        regression,
-        slope,
-      },
-    };
-  } catch (error) {
-    console.error(error);
-    return {
-      llmResult: {
-        success: false,
-        error: error instanceof Error ? error.message : String(error),
-      },
-    };
-  }
-}
+ 
