@@ -5,14 +5,16 @@
 
 import { useState } from 'react';
 import { useChat } from '@ai-sdk/react';
-import { localQuery, LocalQueryTool } from '@openassistant/duckdb';
+import { LocalQueryTool } from '@openassistant/duckdb';
 import { createOpenAI } from '@ai-sdk/openai';
 import {
+  tool,
   convertToModelMessages,
   DefaultChatTransport,
   streamText,
   UIMessagePart,
   lastAssistantMessageIsCompleteWithToolCalls,
+  Tool,
 } from 'ai';
 import { MessageParts } from './components/parts';
 
@@ -47,34 +49,14 @@ export default function Home() {
     return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   };
 
-  const myLocalQuery: LocalQueryTool = {
-    ...localQuery,
+  const localQueryTool = new LocalQueryTool({
     context: {
-      ...localQuery.context,
       getValues,
     },
     onToolCompleted,
-  };
+  });
 
-  // Create tool manually with correct inputSchema for streamText compatibility
-  const localQueryTool = {
-    description: myLocalQuery.description,
-    inputSchema: myLocalQuery.parameters,
-    execute: async (args: Record<string, unknown>, options: any) => {
-      const result = await myLocalQuery.execute(args as any, {
-        ...options,
-        context: myLocalQuery.context,
-      });
-      
-      if (options.toolCallId && myLocalQuery.onToolCompleted) {
-        myLocalQuery.onToolCompleted(options.toolCallId, result.additionalData);
-      }
-      
-      return result.llmResult;
-    },
-  };
-
-  const tools = { localQuery: localQueryTool };
+  const tools = { localQuery: localQueryTool.toVercelAiTool(tool) };
 
   // Custom fetch function that handles the AI processing locally
   const customFetch = async (_input: RequestInfo | URL, init?: RequestInit) => {
@@ -100,30 +82,12 @@ export default function Home() {
     setInput(e.target.value);
   };
 
-  // type MyUIMessage = UIMessage<unknown, unknown, typeof tools>;
-
-  const { error, messages, sendMessage, addToolResult } = useChat({
+  const { error, messages, sendMessage } = useChat({
     transport: new DefaultChatTransport({
       fetch: customFetch,
     }),
     // local tools are handled by the client
-    onToolCall: async ({ toolCall }) => {
-      // In Vercel AI v5, the toolCall structure might have changed
-      // We can check if it's the localQuery tool by checking the tool name or type
-      const toolName = (toolCall as any).toolName || (toolCall as any).name || 'unknown';
-      if (toolName === 'localQuery') {
-        const args = toolCall.input as Record<string, unknown>;
-        const result = await localQueryTool.execute?.(args, {
-          toolCallId: toolCall.toolCallId,
-        });
-        addToolResult({
-          tool: 'localQuery',
-          toolCallId: toolCall.toolCallId,
-          output: result,
-        });
-        console.log('result', result);
-      }
-    },
+    onToolCall: async ({ toolCall }) => {},
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
   });
 
