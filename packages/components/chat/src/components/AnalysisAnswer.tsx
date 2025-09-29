@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, {useState, useCallback, useMemo} from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';

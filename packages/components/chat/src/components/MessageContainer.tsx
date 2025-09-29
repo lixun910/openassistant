@@ -1,12 +1,5 @@
-import {
-  Badge,
-  Button,
-  cn,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@sqlrooms/ui';
-import { CodeIcon, XCircleIcon } from 'lucide-react';
+import { Badge, cn } from '@sqlrooms/ui';
+import { XCircleIcon } from 'lucide-react';
 
 type MessageContainerProps = {
   className?: string;
@@ -21,7 +14,6 @@ export const MessageContainer: React.FC<MessageContainerProps> = ({
   className,
   type,
   // borderColor,
-  content,
   children,
 }) => {
   return (

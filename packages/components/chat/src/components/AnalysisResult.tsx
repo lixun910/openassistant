@@ -40,9 +40,9 @@ type AnalysisResultProps = {
 export const AnalysisResult: React.FC<AnalysisResultProps> = ({result}) => {
   const currentSession = useChatStore((s) => s.ai.getCurrentSession());
   const toolAdditionalData = useChatStore(
-    (s) => (s.ai.getCurrentSession() as any)?.toolAdditionalData || {},
+    (s) => s.ai.getCurrentSession()?.toolAdditionalData || {},
   );
-  const deleteAnalysisResult = useChatStore((s) => s.ai.deleteAnalysisResult);
+  const deleteAnalysisResult = useChatStore((s) => s.config.ai.deleteAnalysisResult);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 

@@ -3,19 +3,14 @@
  * @packageDocumentation
  */
 
-export { AiSliceConfig, createAiSlice, createDefaultAiConfig } from './AiSlice';
-
-export type { AiSliceState } from './AiSlice';
-
 // New Zustand-based store exports
-export { createChatStore, useChatStore } from './store';
+export * from './store';
+export type { ChatStoreState } from './store';
 
-export type { ChatStoreState, ChatConfig } from './store';
 export { QueryControls } from './components/QueryControls';
 export { AnalysisResultsContainer } from './components/AnalysisResultsContainer';
 export { AnalysisResult } from './components/AnalysisResult';
 export { useScrollToBottom } from './hooks/useScrollToBottom';
-export type { AiSliceTool } from './AiSlice';
 export { QueryToolResult } from './components/tools/QueryToolResult';
 
 export * from './components/ModelSelector';
@@ -34,7 +29,7 @@ export * from './AiSlice';
 
 export type { AiSettingsSlice } from './AiSettingsSlice';
 export type { AiConfigSlice } from './AiConfigSlice';
-export type { AiSlice } from './AiSlice';
+export type { AiSlice, AiSliceTool } from './AiSlice';
 
 export { AiSettingsPanel } from './components/settings/AiSettingsPanel';
 export { AiProvidersSettings } from './components/settings/AiProvidersSettings';

@@ -15,12 +15,27 @@ const isWatch = process.argv.includes('--watch');
 const baseConfig = createBaseConfig({
   entryPoints: ['src/index.ts'],
   external: [
-    'react',
-    'react-dom',
     '@jspm/core',
-    'vega',
-    'vega-lite',
-    'react-vega',
+    '@jspm/core/*',
+    '@ai-sdk/openai-compatible',
+    '@ai-sdk/react',
+    '@openassistant/utils',
+    '@sqlrooms/data-table',
+    '@sqlrooms/monaco-editor',
+    '@sqlrooms/recharts',
+    '@sqlrooms/ui',
+    '@sqlrooms/utils',
+    'ai',
+    'clsx',
+    'immer',
+    'lucide-react',
+    'react-markdown',
+    'recharts',
+    'rehype-raw',
+    'remark-gfm',
+    'tailwind-merge',
+    'zod',
+    'zustand',
   ],
   loader: {
     '.js': 'jsx',
@@ -31,7 +46,8 @@ const baseConfig = createBaseConfig({
     '.css': 'css',
   },
   jsx: 'automatic',
-  plugins: [dtsPlugin(), polyfillNode()],
+  // Only include DTS plugin by default; add node polyfills only for browser/ESM builds
+  plugins: [dtsPlugin()],
   define: {
     'process.env.NODE_ENV': isStart ? '"development"' : '"production"',
   },
@@ -46,13 +62,14 @@ if (isWatch) {
     ...baseConfig,
     format: 'esm',
     outfile: 'dist/index.esm.js',
+    plugins: [...(baseConfig.plugins || []), polyfillNode()],
   };
   const cjsConfig = {
     ...baseConfig,
     format: 'cjs',
     outfile: 'dist/index.cjs.js',
     platform: 'node',
-    target: ['es2017'],
+    target: ['node18'],
   };
 
   // Start watching both formats
@@ -61,7 +78,11 @@ if (isWatch) {
 } else {
   // Build all formats
   Promise.all([
-    buildFormat(baseConfig, 'esm', 'dist/index.esm.js'),
+    buildFormat(
+      { ...baseConfig, plugins: [...(baseConfig.plugins || []), polyfillNode()] },
+      'esm',
+      'dist/index.esm.js'
+    ),
     buildFormat(baseConfig, 'cjs', 'dist/index.cjs.js'),
   ]).catch((error) => {
     console.error(error);

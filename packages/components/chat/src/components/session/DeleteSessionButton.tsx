@@ -26,7 +26,7 @@ export const DeleteSessionButton: React.FC<DeleteSessionButtonProps> = ({
 }) => {
   const sessions = useChatStore((s) => s.config.ai.sessions);
   const currentSessionId = useChatStore((s) => s.config.ai.currentSessionId);
-  const deleteSession = useChatStore((s) => s.ai.deleteSession);
+  const deleteSession = useChatStore((s) => s.config.ai.deleteSession);
 
   const [sessionToDeleteId, setSessionToDeleteId] = useState<string | null>(
     null,

@@ -1,5 +1,5 @@
-import {FC, useRef} from 'react';
-import {Sliders, Wrench, FileText, Upload, Eye} from 'lucide-react';
+import { FC, useRef } from 'react';
+import { Sliders, Wrench, FileText, Upload, Eye } from 'lucide-react';
 import {
   Textarea,
   Input,
@@ -12,7 +12,7 @@ import {
   useDisclosure,
   useToast,
 } from '@sqlrooms/ui';
-import {useChatStore} from '../../store';
+import { useChatStore } from '../../store';
 
 export interface AiModelParametersProps {
   getDefaultInstructions?: () => string;
@@ -22,21 +22,24 @@ export const AiModelParameters: FC<AiModelParametersProps> = ({
   getDefaultInstructions,
 }) => {
   const maxSteps = useChatStore(
-    (s) => s.getAiSettings().modelParameters.maxSteps,
+    (s) => s.config.aiSettings.getAiSettings().modelParameters.maxSteps
   );
-  const setMaxStepsAiChatUi = useChatStore((s) => s.setMaxSteps);
+  const setMaxStepsAiChatUi = useChatStore(
+    (s) => s.config.aiSettings.setMaxSteps
+  );
 
   const additionalInstruction = useChatStore(
-    (s) => s.getAiSettings().modelParameters.additionalInstruction,
+    (s) =>
+      s.config.aiSettings.getAiSettings().modelParameters.additionalInstruction
   );
   const setAdditionalInstruction = useChatStore(
-    (s) => s.setAdditionalInstruction,
+    (s) => s.config.aiSettings.setAdditionalInstruction
   );
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const {toast} = useToast();
+  const { toast } = useToast();
 
-  const {isOpen, onOpen, onClose} = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleMaxStepsChange = (value: number) => {
     setMaxStepsAiChatUi(value);
@@ -47,7 +50,7 @@ export const AiModelParameters: FC<AiModelParametersProps> = ({
   };
 
   const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -194,7 +197,7 @@ export const AiModelParameters: FC<AiModelParametersProps> = ({
             type="file"
             accept=".txt,.md,.json,.text,text/plain,text/markdown,application/json"
             onChange={handleFileUpload}
-            style={{display: 'none'}}
+            style={{ display: 'none' }}
           />
         </div>
       </div>

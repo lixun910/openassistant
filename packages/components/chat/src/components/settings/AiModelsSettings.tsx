@@ -1,4 +1,4 @@
-import React, {FC, useMemo, useState} from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import {
   Button,
   Input,
@@ -22,7 +22,7 @@ import {
   Settings,
   Trash2,
 } from 'lucide-react';
-import {useChatStore} from '../../store';
+import { useChatStore } from '../../store';
 
 export interface AiModelsSettingsProps {
   showProviderModels?: boolean;
@@ -37,22 +37,28 @@ export const AiModelsSettings: FC<AiModelsSettingsProps> = ({
   allowEditProviderModels = true,
   allowCustomModels = true,
 }) => {
-  const {toast} = useToast();
-  const aiConfig = useChatStore((s) => s.getAiSettings());
+  const { toast } = useToast();
+  const aiConfig = useChatStore((s) => s.config.aiSettings.getAiSettings());
   const setAiModel = useChatStore((s) => s.ai.setAiModel);
   const addModelToProvider = useChatStore(
-    (s) => s.addModelToProvider,
+    (s) => s.config.aiSettings.addModelToProvider
   );
   const removeModelFromProvider = useChatStore(
-    (s) => s.removeModelFromProvider,
+    (s) => s.config.aiSettings.removeModelFromProvider
   );
-  const addCustomModel = useChatStore((s) => s.addCustomModel);
-  const updateCustomModel = useChatStore((s) => s.updateCustomModel);
-  const removeCustomModel = useChatStore((s) => s.removeCustomModel);
+  const addCustomModel = useChatStore(
+    (s) => s.config.aiSettings.addCustomModel
+  );
+  const updateCustomModel = useChatStore(
+    (s) => s.config.aiSettings.updateCustomModel
+  );
+  const removeCustomModel = useChatStore(
+    (s) => s.config.aiSettings.removeCustomModel
+  );
 
   const providers = useMemo(
     () => Object.entries(aiConfig.providers),
-    [aiConfig.providers],
+    [aiConfig.providers]
   );
   const customModels = aiConfig.customModels || [];
 
@@ -197,7 +203,7 @@ export const AiModelsSettings: FC<AiModelsSettingsProps> = ({
     const duplicateModel = customModels.find(
       (cm) =>
         cm.modelName.toLowerCase() === trimmedName.toLowerCase() &&
-        cm.modelName !== editingModel.oldModelName,
+        cm.modelName !== editingModel.oldModelName
     );
 
     if (duplicateModel) {
@@ -214,7 +220,7 @@ export const AiModelsSettings: FC<AiModelsSettingsProps> = ({
       editingModel.oldModelName,
       trimmedBaseUrl,
       trimmedApiKey,
-      trimmedName,
+      trimmedName
     );
 
     // Show success message
@@ -243,7 +249,7 @@ export const AiModelsSettings: FC<AiModelsSettingsProps> = ({
     const provider = aiConfig.providers[selectedProviderKey];
     const modelExists = provider?.models.some(
       (model) =>
-        model.modelName.toLowerCase() === newModelName.trim().toLowerCase(),
+        model.modelName.toLowerCase() === newModelName.trim().toLowerCase()
     );
 
     if (modelExists) {
@@ -263,9 +269,9 @@ export const AiModelsSettings: FC<AiModelsSettingsProps> = ({
   const handleDeleteModel = (
     type: 'provider' | 'custom',
     providerKey: string | undefined,
-    modelName: string,
+    modelName: string
   ) => {
-    setModelToDelete({type, providerKey, modelName});
+    setModelToDelete({ type, providerKey, modelName });
     openDeleteModelDialog();
   };
 
@@ -275,7 +281,7 @@ export const AiModelsSettings: FC<AiModelsSettingsProps> = ({
     if (modelToDelete.type === 'provider' && modelToDelete.providerKey) {
       removeModelFromProvider(
         modelToDelete.providerKey,
-        modelToDelete.modelName,
+        modelToDelete.modelName
       );
       toast({
         title: 'Model Deleted',
@@ -582,7 +588,7 @@ export const AiModelsSettings: FC<AiModelsSettingsProps> = ({
                     value={editingModel?.modelName || ''}
                     onChange={(e) =>
                       setEditingModel((prev) =>
-                        prev ? {...prev, modelName: e.target.value} : null,
+                        prev ? { ...prev, modelName: e.target.value } : null
                       )
                     }
                     placeholder="e.g., My cool model"
@@ -602,7 +608,7 @@ export const AiModelsSettings: FC<AiModelsSettingsProps> = ({
                     value={editingModel?.baseUrl || ''}
                     onChange={(e) => {
                       setEditingModel((prev) =>
-                        prev ? {...prev, baseUrl: e.target.value} : null,
+                        prev ? { ...prev, baseUrl: e.target.value } : null
                       );
                       if (editBaseUrlError && e.target.value.trim()) {
                         setEditBaseUrlError(false);
@@ -626,7 +632,7 @@ export const AiModelsSettings: FC<AiModelsSettingsProps> = ({
                     value={editingModel?.apiKey || ''}
                     onChange={(e) =>
                       setEditingModel((prev) =>
-                        prev ? {...prev, apiKey: e.target.value} : null,
+                        prev ? { ...prev, apiKey: e.target.value } : null
                       )
                     }
                     placeholder="Optional"

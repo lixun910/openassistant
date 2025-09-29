@@ -4,26 +4,21 @@ import {
   convertToModelMessages,
   streamText,
 } from 'ai';
-import type {LanguageModel} from 'ai';
-import {createOpenAICompatible} from '@ai-sdk/openai-compatible';
-import {convertToVercelAiTool} from './utils';
-import {produce} from 'immer';
-import {getErrorMessageForDisplay} from './utils';
-import type {AiSliceState, AiSliceTool} from './AiSlice';
-import type {AnalysisSessionSchema as AnalysisSession} from './schemas';
+import type { LanguageModel } from 'ai';
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
+import { produce } from 'immer';
+import { getErrorMessageForDisplay, convertToVercelAiTool, createId } from './utils';
+import type { AiSlice, AiSliceTool } from './AiSlice';
+import type { AnalysisSessionSchema as AnalysisSession } from './schemas';
 
-type GetState = AiSliceState & {
-  config: {ai: {currentSessionId?: string; sessions: AnalysisSession[]}};
-  db?: {
-    tables: any[];
-    sqlSelectToJson: (query: string) => Promise<any>;
-  };
+type GetState = AiSlice & {
+  config: { ai: { currentSessionId?: string; sessions: AnalysisSession[] } };
 };
 type GetFn = () => GetState;
 type SetFn = <T>(
   partial: T | Partial<T> | ((state: T) => T | Partial<T>),
   replace?: false | undefined,
-  action?: string,
+  action?: string
 ) => void;
 
 export type LlmDeps = {
@@ -31,7 +26,7 @@ export type LlmDeps = {
   defaultProvider: string;
   defaultModel: string;
   apiKey: string;
-  baseUrl?: string;
+  baseUrl?: string | undefined;
   instructions: string;
   /**
    * Optional: supply a pre-configured client for a given provider, e.g. Azure created via createAzure.
@@ -39,10 +34,10 @@ export type LlmDeps = {
    * instead of the default OpenAI-compatible client.
    */
   getModelClientForProvider?: (
-    provider: string,
+    provider: string
   ) =>
     | ((modelId: string) => LanguageModel)
-    | {chatModel: (modelId: string) => LanguageModel}
+    | { chatModel: (modelId: string) => LanguageModel }
     | undefined;
 };
 
@@ -59,7 +54,9 @@ export function createLocalChatTransportFactory({
     const fetchImpl = async (_input: RequestInfo | URL, init?: RequestInit) => {
       // Resolve provider/model and client at call time to pick up latest settings
       const state = get();
-      const currentSession = state.ai.getCurrentSession();
+      const currentSession = state.config.ai.sessions.find(
+        (s) => s.id === state.config.ai.currentSessionId
+      );
       const provider = currentSession?.modelProvider || defaultProvider;
       const modelId = currentSession?.model || defaultModel;
 
@@ -70,11 +67,11 @@ export function createLocalChatTransportFactory({
         if (typeof customClient === 'function') {
           model = customClient(modelId);
         } else if (
-          typeof (customClient as {chatModel?: unknown}).chatModel ===
+          typeof (customClient as { chatModel?: unknown }).chatModel ===
           'function'
         ) {
           model = (
-            customClient as {chatModel: (id: string) => LanguageModel}
+            customClient as { chatModel: (id: string) => LanguageModel }
           ).chatModel(modelId);
         }
       }
@@ -101,14 +98,14 @@ export function createLocalChatTransportFactory({
           (prev: Record<string, unknown>) => ({
             ...prev,
             [toolCallId]: additionalData,
-          }),
+          })
         );
       };
 
       const tools = Object.entries(state.ai.tools || {}).reduce(
         (
           acc: Record<string, ReturnType<typeof convertToVercelAiTool>>,
-          [name, tool]: [string, AiSliceTool],
+          [name, tool]: [string, AiSliceTool]
         ) => {
           acc[name] = convertToVercelAiTool({
             tool,
@@ -116,7 +113,7 @@ export function createLocalChatTransportFactory({
           });
           return acc;
         },
-        {} as Record<string, ReturnType<typeof convertToVercelAiTool>>,
+        {} as Record<string, ReturnType<typeof convertToVercelAiTool>>
       );
 
       // get system instructions
@@ -133,7 +130,7 @@ export function createLocalChatTransportFactory({
       return result.toUIMessageStreamResponse();
     };
 
-    return new DefaultChatTransport({fetch: fetchImpl});
+    return new DefaultChatTransport({ fetch: fetchImpl });
   };
 }
 
@@ -146,9 +143,9 @@ export function createRemoteChatTransportFactory() {
     });
 }
 
-export function createChatHandlers({get, set}: {get: GetFn; set: SetFn}) {
+export function createChatHandlers({ get, set }: { get: GetFn; set: SetFn }) {
   return {
-    onChatToolCall: async ({toolCall}: {toolCall: unknown}) => {
+    onChatToolCall: async ({ toolCall }: { toolCall: unknown }) => {
       void toolCall;
       // no-op for now; UI messages are synced on finish via useChat
     },
@@ -169,7 +166,7 @@ export function createChatHandlers({get, set}: {get: GetFn; set: SetFn}) {
         set((state: GetState) =>
           produce(state, (draft: GetState) => {
             const targetSession = draft.config.ai.sessions.find(
-              (s: AnalysisSession) => s.id === currentSessionId,
+              (s: AnalysisSession) => s.id === currentSessionId
             );
             if (!targetSession) return;
 
@@ -181,33 +178,33 @@ export function createChatHandlers({get, set}: {get: GetFn; set: SetFn}) {
             if (lastUserMessage) {
               // Check if analysis result already exists for this user message
               const existingResult = targetSession.analysisResults.find(
-                (result) => result.id === lastUserMessage.id,
+                (result) => result.id === (lastUserMessage.id ?? '')
               );
 
               if (!existingResult) {
                 // Extract text content from user message
                 const promptText = lastUserMessage.parts
                   .filter((part) => part.type === 'text')
-                  .map((part) => (part as {text: string}).text)
+                  .map((part) => (part as { text: string }).text)
                   .join('');
 
                 // Create analysis result with the same ID as the user message
                 targetSession.analysisResults.push({
-                  id: lastUserMessage.id,
+                  id: lastUserMessage.id ?? createId(),
                   prompt: promptText,
                   response: [],
                   isCompleted: true,
                 });
               }
             }
-          }),
+          })
         );
         set((state: GetState) =>
           produce(state, (draft: GetState) => {
             draft.ai.isRunningAnalysis = false;
             draft.ai.analysisPrompt = '';
             draft.ai.analysisAbortController = undefined;
-          }),
+          })
         );
       } catch (err) {
         console.error('onChatFinish error:', err);
@@ -224,7 +221,7 @@ export function createChatHandlers({get, set}: {get: GetFn; set: SetFn}) {
           produce(state, (draft: GetState) => {
             if (!currentSessionId) return;
             const targetSession = draft.config.ai.sessions.find(
-              (s: AnalysisSession) => s.id === currentSessionId,
+              (s: AnalysisSession) => s.id === currentSessionId
             );
             if (targetSession) {
               // Find the last user message to create analysis result with correct ID
@@ -235,33 +232,33 @@ export function createChatHandlers({get, set}: {get: GetFn; set: SetFn}) {
               if (lastUserMessage) {
                 // Check if analysis result already exists for this user message
                 const existingResult = targetSession.analysisResults.find(
-                  (result) => result.id === lastUserMessage.id,
+                  (result) => result.id === (lastUserMessage.id ?? '')
                 );
 
                 if (!existingResult) {
                   // Extract text content from user message
                   const promptText = lastUserMessage.parts
                     .filter((part) => part.type === 'text')
-                    .map((part) => (part as {text: string}).text)
+                    .map((part) => (part as { text: string }).text)
                     .join('');
 
                   // Create analysis result with the same ID as the user message
                   targetSession.analysisResults.push({
-                    id: lastUserMessage.id,
+                    id: lastUserMessage.id ?? createId(),
                     prompt: promptText,
                     response: [],
-                    errorMessage: {error: errMsg},
+                    errorMessage: { error: errMsg },
                     isCompleted: true,
                   });
                 } else {
                   // Update existing result with error message
-                  existingResult.errorMessage = {error: errMsg};
+                  existingResult.errorMessage = { error: errMsg };
                 }
               }
             }
             draft.ai.isRunningAnalysis = false;
             draft.ai.analysisAbortController = undefined;
-          }),
+          })
         );
       } catch (e) {
         console.error('Failed to store chat error:', e);

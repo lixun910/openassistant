@@ -1,7 +1,8 @@
-import {FC} from 'react';
-import {CreditCard, BarChart3, DollarSign} from 'lucide-react';
-import {SkeletonPane} from '@sqlrooms/ui';
-import {ChartContainer, ChartTooltip} from '@sqlrooms/recharts';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { FC } from 'react';
+import { CreditCard, BarChart3, DollarSign } from 'lucide-react';
+import { SkeletonPane } from '@sqlrooms/ui';
+import { ChartContainer, ChartTooltip } from '@sqlrooms/recharts';
 import {
   Bar,
   XAxis,
@@ -15,7 +16,7 @@ export interface ModelUsageData {
   totalSpend: number;
   maxBudget: number;
   isLoadingSpend: boolean;
-  weeklySpend?: Array<{date: string; spend: number}>;
+  weeklySpend?: Array<{ date: string; spend: number }>;
   isLoadingWeeklySpend?: boolean;
 }
 
@@ -24,9 +25,11 @@ type AiModelUsageProps = {
   modelUsage?: ModelUsageData;
 };
 
-const fillMissingDays = (weeklySpend: Array<{date: string; spend: number}>) => {
+const fillMissingDays = (
+  weeklySpend: Array<{ date: string; spend: number }>
+) => {
   const today = new Date();
-  const pastWeek: Array<{date: string; spend: number}> = [];
+  const pastWeek: Array<{ date: string; spend: number }> = [];
 
   // Generate the past 7 days
   for (let i = 6; i >= 0; i--) {
@@ -67,11 +70,11 @@ export const AiModelUsage: FC<AiModelUsageProps> = ({
 
   const getCurrentMonthRange = () => {
     const now = new Date();
-    const month = now.toLocaleDateString('en-US', {month: 'long'});
+    const month = now.toLocaleDateString('en-US', { month: 'long' });
     const lastDay = new Date(
       now.getFullYear(),
       now.getMonth() + 1,
-      0,
+      0
     ).getDate();
     return `${month} 1-${lastDay}`;
   };
@@ -114,7 +117,7 @@ export const AiModelUsage: FC<AiModelUsageProps> = ({
           </label>
           <div
             className="bg-muted h-32 rounded-lg p-4"
-            style={{position: 'relative'}}
+            style={{ position: 'relative' }}
           >
             {isLoadingWeeklySpend ? (
               <SkeletonPane n={7} rowHeight="100%" className="w-full" />
@@ -148,18 +151,18 @@ export const AiModelUsage: FC<AiModelUsageProps> = ({
                     />
                     <XAxis
                       dataKey="dayLabel"
-                      tick={{fontSize: 10}}
+                      tick={{ fontSize: 10 }}
                       tickLine={false}
                       axisLine={false}
                     />
                     <YAxis
-                      tick={{fontSize: 10}}
+                      tick={{ fontSize: 10 }}
                       tickLine={false}
                       axisLine={false}
                       tickFormatter={(value) => `$${value.toFixed(3)}`}
                     />
                     <ChartTooltip
-                      content={({active, payload}: any) => {
+                      content={({ active, payload }: any) => {
                         if (active && payload && payload.length && payload[0]) {
                           const data = payload[0].payload;
                           return (

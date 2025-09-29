@@ -20,7 +20,7 @@ export interface SessionTitleProps {
  */
 export const SessionTitle: React.FC<SessionTitleProps> = ({className}) => {
   const currentSession = useChatStore((s) => s.ai.getCurrentSession());
-  const renameSession = useChatStore((s) => s.ai.renameSession);
+  const renameSession = useChatStore((s) => s.config.ai.renameSession);
 
   return (
     <div className={cn('flex items-center gap-2', className)}>

@@ -1,20 +1,18 @@
-import {cn, ScrollArea, ScrollBar, SkeletonPane} from '@sqlrooms/ui';
-import {ChevronDown} from 'lucide-react';
-import React, {useRef, useMemo} from 'react';
-import {useChatStore} from '../store';
-import {useScrollToBottom} from '../hooks/useScrollToBottom';
-import {AnalysisResult} from './AnalysisResult';
+import { cn, ScrollArea, ScrollBar, SkeletonPane } from '@sqlrooms/ui';
+import { ChevronDown } from 'lucide-react';
+import React, { useRef, useMemo } from 'react';
+import { useChatStore } from '../store';
+import { useScrollToBottom } from '../hooks/useScrollToBottom';
+import { AnalysisResult } from './AnalysisResult';
 
 export const AnalysisResultsContainer: React.FC<{
   className?: string;
-}> = ({className}) => {
+}> = ({ className }) => {
   const isRunningAnalysis = useChatStore((s) => s.ai.isRunningAnalysis);
-  const uiMessages = useChatStore(
-    (s) => (s.ai.getCurrentSession() as any)?.uiMessages,
-  );
+  const uiMessages = useChatStore((s) => s.ai.getCurrentSession()?.uiMessages);
   const getAnalysisResults = useChatStore((s) => s.ai.getAnalysisResults);
   const currentAnalysisResults = useChatStore(
-    (s) => (s.ai.getCurrentSession() as any)?.analysisResults,
+    (s) => s.ai.getCurrentSession()?.analysisResults
   );
 
   // Memoize the analysis results to prevent infinite re-renders
@@ -25,7 +23,7 @@ export const AnalysisResultsContainer: React.FC<{
 
   const containerRef = useRef<HTMLDivElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
-  const {showScrollButton, scrollToBottom} = useScrollToBottom({
+  const { showScrollButton, scrollToBottom } = useScrollToBottom({
     containerRef,
     endRef,
     dataToObserve: analysisResults,
@@ -52,7 +50,7 @@ export const AnalysisResultsContainer: React.FC<{
           className={cn(
             'bg-primary hover:bg-primary/90 text-primary-foreground pointer-events-auto z-50',
             'mb-6 translate-y-4 rounded-full p-2 opacity-0 shadow-md transition-all duration-200',
-            showScrollButton && 'translate-y-0 opacity-100',
+            showScrollButton && 'translate-y-0 opacity-100'
           )}
           aria-label="Scroll to bottom"
         >
