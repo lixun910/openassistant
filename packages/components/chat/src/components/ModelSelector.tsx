@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@sqlrooms/ui';
-import {useStoreWithAi} from '../AiSlice';
+import {useChatStore} from '../store';
 import {capitalize} from '@sqlrooms/utils';
 interface Model {
   provider: string;
@@ -26,8 +26,8 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
   className,
   models,
 }) => {
-  const currentSession = useStoreWithAi((s) => s.ai.getCurrentSession());
-  const setAiModel = useStoreWithAi((s) => s.ai.setAiModel);
+  const currentSession = useChatStore((s) => s.ai.getCurrentSession());
+  const setAiModel = useChatStore((s) => s.ai.setAiModel);
 
   const handleModelChange = (value: string) => {
     const selectedModel = models.find((model) => model.value === value);

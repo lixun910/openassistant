@@ -1,6 +1,6 @@
-import {Button, useDisclosure} from '@sqlrooms/ui';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
-import {useStoreWithAi} from '../../AiSlice';
+import {useChatStore} from '../../store';
 import {MessageContainer} from '../MessageContainer';
 import {ToolCallErrorBoundary} from './ToolResultErrorBoundary';
 import {ToolErrorMessage} from './ToolErrorMessage';
@@ -39,9 +39,6 @@ export const ToolResult: React.FC<ToolResultProps> = ({
   isCompleted,
   errorMessage,
 }) => {
-  const {isOpen: showDetails, onToggle: toggleShowDetails} =
-    useDisclosure(false);
-
   const toolName = toolInvocation.toolName || toolInvocation.name || 'unknown';
   const args = toolInvocation.args || toolInvocation.input || {};
   const state = toolInvocation.state || 'call';
@@ -53,8 +50,8 @@ export const ToolResult: React.FC<ToolResultProps> = ({
   // show reason text before tool call complete
   const text = args.reasoning || '';
 
-  const ToolComponent = useStoreWithAi((state) =>
-    state.ai.findToolComponent(toolName),
+  const ToolComponent = useChatStore((state) =>
+    state.ai.findToolComponent(toolName)
   );
 
   // check if args has a property called 'reason'

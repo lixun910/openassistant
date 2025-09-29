@@ -1,7 +1,7 @@
 import {Button, cn} from '@sqlrooms/ui';
 import {Plus as PlusIcon} from 'lucide-react';
 import React from 'react';
-import {useStoreWithAi} from '../../AiSlice';
+import {useChatStore} from '../../store';
 import {DeleteSessionButton} from './DeleteSessionButton';
 
 /**
@@ -21,7 +21,7 @@ export interface SessionActionsProps {
  * ```
  */
 export const SessionActions: React.FC<SessionActionsProps> = ({className}) => {
-  const createSession = useStoreWithAi((s) => s.ai.createSession);
+  const createSession = useChatStore((s) => s.ai.createSession);
 
   return (
     <div className={cn('flex items-center gap-2', className)}>

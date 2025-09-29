@@ -31,7 +31,7 @@ export const SessionDropdown: React.FC<SessionDropdownProps> = ({
 }) => {
   const sessions = useChatStore((s) => s.config.ai.sessions);
   const currentSessionId = useChatStore((s) => s.config.ai.currentSessionId);
-  const switchSession = useChatStore((s) => s.ai.switchSession);
+  const switchSession = useChatStore((s) => s.config.ai.switchSession);
   const createSession = useChatStore((s) => s.ai.createSession);
 
   return (

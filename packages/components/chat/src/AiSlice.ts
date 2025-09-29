@@ -1,8 +1,17 @@
 import { createId } from './utils';
 import { z } from 'zod';
 import type React from 'react';
-import { AnalysisSessionSchema } from './schemas';
+import { AnalysisResultSchema, AnalysisSessionSchema } from './schemas';
 import { ChatStoreState, createSlice } from './store';
+import { DefaultChatTransport, UIMessage } from 'ai';
+import { UIMessagePart } from './schema/UIMessageSchema';
+import { produce } from 'immer';
+import {
+  createChatHandlers,
+  createLocalChatTransportFactory,
+  createRemoteChatTransportFactory,
+  LlmDeps,
+} from './llm';
 
 export type DefaultToolsOptions = {
   /**
@@ -32,7 +41,9 @@ export const AiSliceToolSchema = z.object({
       })
     )
   ),
+  context: z.record(z.string(), z.unknown()).optional(),
   component: z.any().optional(), // React.ComponentType
+  onToolCompleted: z.function().returns(z.void()).optional(),
 });
 
 export type AiSliceTool = z.infer<typeof AiSliceToolSchema>;
@@ -43,6 +54,10 @@ export const AiSliceState = z.object({
     isRunningAnalysis: z.boolean(),
     tools: z.record(z.string(), AiSliceToolSchema),
     analysisAbortController: z.instanceof(AbortController).optional(),
+    /** Optional remote endpoint to use for chat; if empty, local transport is used */
+    endPoint: z.string().optional(),
+    /** Optional headers to send with remote endpoint */
+    headers: z.record(z.string(), z.string()).optional(),
   }),
 });
 
@@ -51,7 +66,9 @@ export type AiSliceState = z.infer<typeof AiSliceState>;
 export interface AiSliceActions {
   ai: {
     setAnalysisPrompt: (prompt: string) => void;
-    startAnalysis: () => Promise<void>;
+    startAnalysis: (
+      sendMessage: (message: { text: string }) => void
+    ) => Promise<void>;
     cancelAnalysis: () => void;
     setAiModel: (modelProvider: string, model: string) => void;
     createSession: (
@@ -65,6 +82,27 @@ export interface AiSliceActions {
     getBaseUrlFromSettings: () => string | undefined;
     getMaxStepsFromSettings: () => number;
     getInstructionsFromSettings: () => string;
+    // AI SDK v5
+    getAnalysisResults: () => AnalysisResultSchema[];
+    setSessionUiMessages: (sessionId: string, uiMessages: UIMessage[]) => void;
+    setSessionToolAdditionalData: (
+      sessionId: string,
+      updater:
+        | Record<string, unknown>
+        | ((prev: Record<string, unknown>) => Record<string, unknown>)
+    ) => void;
+    getLocalChatTransport: () => DefaultChatTransport<UIMessage>;
+    getRemoteChatTransport: (
+      endpoint: string,
+      headers?: Record<string, string>
+    ) => DefaultChatTransport<UIMessage>;
+    onChatToolCall: (args: { toolCall: unknown }) => Promise<void> | void;
+    onChatFinish: (args: {
+      message: UIMessage;
+      messages: UIMessage[];
+      isError?: boolean;
+    }) => void;
+    onChatError: (error: unknown) => void;
   };
 }
 
@@ -83,6 +121,7 @@ export interface AiSliceOptions {
   maxSteps?: number;
   getApiKey?: (modelProvider: string) => string;
   getBaseUrl?: () => string;
+  getModelClientForProvider?: LlmDeps['getModelClientForProvider'];
 }
 
 export type AiSlice = {
@@ -106,6 +145,7 @@ export const createAiSlice = (options: AiSliceOptions) =>
       getBaseUrl,
       maxSteps,
       getInstructions,
+      getModelClientForProvider,
     } = options;
 
     return {
@@ -118,7 +158,7 @@ export const createAiSlice = (options: AiSliceOptions) =>
         },
 
         setAnalysisPrompt: (prompt: string) => {
-          set((state) => ({
+          set((state): Partial<ChatStoreState> => ({
             ai: {
               ...state.ai,
               analysisPrompt: prompt,
@@ -178,7 +218,7 @@ export const createAiSlice = (options: AiSliceOptions) =>
           }
 
           // Add to AI sessions
-          set((state) => ({
+          set((state): Partial<ChatStoreState> => ({
             config: {
               ...state.config,
               ai: {
@@ -186,9 +226,11 @@ export const createAiSlice = (options: AiSliceOptions) =>
                 sessions: [
                   {
                     id: newSessionId,
-                    name: sessionName,
+                    name: sessionName as string,
                     modelProvider:
-                      modelProvider || currentSession?.modelProvider || 'openai',
+                      modelProvider ||
+                      currentSession?.modelProvider ||
+                      'openai',
                     model: model || currentSession?.model || 'gpt-4.1',
                     analysisResults: [],
                     uiMessages: [],
@@ -206,64 +248,30 @@ export const createAiSlice = (options: AiSliceOptions) =>
          * Start the analysis
          * TODO: how to pass the history analysisResults?
          */
-        startAnalysis: async () => {
-          const resultId = createId();
-          const abortController = new AbortController();
-          const currentSession = get().config.ai.sessions.find(
-            (session) => session.id === get().config.ai.currentSessionId
-          );
-
+        startAnalysis: async (
+          sendMessage: (message: { text: string }) => void
+        ) => {
+          const currentSession = get().ai.getCurrentSession();
           if (!currentSession) {
             console.error('No current session found');
             return;
           }
 
-          set((state) => ({
-            ai: {
-              ...state.ai,
-              analysisAbortController: abortController,
-              isRunningAnalysis: true,
-            },
-          }));
-
-          const session = get().config.ai.sessions.find(
-            (s) => s.id === get().config.ai.currentSessionId
+          set((state): Partial<ChatStoreState> =>
+            produce(state, (draft) => {
+              // mark running and create controller
+              draft.ai.isRunningAnalysis = true;
+              draft.ai.analysisAbortController = new AbortController();
+            })
           );
 
-          if (session) {
-            session.analysisResults.push({
-              id: resultId,
-              prompt: get().ai.analysisPrompt,
-              response: [
-                {
-                  type: 'text',
-                  text: '',
-                },
-              ],
-              isCompleted: false,
-            });
-          }
-
-          try {
-            // TODO: Implement runAnalysis function
-            console.log(
-              'Analysis started - runAnalysis function needs to be implemented'
-            );
-          } catch (err) {
-            console.error('Analysis failed:', err);
-          } finally {
-            set((state) => ({
-              ai: {
-                ...state.ai,
-                isRunningAnalysis: false,
-                analysisPrompt: '',
-              },
-            }));
-          }
+          // Delegate to chat hook; lifecycle managed by onChatFinish/onChatError
+          // Analysis result will be created in onChatFinish with the correct message ID
+          sendMessage({ text: get().ai.analysisPrompt });
         },
 
         cancelAnalysis: () => {
-          set((state) => ({
+          set((state): Partial<ChatStoreState> => ({
             ai: {
               ...state.ai,
               isRunningAnalysis: false,
@@ -362,6 +370,133 @@ export const createAiSlice = (options: AiSliceOptions) =>
 
           return instructions;
         },
+
+        setSessionUiMessages: (sessionId: string, uiMessages: UIMessage[]) => {
+          set((state): Partial<ChatStoreState> =>
+            produce(state, (draft) => {
+              const session = draft.config.ai.sessions.find(
+                (s) => s.id === sessionId
+              );
+              if (session) {
+                // store the latest UI messages from the chat hook
+                // Create a deep copy to avoid read-only property issues
+                session.uiMessages = JSON.parse(JSON.stringify(uiMessages));
+              }
+            })
+          );
+        },
+
+        setSessionToolAdditionalData: (
+          sessionId: string,
+          updater:
+            | Record<string, unknown>
+            | ((prev: Record<string, unknown>) => Record<string, unknown>)
+        ) => {
+          set((state): Partial<ChatStoreState> =>
+            produce(state, (draft) => {
+              const session = draft.config.ai.sessions.find(
+                (s) => s.id === sessionId
+              );
+              if (session) {
+                const prev = session.toolAdditionalData || {};
+                session.toolAdditionalData =
+                  typeof updater === 'function'
+                    ? (
+                        updater as (
+                          p: Record<string, unknown>
+                        ) => Record<string, unknown>
+                      )(prev)
+                    : updater;
+              }
+            })
+          );
+        },
+
+        /**
+         * Get analysis results from the current session's UI messages
+         */
+        getAnalysisResults: (): AnalysisResultSchema[] => {
+          const currentSession = get().ai.getCurrentSession();
+          if (!currentSession?.uiMessages?.length) return [];
+
+          const results: AnalysisResultSchema[] = [];
+          let i = 0;
+
+          while (i < currentSession.uiMessages.length) {
+            const userMessage = currentSession.uiMessages[i];
+
+            // Skip non-user messages
+            if (!userMessage || userMessage.role !== 'user') {
+              i++;
+              continue;
+            }
+
+            // Extract user prompt text
+            const prompt = userMessage.parts
+              .filter(
+                (part): part is { type: 'text'; text: string } =>
+                  part.type === 'text'
+              )
+              .map((part) => part.text)
+              .join('');
+
+            // Find the assistant response
+            let response: UIMessagePart[] = [];
+            let isCompleted = false;
+            let nextIndex = i + 1;
+
+            for (let j = i + 1; j < currentSession.uiMessages.length; j++) {
+              const nextMessage = currentSession.uiMessages[j];
+              if (!nextMessage) continue;
+
+              if (nextMessage.role === 'assistant') {
+                response = nextMessage.parts;
+                isCompleted = true;
+                nextIndex = j + 1; // Skip past the assistant message
+                break;
+              } else if (nextMessage.role === 'user') {
+                // Stop at next user message
+                nextIndex = j;
+                break;
+              }
+            }
+
+            // Check if there's a related item in currentSession.analysisResults
+            const relatedAnalysisResult = currentSession.analysisResults?.find(
+              (result) => result.id === (userMessage.id as string)
+            );
+
+            results.push({
+              id: userMessage.id as string,
+              prompt,
+              response,
+              errorMessage: relatedAnalysisResult?.errorMessage,
+              isCompleted,
+            });
+
+            i = nextIndex;
+          }
+
+          return results;
+        },
+
+        getLocalChatTransport: () =>
+          createLocalChatTransportFactory({
+            get,
+            defaultProvider,
+            defaultModel,
+            apiKey: get().ai.getApiKeyFromSettings(),
+            baseUrl: get().ai.getBaseUrlFromSettings(),
+            instructions: get().ai.getInstructionsFromSettings(),
+            getModelClientForProvider,
+          })(),
+
+        getRemoteChatTransport: (
+          endpoint: string,
+          headers?: Record<string, string>
+        ) => createRemoteChatTransportFactory()(endpoint, headers),
+
+        ...createChatHandlers({ get, set }),
       },
     };
   });

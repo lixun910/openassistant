@@ -5352,6 +5352,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@monaco-editor/loader@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "@monaco-editor/loader@npm:1.5.0"
+  dependencies:
+    state-local: "npm:^1.0.6"
+  checksum: 97d79916afa856809de4eaafaee1b1c6dc9443c0fdde81a7562f4ffa0c252496e97c4becf4c1f00c4119878c76d73390ce416a64305e59865a5830bded5afe55
+  languageName: node
+  linkType: hard
+
+"@monaco-editor/react@npm:^4.7.0":
+  version: 4.7.0
+  resolution: "@monaco-editor/react@npm:4.7.0"
+  dependencies:
+    "@monaco-editor/loader": "npm:^1.5.0"
+  peerDependencies:
+    monaco-editor: ">= 0.25.0 < 1"
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: d72392c4ed6faf8d830ba43421461e1b767b5978edba0739457d7781aa9533c66982be7f59bb156a77a2b578eddfb4711f50e0d84f0f0d25d28b5ab11140f5cc
+  languageName: node
+  linkType: hard
+
 "@napi-rs/wasm-runtime@npm:^0.2.8":
   version: 0.2.8
   resolution: "@napi-rs/wasm-runtime@npm:0.2.8"
@@ -5978,6 +6000,8 @@ __metadata:
     "@ai-sdk/openai-compatible": "npm:^1.0.19"
     "@ai-sdk/react": "npm:^2.0.56"
     "@openassistant/utils": "npm:^0.5.18"
+    "@sqlrooms/data-table": "npm:^0.24.27"
+    "@sqlrooms/monaco-editor": "npm:^0.24.27"
     "@sqlrooms/recharts": "npm:^0.24.27"
     "@sqlrooms/ui": "npm:^0.24.27"
     "@sqlrooms/utils": "npm:^0.24.27"
@@ -7420,6 +7444,13 @@ __metadata:
   version: 1.1.1
   resolution: "@radix-ui/rect@npm:1.1.1"
   checksum: b6c5eb787640775b53dd52fa47218a089f0a0d8220d3ebff079c0b754e1fb82d89b6bdf08a82fd0d59549bdeb52678c0cca091c302da49dcf74c3c989cb55678
+  languageName: node
+  linkType: hard
+
+"@reach/observe-rect@npm:^1.1.0":
+  version: 1.2.0
+  resolution: "@reach/observe-rect@npm:1.2.0"
+  checksum: 7dd903eeaad0e22c6d973bd26265d91eadba56ab5134701ceb3e85214db75339fae94aa7e8b88a65e8daa64bc7cf1b915d4ffcdfd324466b561dc6adc3c6e070
   languageName: node
   linkType: hard
 
@@ -9568,6 +9599,76 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sqlrooms/data-table@npm:^0.24.27":
+  version: 0.24.27
+  resolution: "@sqlrooms/data-table@npm:0.24.27"
+  dependencies:
+    "@sqlrooms/duckdb": "npm:0.24.27"
+    "@sqlrooms/ui": "npm:0.24.27"
+    "@sqlrooms/utils": "npm:0.24.27"
+    "@tanstack/react-table": "npm:^8.21.3"
+    "@tanstack/table-core": "npm:^8.21.3"
+    lucide-react: "npm:^0.503.0"
+    react-virtual: "npm:2.10.4"
+  peerDependencies:
+    apache-arrow: 17.0.0
+    react: ">=18"
+    react-dom: ">=18"
+  checksum: e800708b018b748864856f88373009ec222e2648cce973f5833d82e4244afefdc59884d453e6bf20fbe169164fd091c1a42f029b7d6aec26c48a42744fd38c25
+  languageName: node
+  linkType: hard
+
+"@sqlrooms/duckdb-config@npm:0.24.27":
+  version: 0.24.27
+  resolution: "@sqlrooms/duckdb-config@npm:0.24.27"
+  dependencies:
+    zod: "npm:^3.25.73"
+  checksum: ea4694322ac053604ec23707bf318428b1f5ea7d0af7805319e4d7feb4fab0eae555c9b104c6024d0bda081e6292ed13562cd3d579ac8c3afb3e1887ad8c4a0f
+  languageName: node
+  linkType: hard
+
+"@sqlrooms/duckdb@npm:0.24.27":
+  version: 0.24.27
+  resolution: "@sqlrooms/duckdb@npm:0.24.27"
+  dependencies:
+    "@duckdb/duckdb-wasm": "npm:>=1.29.0-0"
+    "@sqlrooms/duckdb-config": "npm:0.24.27"
+    "@sqlrooms/room-config": "npm:0.24.27"
+    "@sqlrooms/room-store": "npm:0.24.27"
+    "@sqlrooms/utils": "npm:0.24.27"
+    fast-deep-equal: "npm:^3.1.3"
+    immer: "npm:^10.1.1"
+    zod: "npm:^3.25.73"
+    zustand: "npm:^5.0.5"
+  peerDependencies:
+    apache-arrow: 17.0.0
+  checksum: 793418fe8e29c2101865fcdbeb5bba2e269931b85d18f933811eeecd6fba22732107fa7bdde8e2d15fc8a95cd508bc5700dfd188763f10f694f45f162cc2ae6d
+  languageName: node
+  linkType: hard
+
+"@sqlrooms/layout-config@npm:0.24.27":
+  version: 0.24.27
+  resolution: "@sqlrooms/layout-config@npm:0.24.27"
+  dependencies:
+    zod: "npm:^3.25.73"
+  checksum: 80053ce546c1fe8478472be8ea67f07c8f15bcf926888b5b071f215f0b9293b03826677981ea04141e82ece9115bc7457078bfe6b052da6eae8372584a247e90
+  languageName: node
+  linkType: hard
+
+"@sqlrooms/monaco-editor@npm:^0.24.27":
+  version: 0.24.27
+  resolution: "@sqlrooms/monaco-editor@npm:0.24.27"
+  dependencies:
+    "@monaco-editor/react": "npm:^4.7.0"
+    "@sqlrooms/ui": "npm:0.24.27"
+    monaco-editor: "npm:^0.52.2"
+  peerDependencies:
+    react: ">=18"
+    react-dom: ">=18"
+  checksum: 3a2f252e5a74556a6a306a4691d2975b1d5356f11edb51063cf7ea0b1b658c79804d4488ed765b0e33d1642fa45d0565eb23c815111325e040035785c8677881
+  languageName: node
+  linkType: hard
+
 "@sqlrooms/recharts@npm:^0.24.27":
   version: 0.24.27
   resolution: "@sqlrooms/recharts@npm:0.24.27"
@@ -9578,6 +9679,32 @@ __metadata:
     react: ">=18"
     react-dom: ">=18"
   checksum: 201e3479de1ca023767d37ff820d1c84983dbc3dd15839dabd920f7a0875deadd5c5370e5162b0b0c2efc8cf02fbce6bbd3ebc578db4c8119102a4928f3db8a0
+  languageName: node
+  linkType: hard
+
+"@sqlrooms/room-config@npm:0.24.27":
+  version: 0.24.27
+  resolution: "@sqlrooms/room-config@npm:0.24.27"
+  dependencies:
+    "@sqlrooms/layout-config": "npm:0.24.27"
+    zod: "npm:^3.25.73"
+  peerDependencies:
+    react: ">=18"
+  checksum: 27fc7056b7d46cc561e96928f7b037512a63a7505ff9b8f99a859d87f288793fb8d4da5fd9e7856c376ce19490261743b22f436194b121d744423cf70c40c504
+  languageName: node
+  linkType: hard
+
+"@sqlrooms/room-store@npm:0.24.27":
+  version: 0.24.27
+  resolution: "@sqlrooms/room-store@npm:0.24.27"
+  dependencies:
+    "@sqlrooms/room-config": "npm:0.24.27"
+    immer: "npm:^10.1.1"
+    zod: "npm:^3.25.73"
+    zustand: "npm:^5.0.5"
+  peerDependencies:
+    react: ">=18"
+  checksum: 4cd73eb35681dc99a6872a8879bfa7173494edb5e36ddf646139939717c0c0d45e06c3f2fbcd451be3b564391727a186c1cbf43cb9b1a41d6d3fdcfa79fc6636
   languageName: node
   linkType: hard
 
@@ -9630,7 +9757,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sqlrooms/utils@npm:^0.24.27":
+"@sqlrooms/utils@npm:0.24.27, @sqlrooms/utils@npm:^0.24.27":
   version: 0.24.27
   resolution: "@sqlrooms/utils@npm:0.24.27"
   dependencies:
@@ -9698,6 +9825,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/react-table@npm:^8.21.3":
+  version: 8.21.3
+  resolution: "@tanstack/react-table@npm:8.21.3"
+  dependencies:
+    "@tanstack/table-core": "npm:8.21.3"
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: a32217ebe64d24e71dea6a6742bc288dcabf389657b16805a1ab3f347d3dca8262759c45c604a1f65bd97925d5cbdfb66d1be7637100a12eb5b279bdd420962d
+  languageName: node
+  linkType: hard
+
 "@tanstack/react-virtual@npm:3.11.3":
   version: 3.11.3
   resolution: "@tanstack/react-virtual@npm:3.11.3"
@@ -9707,6 +9846,13 @@ __metadata:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
   checksum: eb39f8a015f4dc98070f0c18bbb1f9c094b7182133554ef3ee31d2678cd3a66edd28ce854d533e830f88f1f0ad1d5b065de184438a08fe774a9acc1dc62da436
+  languageName: node
+  linkType: hard
+
+"@tanstack/table-core@npm:8.21.3, @tanstack/table-core@npm:^8.21.3":
+  version: 8.21.3
+  resolution: "@tanstack/table-core@npm:8.21.3"
+  checksum: aa05e5f80110f0f56d66161e950668ea6ef3e2ea4f3a2ccd5d5980b39b4feea987245b20531aee2c6743e6edd12c0361503413b63090c807f88a61b19bfd04f3
   languageName: node
   linkType: hard
 
@@ -16572,7 +16718,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immer@npm:^10.1.3":
+"immer@npm:^10.1.1, immer@npm:^10.1.3":
   version: 10.1.3
   resolution: "immer@npm:10.1.3"
   checksum: 672faf5fc84177eecbfb49143ea8f6b5c1f981bd78c57e1562469354f6df658921ed6e0372b9ceed1e07c031e0c6d66863c4df80605928c6c774840b945aef83
@@ -18569,6 +18715,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lucide-react@npm:^0.503.0":
+  version: 0.503.0
+  resolution: "lucide-react@npm:0.503.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: d7564a59c0b88868162c2af9633df18009635db9cad222ef05533c2ef02fd48921d5d057c447ce5435b3df2e5b68eab9f3a378beffdbc13b205f5b79ea21c8d8
+  languageName: node
+  linkType: hard
+
 "lucide-react@npm:^0.544.0":
   version: 0.544.0
   resolution: "lucide-react@npm:0.544.0"
@@ -19719,6 +19874,13 @@ __metadata:
   version: 2.30.1
   resolution: "moment@npm:2.30.1"
   checksum: ae42d876d4ec831ef66110bdc302c0657c664991e45cf2afffc4b0f6cd6d251dde11375c982a5c0564ccc0fa593fc564576ddceb8c8845e87c15f58aa6baca69
+  languageName: node
+  linkType: hard
+
+"monaco-editor@npm:^0.52.2":
+  version: 0.52.2
+  resolution: "monaco-editor@npm:0.52.2"
+  checksum: 0d4962d69ffa0a8df040faa9c582cef1893fa3fb617feca8f1425c5e670e74c2856104b9a2b01cbda0103a5e5f92f58843206bc9a0e070471c0c1270d7f52a96
   languageName: node
   linkType: hard
 
@@ -22070,6 +22232,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-virtual@npm:2.10.4":
+  version: 2.10.4
+  resolution: "react-virtual@npm:2.10.4"
+  dependencies:
+    "@reach/observe-rect": "npm:^1.1.0"
+  peerDependencies:
+    react: ^16.6.3 || ^17.0.0
+  checksum: 44629ff867110007dd527eee3a60fd35363946a55d5fa3d5f690ae3acf587a4492d9acb96f36105b675db48df64e7caf2d1375ccc53a6ae1c41be42530887c83
+  languageName: node
+  linkType: hard
+
 "react-virtualized-auto-sizer@npm:^1.0.25":
   version: 1.0.26
   resolution: "react-virtualized-auto-sizer@npm:1.0.26"
@@ -23341,6 +23514,13 @@ __metadata:
   dependencies:
     escape-string-regexp: "npm:^2.0.0"
   checksum: cdc988acbc99075b4b036ac6014e5f1e9afa7e564482b687da6384eee6a1909d7eaffde85b0a17ffbe186c5247faf6c2b7544e802109f63b72c7be69b13151bb
+  languageName: node
+  linkType: hard
+
+"state-local@npm:^1.0.6":
+  version: 1.0.7
+  resolution: "state-local@npm:1.0.7"
+  checksum: 1d956043e270861d40a639ff3457938cf61dbc7e25209d21b55060d8dfaf74742b8a1e525ed6fcb0c2d89b7d3e305bb8589bf27392012889456b3ad82a4b7d0a
   languageName: node
   linkType: hard
 
@@ -26454,7 +26634,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^5.0.8":
+"zustand@npm:^5.0.5, zustand@npm:^5.0.8":
   version: 5.0.8
   resolution: "zustand@npm:5.0.8"
   peerDependencies:

@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, { FC, useState } from 'react';
 import {
   Button,
   Input,
@@ -22,22 +22,22 @@ import {
   Trash2,
   CirclePlus,
 } from 'lucide-react';
-import {useChatStore} from '../../store';
+import { useChatStore } from '../../store';
 
 export const AiProvidersSettings: FC = () => {
-  const {toast} = useToast();
+  const { toast } = useToast();
   const updateProvider = useChatStore(
-    (state) => state.updateProvider,
+    (state) => state.config.aiSettings.updateProvider
   );
-  const addProvider = useChatStore((state) => state.addProvider);
+  const addProvider = useChatStore(
+    (state) => state.config.aiSettings.addProvider
+  );
   const removeProvider = useChatStore(
-    (state) => state.removeProvider,
+    (state) => state.config.aiSettings.removeProvider
   );
-  const providers = useChatStore(
-    (state) => state.config.aiSettings.providers,
-  );
+  const providers = useChatStore((state) => state.config.aiSettings.providers);
   const modelProviders = React.useMemo(() => {
-    const result: Record<string, {apiKey: string; baseUrl: string}> = {};
+    const result: Record<string, { apiKey: string; baseUrl: string }> = {};
     Object.entries(providers).forEach(([key, provider]) => {
       result[key] = {
         apiKey: provider.apiKey,
@@ -48,11 +48,11 @@ export const AiProvidersSettings: FC = () => {
   }, [providers]);
 
   const [expandedProviders, setExpandedProviders] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
 
   // Dialog state for adding a new provider
-  const {isOpen, onOpen, onClose} = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [newProviderKey, setNewProviderKey] = useState('');
   const [newProviderApiKey, setNewProviderApiKey] = useState('');
   const [newProviderBaseUrl, setNewProviderBaseUrl] = useState('');
@@ -95,13 +95,13 @@ export const AiProvidersSettings: FC = () => {
   const handleUpdateProvider = (
     providerKey: string,
     field: 'apiKey' | 'baseUrl',
-    value: string,
+    value: string
   ) => {
-    updateProvider(providerKey, {[field]: value});
+    updateProvider(providerKey, { [field]: value });
   };
 
   const handleDeleteProvider = (providerKey: string) => {
-    setProviderToDelete({key: providerKey});
+    setProviderToDelete({ key: providerKey });
     onDeleteOpen();
   };
 
@@ -197,7 +197,7 @@ export const AiProvidersSettings: FC = () => {
                         handleUpdateProvider(
                           providerKey,
                           'baseUrl',
-                          e.target.value,
+                          e.target.value
                         )
                       }
                       placeholder="Enter base URL"

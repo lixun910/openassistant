@@ -1,5 +1,6 @@
 import {useEffect, useRef, type RefObject, useState, useCallback} from 'react';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface ScrollToBottomResult<T extends HTMLElement | null> {
   showScrollButton: boolean;
   scrollToBottom: () => void;
@@ -128,7 +129,7 @@ export function useScrollToBottom<T extends HTMLElement | null>({
     if (container && end && wasAtBottomRef.current) {
       // Only scroll if this is not the initial load or if scrollOnInitialLoad is true
       if (!isInitialLoadRef.current || scrollOnInitialLoad) {
-        end.scrollIntoView({behavior: 'instant', block: 'end'});
+        end.scrollIntoView({behavior: 'auto', block: 'end'});
       }
     }
 

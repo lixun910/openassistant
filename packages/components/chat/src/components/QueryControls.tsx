@@ -1,5 +1,5 @@
-import {Button, cn, Textarea} from '@sqlrooms/ui';
-import {ArrowUpIcon, OctagonXIcon} from 'lucide-react';
+import { Button, cn, Textarea } from '@sqlrooms/ui';
+import { ArrowUpIcon, OctagonXIcon } from 'lucide-react';
 import {
   PropsWithChildren,
   useCallback,
@@ -7,13 +7,13 @@ import {
   useEffect,
   useMemo,
 } from 'react';
-import {useChatStore} from '../store';
-import {useChat} from '@ai-sdk/react';
+import { useChatStore } from '../store';
+import { useChat } from '@ai-sdk/react';
 import {
   DefaultChatTransport,
   lastAssistantMessageIsCompleteWithToolCalls,
 } from 'ai';
-import type {UIMessage} from 'ai';
+import type { UIMessage } from 'ai';
 
 type QueryControlsProps = PropsWithChildren<{
   className?: string;
@@ -30,28 +30,26 @@ export const QueryControls: React.FC<QueryControlsProps> = ({
   onCancel,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const isRunningAnalysis = useStoreWithAi((s) => s.ai.isRunningAnalysis);
-  const startAnalysis = useStoreWithAi((s) => s.ai.startAnalysis);
-  const cancelAnalysis = useStoreWithAi((s) => s.ai.cancelAnalysis);
-  const analysisPrompt = useStoreWithAi((s) => s.ai.analysisPrompt);
-  const isDataAvailable = useStoreWithAi((s) => s.room.isDataAvailable);
-  const setAnalysisPrompt = useStoreWithAi((s) => s.ai.setAnalysisPrompt);
-  const currentSession = useStoreWithAi((s) => s.ai.getCurrentSession());
+  const isRunningAnalysis = useChatStore((s) => s.ai.isRunningAnalysis);
+  const startAnalysis = useChatStore((s) => s.ai.startAnalysis);
+  const cancelAnalysis = useChatStore((s) => s.ai.cancelAnalysis);
+  const analysisPrompt = useChatStore((s) => s.ai.analysisPrompt);
+  // const isDataAvailable = useChatStore((s) => s.room.isDataAvailable);
+  const setAnalysisPrompt = useChatStore((s) => s.ai.setAnalysisPrompt);
+  const currentSession = useChatStore((s) => s.ai.getCurrentSession());
   const model = currentSession?.model;
   const sessionId = currentSession?.id;
 
-  const getLocalChatTransport = useStoreWithAi(
-    (s) => s.ai.getLocalChatTransport,
+  const getLocalChatTransport = useChatStore((s) => s.ai.getLocalChatTransport);
+  const getRemoteChatTransport = useChatStore(
+    (s) => s.ai.getRemoteChatTransport
   );
-  const getRemoteChatTransport = useStoreWithAi(
-    (s) => s.ai.getRemoteChatTransport,
-  );
-  const endPoint = useStoreWithAi((s) => s.ai.endPoint);
-  const headers = useStoreWithAi((s) => s.ai.headers);
-  const onChatToolCall = useStoreWithAi((s) => s.ai.onChatToolCall);
-  const onChatFinish = useStoreWithAi((s) => s.ai.onChatFinish);
-  const onChatError = useStoreWithAi((s) => s.ai.onChatError);
-  const setSessionUiMessages = useStoreWithAi((s) => s.ai.setSessionUiMessages);
+  const endPoint = useChatStore((s) => s.ai.endPoint);
+  const headers = useChatStore((s) => s.ai.headers);
+  const onChatToolCall = useChatStore((s) => s.ai.onChatToolCall);
+  const onChatFinish = useChatStore((s) => s.ai.onChatFinish);
+  const onChatError = useChatStore((s) => s.ai.onChatError);
+  const setSessionUiMessages = useChatStore((s) => s.ai.setSessionUiMessages);
 
   const transport: DefaultChatTransport<UIMessage> = useMemo(() => {
     // Recreate transport when the model changes
@@ -63,7 +61,7 @@ export const QueryControls: React.FC<QueryControlsProps> = ({
     return getLocalChatTransport();
   }, [getLocalChatTransport, getRemoteChatTransport, headers, endPoint, model]);
 
-  const {messages, sendMessage} = useChat({
+  const { messages, sendMessage } = useChat({
     id: sessionId,
     transport,
     messages: (currentSession?.uiMessages as unknown as UIMessage[]) ?? [],
@@ -81,7 +79,7 @@ export const QueryControls: React.FC<QueryControlsProps> = ({
   }, [messages, sessionId, setSessionUiMessages]);
 
   useEffect(() => {
-    if (!isDataAvailable) return;
+    // if (!isDataAvailable) return;
     // Focus the textarea when the component mounts
     // Using a small timeout ensures the data is loaded and
     // add timeout to prevent aria hidden warning caused by the
@@ -93,7 +91,7 @@ export const QueryControls: React.FC<QueryControlsProps> = ({
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [isDataAvailable]);
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -110,7 +108,7 @@ export const QueryControls: React.FC<QueryControlsProps> = ({
         }
       }
     },
-    [isRunningAnalysis, model, analysisPrompt, startAnalysis, sendMessage],
+    [isRunningAnalysis, model, analysisPrompt, startAnalysis, sendMessage]
   );
 
   const canStart = Boolean(model && analysisPrompt.trim().length);
@@ -136,7 +134,7 @@ export const QueryControls: React.FC<QueryControlsProps> = ({
     <div
       className={cn(
         'flex w-full flex-col items-center justify-center gap-4',
-        className,
+        className
       )}
     >
       <div className="bg-muted/50 flex h-full w-full flex-row items-center gap-2 rounded-md border">
