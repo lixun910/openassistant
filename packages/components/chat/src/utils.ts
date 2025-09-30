@@ -61,7 +61,7 @@ export function convertToVercelAiTool({
     inputSchema: tool.parameters,
     // outputSchema: tool.outputSchema,
     execute: async (args: Record<string, unknown>, options: any) => {
-      const result = await tool.execute(args as unknown, {
+      const result = await (tool.execute as any)(args, {
         ...options,
         context: tool.context,
       });

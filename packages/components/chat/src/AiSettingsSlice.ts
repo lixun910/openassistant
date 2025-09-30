@@ -107,11 +107,28 @@ export function createDefaultAiSettings(
   };
 }
 
+/**
+ * Configuration options for creating an AI settings slice
+ */
+export interface AiSettingsSliceOptions {
+  /** Initial AI settings to use instead of defaults */
+  initialSettings?: Partial<AiSettingsState['aiSettings']>;
+}
+
 export type AiSettingsSlice = AiSettingsState & AiSettingsActions;
-export const createAiSettingsSlice = createSlice<AiSettingsSlice>(
-  (set, get) => ({
+
+/**
+ * Create an AI settings slice
+ * @param options - The options for creating the AI settings slice
+ * @returns The AI settings slice
+ */
+export const createAiSettingsSlice = (options: AiSettingsSliceOptions = {}) =>
+  createSlice<AiSettingsSlice>((set, get) => {
+    const { initialSettings = {} } = options;
+    
+    return {
     aiSettings: {
-      ...createDefaultAiSettings({}).aiSettings,
+      ...createDefaultAiSettings(initialSettings).aiSettings,
 
       getAiSettings: () => {
         const state = get();
@@ -280,5 +297,5 @@ export const createAiSettingsSlice = createSlice<AiSettingsSlice>(
         );
       },
     },
-  })
-);
+    };
+  });

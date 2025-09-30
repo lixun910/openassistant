@@ -1,17 +1,21 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { heroui } from '@heroui/react';
+import { sqlroomsTailwindPreset } from '@sqlrooms/ui';
+
+const preset = sqlroomsTailwindPreset();
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  ...preset,
   content: [
     './src/**/*.{js,ts,jsx,tsx}',
-    '../../node_modules/@sqlrooms/**/*.{js,ts,jsx,tsx}',
+    '../../node_modules/@sqlrooms/*/dist/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    ...preset.theme,
+    extend: {
+      ...preset.theme?.extend,
+    },
   },
-  darkMode: 'class',
-  plugins: [heroui()],
 };

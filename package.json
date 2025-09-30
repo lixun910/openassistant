@@ -6,18 +6,17 @@
     "packages/*",
     "packages/tools/*",
     "packages/components/*",
-    "examples/*",
-    "playground"
+    "examples/*"
   ],
   "scripts": {
     "clean": "rm -rf packages/*/dist",
     "start": "lerna run start --scope=@openassistant/ui",
-    "build-slow": "lerna run build --scope=@openassistant/utils && lerna run build --npm-client=yarn --concurrency=1 --ignore=@openassistant/core,@openassistant/ui,@openassistant/duckdb,@openassistant/geoda,@openassistant/map,@openassistant/osm,@openassistant/places,@openassistant/plots,playground",
+    "build-slow": "lerna run build --scope=@openassistant/utils && lerna run build --npm-client=yarn --concurrency=1 --ignore=@openassistant/utils",
     "build-geoda": "lerna run build --scope=@openassistant/geoda",
     "build": "node scripts/build-components.mjs",
-    "watch": "lerna run watch --parallel --ignore=@openassistant/core,@openassistant/ui,playground",
+    "watch": "lerna run watch --parallel",
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
-    "lint": "lerna run lint --parallel --ignore=@openassistant/core,@openassistant/ui,playground",
+    "lint": "lerna run lint --parallel",
     "website:start": "cd website && yarn start",
     "version-prerelease": "lerna version prerelease --no-push --sync-workspace-lock --no-git-tag-version --force-publish && ts-node scripts/update-version.mjs && yarn install",
     "version-patch": "lerna version patch --no-push --sync-workspace-lock --no-git-tag-version --force-publish && ts-node scripts/update-version.mjs && yarn install",
@@ -79,7 +78,7 @@
     "@duckdb/duckdb-wasm": "1.29.0",
     "apache-arrow": "^17.0.0",
     "typescript": "5.0.4",
-    "zod": "^3.25.76"
+    "zod": "^4.1.8"
   },
   "packageManager": "yarn@4.0.0+sha512.955259c0370ab8c06d013faa7d5e7addb6914251029695675f54e04c917ea6b092c379ba8d3521556d90b3874e5037759467072f01d2295341ead43cc259f14b"
 }

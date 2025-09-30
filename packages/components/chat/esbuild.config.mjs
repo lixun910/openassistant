@@ -15,10 +15,13 @@ const isWatch = process.argv.includes('--watch');
 const baseConfig = createBaseConfig({
   entryPoints: ['src/index.ts'],
   external: [
+    'react',
+    'react-dom',
     '@jspm/core',
     '@jspm/core/*',
     '@ai-sdk/openai-compatible',
     '@ai-sdk/react',
+    '@ai-sdk/xai',
     '@openassistant/utils',
     '@sqlrooms/data-table',
     '@sqlrooms/monaco-editor',
@@ -34,6 +37,7 @@ const baseConfig = createBaseConfig({
     'rehype-raw',
     'remark-gfm',
     'tailwind-merge',
+    'use-sync-external-store',
     'zod',
     'zustand',
   ],
@@ -62,7 +66,9 @@ if (isWatch) {
     ...baseConfig,
     format: 'esm',
     outfile: 'dist/index.esm.js',
-    plugins: [...(baseConfig.plugins || []), polyfillNode()],
+    plugins: [...(baseConfig.plugins || []), polyfillNode({
+      exclude: ['use-sync-external-store']
+    })],
   };
   const cjsConfig = {
     ...baseConfig,
@@ -79,7 +85,9 @@ if (isWatch) {
   // Build all formats
   Promise.all([
     buildFormat(
-      { ...baseConfig, plugins: [...(baseConfig.plugins || []), polyfillNode()] },
+      { ...baseConfig, plugins: [...(baseConfig.plugins || []), polyfillNode({
+        exclude: ['use-sync-external-store']
+      })] },
       'esm',
       'dist/index.esm.js'
     ),

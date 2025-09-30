@@ -36,7 +36,7 @@ const AnalysisSessionBaseSchema = z.object({
   createdAt: z.coerce.date().optional(),
   // use vercel ai v5 schema
   uiMessages: z.array(UIMessageSchema),
-  toolAdditionalData: z.record(z.unknown()).optional(),
+  toolAdditionalData: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const AnalysisSessionSchema = migrateAnalysisSession(
