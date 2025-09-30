@@ -1,5 +1,33 @@
-import {z} from 'zod';
-import {StreamMessagePartSchema} from '@openassistant/core';
+import { z } from 'zod';
+
+const StreamMessagePartSchema = z.union([
+  z.object({
+    type: z.literal('text'),
+    text: z.string(),
+    additionalData: z.any().optional(),
+    isCompleted: z.boolean().optional(),
+  }),
+  z.object({
+    type: z.literal('tool-invocation'),
+    toolInvocation: z.object({
+      toolCallId: z.string(),
+      toolName: z.string(),
+      args: z.any(),
+      state: z.string(),
+      result: z.any().optional(),
+    }),
+    additionalData: z.any().optional(),
+    isCompleted: z.boolean().optional(),
+  }),
+  // Add a catch-all for other part types that might exist
+  z
+    .object({
+      type: z.string(),
+      additionalData: z.any().optional(),
+      isCompleted: z.boolean().optional(),
+    })
+    .passthrough(),
+]);
 
 // Import individual migration functions
 import {
@@ -41,7 +69,7 @@ export const migrateStreamMessage = z.preprocess(
   },
   z.object({
     parts: z.array(StreamMessagePartSchema).optional(),
-  }),
+  })
 );
 
 /**

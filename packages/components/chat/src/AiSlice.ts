@@ -33,17 +33,17 @@ export type DefaultToolsOptions = {
 export const AiSliceToolSchema = z.object({
   description: z.string(),
   parameters: z.any(), // z.ZodTypeAny
-  execute: z.function().returns(
-    z.promise(
+  execute: z.function({
+    output: z.promise(
       z.object({
         llmResult: z.unknown(),
         additionalData: z.unknown().optional(),
       })
     )
-  ),
+  }),
   context: z.record(z.string(), z.unknown()).optional(),
   component: z.any().optional(), // React.ComponentType
-  onToolCompleted: z.function().returns(z.void()).optional(),
+  onToolCompleted: z.function({ output: z.void() }).optional(),
 });
 
 export type AiSliceTool = z.infer<typeof AiSliceToolSchema>;
@@ -158,12 +158,14 @@ export const createAiSlice = (options: AiSliceOptions) =>
         },
 
         setAnalysisPrompt: (prompt: string) => {
-          set((state): Partial<ChatStoreState> => ({
-            ai: {
-              ...state.ai,
-              analysisPrompt: prompt,
-            },
-          }));
+          set(
+            (state): Partial<ChatStoreState> => ({
+              ai: {
+                ...state.ai,
+                analysisPrompt: prompt,
+              },
+            })
+          );
         },
 
         /**
@@ -218,30 +220,32 @@ export const createAiSlice = (options: AiSliceOptions) =>
           }
 
           // Add to AI sessions
-          set((state): Partial<ChatStoreState> => ({
-            config: {
-              ...state.config,
-              ai: {
-                ...state.config.ai,
-                sessions: [
-                  {
-                    id: newSessionId,
-                    name: sessionName as string,
-                    modelProvider:
-                      modelProvider ||
-                      currentSession?.modelProvider ||
-                      'openai',
-                    model: model || currentSession?.model || 'gpt-4.1',
-                    analysisResults: [],
-                    uiMessages: [],
-                    createdAt: new Date(),
-                  },
-                  ...state.config.ai.sessions,
-                ],
-                currentSessionId: newSessionId,
+          set(
+            (state): Partial<ChatStoreState> => ({
+              config: {
+                ...state.config,
+                ai: {
+                  ...state.config.ai,
+                  sessions: [
+                    {
+                      id: newSessionId,
+                      name: sessionName as string,
+                      modelProvider:
+                        modelProvider ||
+                        currentSession?.modelProvider ||
+                        'openai',
+                      model: model || currentSession?.model || 'gpt-4.1',
+                      analysisResults: [],
+                      uiMessages: [],
+                      createdAt: new Date(),
+                    },
+                    ...state.config.ai.sessions,
+                  ],
+                  currentSessionId: newSessionId,
+                },
               },
-            },
-          }));
+            })
+          );
         },
 
         /**
@@ -257,12 +261,13 @@ export const createAiSlice = (options: AiSliceOptions) =>
             return;
           }
 
-          set((state): Partial<ChatStoreState> =>
-            produce(state, (draft) => {
-              // mark running and create controller
-              draft.ai.isRunningAnalysis = true;
-              draft.ai.analysisAbortController = new AbortController();
-            })
+          set(
+            (state): Partial<ChatStoreState> =>
+              produce(state, (draft) => {
+                // mark running and create controller
+                draft.ai.isRunningAnalysis = true;
+                draft.ai.analysisAbortController = new AbortController();
+              })
           );
 
           // Delegate to chat hook; lifecycle managed by onChatFinish/onChatError
@@ -271,12 +276,14 @@ export const createAiSlice = (options: AiSliceOptions) =>
         },
 
         cancelAnalysis: () => {
-          set((state): Partial<ChatStoreState> => ({
-            ai: {
-              ...state.ai,
-              isRunningAnalysis: false,
-            },
-          }));
+          set(
+            (state): Partial<ChatStoreState> => ({
+              ai: {
+                ...state.ai,
+                isRunningAnalysis: false,
+              },
+            })
+          );
           get().ai.analysisAbortController?.abort('Analysis cancelled');
         },
 
@@ -372,17 +379,18 @@ export const createAiSlice = (options: AiSliceOptions) =>
         },
 
         setSessionUiMessages: (sessionId: string, uiMessages: UIMessage[]) => {
-          set((state): Partial<ChatStoreState> =>
-            produce(state, (draft) => {
-              const session = draft.config.ai.sessions.find(
-                (s) => s.id === sessionId
-              );
-              if (session) {
-                // store the latest UI messages from the chat hook
-                // Create a deep copy to avoid read-only property issues
-                session.uiMessages = JSON.parse(JSON.stringify(uiMessages));
-              }
-            })
+          set(
+            (state): Partial<ChatStoreState> =>
+              produce(state, (draft) => {
+                const session = draft.config.ai.sessions.find(
+                  (s) => s.id === sessionId
+                );
+                if (session) {
+                  // store the latest UI messages from the chat hook
+                  // Create a deep copy to avoid read-only property issues
+                  session.uiMessages = JSON.parse(JSON.stringify(uiMessages));
+                }
+              })
           );
         },
 
@@ -392,23 +400,24 @@ export const createAiSlice = (options: AiSliceOptions) =>
             | Record<string, unknown>
             | ((prev: Record<string, unknown>) => Record<string, unknown>)
         ) => {
-          set((state): Partial<ChatStoreState> =>
-            produce(state, (draft) => {
-              const session = draft.config.ai.sessions.find(
-                (s) => s.id === sessionId
-              );
-              if (session) {
-                const prev = session.toolAdditionalData || {};
-                session.toolAdditionalData =
-                  typeof updater === 'function'
-                    ? (
-                        updater as (
-                          p: Record<string, unknown>
-                        ) => Record<string, unknown>
-                      )(prev)
-                    : updater;
-              }
-            })
+          set(
+            (state): Partial<ChatStoreState> =>
+              produce(state, (draft) => {
+                const session = draft.config.ai.sessions.find(
+                  (s) => s.id === sessionId
+                );
+                if (session) {
+                  const prev = session.toolAdditionalData || {};
+                  session.toolAdditionalData =
+                    typeof updater === 'function'
+                      ? (
+                          updater as (
+                            p: Record<string, unknown>
+                          ) => Record<string, unknown>
+                        )(prev)
+                      : updater;
+                }
+              })
           );
         },
 
