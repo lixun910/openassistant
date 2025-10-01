@@ -18,6 +18,9 @@ export interface AiConfigActions {
     renameSession: (sessionId: string, name: string) => void;
     deleteSession: (sessionId: string) => void;
     deleteAnalysisResult: (sessionId: string, resultId: string) => void;
+    setAiConfigOptions: (
+      options: Partial<AiConfigState['ai']>
+    ) => void;
   };
 }
 
@@ -50,6 +53,20 @@ export type AiConfigSlice = AiConfigState & AiConfigActions;
 export const createAiConfigSlice = createSlice<AiConfigSlice>((set, get) => ({
   ai: {
     ...createDefaultAiConfig({}).ai,
+
+    setAiConfigOptions: (incoming) => {
+      set((state) =>
+        produce(state, (draft) => {
+          if (!incoming) return;
+          if (incoming.sessions) {
+            draft.config.ai.sessions = incoming.sessions as unknown as (typeof draft.config.ai.sessions);
+          }
+          if (incoming.currentSessionId !== undefined) {
+            draft.config.ai.currentSessionId = incoming.currentSessionId as string | undefined;
+          }
+        })
+      );
+    },
 
     /**
      * Switch to a different session

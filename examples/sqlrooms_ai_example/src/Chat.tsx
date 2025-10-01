@@ -7,6 +7,7 @@ import {
   ModelSelector,
   ChatStoreOptions,
   createChatStore,
+  ChatStoreProvider,
   useChatStore,
 } from '@openassistant/chat';
 import { Button, useDisclosure } from '@sqlrooms/ui';
@@ -40,7 +41,7 @@ function buildModels(
 }
 
 export default function Chat() {
-  // Create the store with our custom settings - this automatically becomes the global store
+  // Create an app-local store instance and provide it via Provider
   const useChatStore = createChatStore({
     aiSettings: {
       initialSettings: AI_SETTINGS,
@@ -57,46 +58,48 @@ export default function Chat() {
   const settingsPanelOpen = useDisclosure();
 
   return (
-    <div className="flex h-full w-full flex-col gap-0 overflow-hidden p-4">
-      <div className="relative mb-4">
-        <SessionControls className="mr-8 max-w-[calc(100%-3rem)] overflow-hidden" />
-        <Button
-          variant="outline"
-          className="hover:bg-accent absolute right-0 top-0 flex h-8 w-8 items-center justify-center transition-colors"
-          onClick={settingsPanelOpen.onToggle}
-          title="Configuration"
-        >
-          <Settings className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {settingsPanelOpen.isOpen ? (
-        <div className="flex-grow overflow-auto">
-          {currentSessionId && (
-            <AiSettingsPanel disclosure={settingsPanelOpen}>
-              <AiSettingsPanel.ProvidersSettings />
-              <AiSettingsPanel.ModelsSettings />
-              <AiSettingsPanel.ModelParametersSettings
-                getDefaultInstructions={() =>
-                  useChatStore.getState().ai.getInstructionsFromSettings()
-                }
-              />
-            </AiSettingsPanel>
-          )}
+    <ChatStoreProvider store={useChatStore}>
+      <div className="flex h-full w-full flex-col gap-0 overflow-hidden p-4">
+        <div className="relative mb-4">
+          <SessionControls className="mr-8 max-w-[calc(100%-3rem)] overflow-hidden" />
+          <Button
+            variant="outline"
+            className="hover:bg-accent absolute right-0 top-0 flex h-8 w-8 items-center justify-center transition-colors"
+            onClick={settingsPanelOpen.onToggle}
+            title="Configuration"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
         </div>
-      ) : (
-        <>
-          <div className="flex-grow overflow-auto">
-            <AnalysisResultsContainer key={currentSessionId} />
-          </div>
 
-          <QueryControls placeholder="Type here what would you like to learn about the data? Something like 'What is the max magnitude of the earthquakes by year?'">
-            <div className="flex items-center justify-end gap-2">
-              <ModelSelector models={models} />
+        {settingsPanelOpen.isOpen ? (
+          <div className="flex-grow overflow-auto">
+            {currentSessionId && (
+              <AiSettingsPanel disclosure={settingsPanelOpen}>
+                <AiSettingsPanel.ProvidersSettings />
+                <AiSettingsPanel.ModelsSettings />
+                <AiSettingsPanel.ModelParametersSettings
+                  getDefaultInstructions={() =>
+                    useChatStore.getState().ai.getInstructionsFromSettings()
+                  }
+                />
+              </AiSettingsPanel>
+            )}
+          </div>
+        ) : (
+          <>
+            <div className="flex-grow overflow-auto">
+              <AnalysisResultsContainer key={currentSessionId} />
             </div>
-          </QueryControls>
-        </>
-      )}
-    </div>
+
+            <QueryControls placeholder="Type here what would you like to learn about the data? Something like 'What is the max magnitude of the earthquakes by year?'">
+              <div className="flex items-center justify-end gap-2">
+                <ModelSelector models={models} />
+              </div>
+            </QueryControls>
+          </>
+        )}
+      </div>
+    </ChatStoreProvider>
   );
 }
