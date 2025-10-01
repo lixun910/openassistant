@@ -37,6 +37,9 @@ export interface AiSettingsActions {
     getAiSettings: () => AiSettingsState['aiSettings'];
     setMaxSteps: (maxSteps: number) => void;
     setAdditionalInstruction: (additionalInstruction: string) => void;
+    setAiSettingsOptions: (
+      options: Partial<AiSettingsState['aiSettings']>
+    ) => void;
     updateProvider: (
       provider: string,
       updates: {
@@ -148,6 +151,37 @@ export const createAiSettingsSlice = (options: AiSettingsSliceOptions = {}) =>
           produce(state, (draft) => {
             draft.config.aiSettings.modelParameters.additionalInstruction =
               additionalInstruction;
+          })
+        );
+      },
+
+      setAiSettingsOptions: (incoming) => {
+        set((state) =>
+          produce(state, (draft) => {
+            if (!incoming) return;
+            const settings = draft.config.aiSettings;
+
+            if (incoming.providers) {
+              for (const [key, provider] of Object.entries(incoming.providers)) {
+                const current = settings.providers[key] || { baseUrl: '', apiKey: '', models: [] };
+                settings.providers[key] = {
+                  baseUrl: provider.baseUrl ?? current.baseUrl,
+                  apiKey: provider.apiKey ?? current.apiKey,
+                  models: provider.models ?? current.models,
+                } as (typeof settings.providers)[string];
+              }
+            }
+
+            if (incoming.customModels) {
+              settings.customModels = incoming.customModels;
+            }
+
+            if (incoming.modelParameters) {
+              settings.modelParameters.maxSteps =
+                incoming.modelParameters.maxSteps ?? settings.modelParameters.maxSteps;
+              settings.modelParameters.additionalInstruction =
+                incoming.modelParameters.additionalInstruction ?? settings.modelParameters.additionalInstruction;
+            }
           })
         );
       },

@@ -66,6 +66,9 @@ export type AiSliceState = z.infer<typeof AiSliceState>;
 export interface AiSliceActions {
   ai: {
     setAnalysisPrompt: (prompt: string) => void;
+    setAiOptions: (
+      options: Partial<Pick<AiSliceState['ai'], 'analysisPrompt' | 'tools' | 'endPoint' | 'headers'>>
+    ) => void;
     startAnalysis: (
       sendMessage: (message: { text: string }) => void
     ) => Promise<void>;
@@ -155,6 +158,30 @@ export const createAiSlice = (options: AiSliceOptions) =>
 
         tools: {
           ...customTools,
+        },
+
+        setAiOptions: (incoming) => {
+          set(
+            (state): Partial<ChatStoreState> =>
+              produce(state, (draft) => {
+                if (!incoming) return;
+                if (incoming.analysisPrompt !== undefined) {
+                  draft.ai.analysisPrompt = incoming.analysisPrompt as string;
+                }
+                if (incoming.tools) {
+                  draft.ai.tools = {
+                    ...draft.ai.tools,
+                    ...incoming.tools,
+                  } as typeof draft.ai.tools;
+                }
+                if (incoming.endPoint !== undefined) {
+                  draft.ai.endPoint = incoming.endPoint as string | undefined;
+                }
+                if (incoming.headers !== undefined) {
+                  draft.ai.headers = incoming.headers as Record<string, string> | undefined;
+                }
+              })
+          );
         },
 
         setAnalysisPrompt: (prompt: string) => {
