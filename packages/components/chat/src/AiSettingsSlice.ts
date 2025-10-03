@@ -63,6 +63,7 @@ export interface AiSettingsActions {
       newModelName: string
     ) => void;
     removeCustomModel: (modelName: string) => void;
+    getModels: () => { provider: string; label: string; value: string }[];
   };
 }
 
@@ -128,208 +129,267 @@ export type AiSettingsSlice = AiSettingsState & AiSettingsActions;
 export const createAiSettingsSlice = (options: AiSettingsSliceOptions = {}) =>
   createSlice<AiSettingsSlice>((set, get) => {
     const { initialSettings = {} } = options;
-    
+
+    // Cache for derived models to maintain referential stability
+    let cachedModels:
+      { provider: string; label: string; value: string }[] = [];
+    let cachedProvidersRef:
+      AiSettingsState['aiSettings']['providers'] | undefined;
+    let cachedCustomModelsRef:
+      AiSettingsState['aiSettings']['customModels'] | undefined;
+
     return {
-    aiSettings: {
-      ...createDefaultAiSettings(initialSettings).aiSettings,
+      aiSettings: {
+        ...createDefaultAiSettings(initialSettings).aiSettings,
 
-      getAiSettings: () => {
-        const state = get();
-        return state.config.aiSettings;
-      },
+        getAiSettings: () => {
+          const state = get();
+          return state.config.aiSettings;
+        },
 
-      setMaxSteps: (maxSteps: number) => {
-        set((state) =>
-          produce(state, (draft) => {
-            draft.config.aiSettings.modelParameters.maxSteps = maxSteps;
-          })
-        );
-      },
+        setMaxSteps: (maxSteps: number) => {
+          set((state) =>
+            produce(state, (draft) => {
+              draft.config.aiSettings.modelParameters.maxSteps = maxSteps;
+            })
+          );
+        },
 
-      setAdditionalInstruction: (additionalInstruction: string) => {
-        set((state) =>
-          produce(state, (draft) => {
-            draft.config.aiSettings.modelParameters.additionalInstruction =
-              additionalInstruction;
-          })
-        );
-      },
+        setAdditionalInstruction: (additionalInstruction: string) => {
+          set((state) =>
+            produce(state, (draft) => {
+              draft.config.aiSettings.modelParameters.additionalInstruction =
+                additionalInstruction;
+            })
+          );
+        },
 
-      setAiSettingsOptions: (incoming) => {
-        set((state) =>
-          produce(state, (draft) => {
-            if (!incoming) return;
-            const settings = draft.config.aiSettings;
+        setAiSettingsOptions: (incoming) => {
+          set((state) =>
+            produce(state, (draft) => {
+              if (!incoming) return;
+              const settings = draft.config.aiSettings;
 
-            if (incoming.providers) {
-              for (const [key, provider] of Object.entries(incoming.providers)) {
-                const current = settings.providers[key] || { baseUrl: '', apiKey: '', models: [] };
-                settings.providers[key] = {
-                  baseUrl: provider.baseUrl ?? current.baseUrl,
-                  apiKey: provider.apiKey ?? current.apiKey,
-                  models: provider.models ?? current.models,
-                } as (typeof settings.providers)[string];
+              if (incoming.providers) {
+                for (const [key, provider] of Object.entries(
+                  incoming.providers
+                )) {
+                  const current = settings.providers[key] || {
+                    baseUrl: '',
+                    apiKey: '',
+                    models: [],
+                  };
+                  settings.providers[key] = {
+                    baseUrl: provider.baseUrl ?? current.baseUrl,
+                    apiKey: provider.apiKey ?? current.apiKey,
+                    models: provider.models ?? current.models,
+                  } as (typeof settings.providers)[string];
+                }
               }
-            }
 
-            if (incoming.customModels) {
-              settings.customModels = incoming.customModels;
-            }
+              if (incoming.customModels) {
+                settings.customModels = incoming.customModels;
+              }
 
-            if (incoming.modelParameters) {
-              settings.modelParameters.maxSteps =
-                incoming.modelParameters.maxSteps ?? settings.modelParameters.maxSteps;
-              settings.modelParameters.additionalInstruction =
-                incoming.modelParameters.additionalInstruction ?? settings.modelParameters.additionalInstruction;
-            }
-          })
-        );
-      },
+              if (incoming.modelParameters) {
+                settings.modelParameters.maxSteps =
+                  incoming.modelParameters.maxSteps ??
+                  settings.modelParameters.maxSteps;
+                settings.modelParameters.additionalInstruction =
+                  incoming.modelParameters.additionalInstruction ??
+                  settings.modelParameters.additionalInstruction;
+              }
+            })
+          );
+        },
 
-      updateProvider: (
-        provider: string,
-        updates: {
-          baseUrl?: string;
-          apiKey?: string;
-        }
-      ) => {
-        set((state) =>
-          produce(state, (draft) => {
-            if (draft.config.aiSettings.providers[provider]) {
-              Object.assign(
-                draft.config.aiSettings.providers[provider],
-                updates
+        updateProvider: (
+          provider: string,
+          updates: {
+            baseUrl?: string;
+            apiKey?: string;
+          }
+        ) => {
+          set((state) =>
+            produce(state, (draft) => {
+              if (draft.config.aiSettings.providers[provider]) {
+                Object.assign(
+                  draft.config.aiSettings.providers[provider],
+                  updates
+                );
+              }
+            })
+          );
+        },
+
+        addProvider: (provider: string, baseUrl: string, apiKey: string) => {
+          set((state) =>
+            produce(state, (draft) => {
+              draft.config.aiSettings.providers[provider] = {
+                baseUrl,
+                apiKey,
+                models: [],
+              };
+            })
+          );
+        },
+
+        addModelToProvider: (provider: string, modelName: string) => {
+          set((state) =>
+            produce(state, (draft) => {
+              if (draft.config.aiSettings.providers[provider]) {
+                // Check if model already exists
+                const modelExists = draft.config.aiSettings.providers[
+                  provider
+                ].models.some((model) => model.modelName === modelName);
+
+                if (!modelExists) {
+                  draft.config.aiSettings.providers[provider].models.push({
+                    modelName: modelName,
+                  });
+                }
+              }
+            })
+          );
+        },
+
+        removeModelFromProvider: (provider: string, modelName: string) => {
+          set((state) =>
+            produce(state, (draft) => {
+              if (draft.config.aiSettings.providers[provider]) {
+                draft.config.aiSettings.providers[provider].models =
+                  draft.config.aiSettings.providers[provider].models.filter(
+                    (model) => model.modelName !== modelName
+                  );
+              }
+            })
+          );
+        },
+
+        removeProvider: (provider: string) => {
+          set((state) =>
+            produce(state, (draft) => {
+              delete draft.config.aiSettings.providers[provider];
+            })
+          );
+        },
+
+        addCustomModel: (
+          baseUrl: string,
+          apiKey: string,
+          modelName: string
+        ) => {
+          set((state) =>
+            produce(state, (draft) => {
+              const newCustomModel = {
+                baseUrl,
+                apiKey,
+                modelName,
+              };
+
+              // Check if a custom model with the same name already exists
+              const existingModelIndex =
+                draft.config.aiSettings.customModels.findIndex(
+                  (model) =>
+                    model.modelName.toLowerCase() === modelName.toLowerCase()
+                );
+
+              if (existingModelIndex !== -1) {
+                // Update existing model
+                draft.config.aiSettings.customModels[existingModelIndex] =
+                  newCustomModel;
+              } else {
+                // Add new model
+                draft.config.aiSettings.customModels.push(newCustomModel);
+              }
+            })
+          );
+        },
+
+        updateCustomModel: (
+          oldModelName: string,
+          baseUrl: string,
+          apiKey: string,
+          newModelName: string
+        ) => {
+          set((state) =>
+            produce(state, (draft) => {
+              // Find the model to update
+              const modelIndex = draft.config.aiSettings.customModels.findIndex(
+                (model) => model.modelName === oldModelName
               );
-            }
-          })
-        );
-      },
 
-      addProvider: (provider: string, baseUrl: string, apiKey: string) => {
-        set((state) =>
-          produce(state, (draft) => {
-            draft.config.aiSettings.providers[provider] = {
-              baseUrl,
-              apiKey,
-              models: [],
-            };
-          })
-        );
-      },
+              if (modelIndex !== -1) {
+                // Check if the new name conflicts with another model (excluding the current one)
+                const conflictingModelIndex =
+                  draft.config.aiSettings.customModels.findIndex(
+                    (model, index) =>
+                      index !== modelIndex &&
+                      model.modelName.toLowerCase() ===
+                        newModelName.toLowerCase()
+                  );
 
-      addModelToProvider: (provider: string, modelName: string) => {
-        set((state) =>
-          produce(state, (draft) => {
-            if (draft.config.aiSettings.providers[provider]) {
-              // Check if model already exists
-              const modelExists = draft.config.aiSettings.providers[
-                provider
-              ].models.some((model) => model.modelName === modelName);
-
-              if (!modelExists) {
-                draft.config.aiSettings.providers[provider].models.push({
-                  modelName: modelName,
-                });
+                if (conflictingModelIndex === -1) {
+                  // Update the model
+                  draft.config.aiSettings.customModels[modelIndex] = {
+                    baseUrl,
+                    apiKey,
+                    modelName: newModelName,
+                  };
+                }
               }
-            }
-          })
-        );
-      },
+            })
+          );
+        },
 
-      removeModelFromProvider: (provider: string, modelName: string) => {
-        set((state) =>
-          produce(state, (draft) => {
-            if (draft.config.aiSettings.providers[provider]) {
-              draft.config.aiSettings.providers[provider].models =
-                draft.config.aiSettings.providers[provider].models.filter(
+        removeCustomModel: (modelName: string) => {
+          set((state) =>
+            produce(state, (draft) => {
+              draft.config.aiSettings.customModels =
+                draft.config.aiSettings.customModels.filter(
                   (model) => model.modelName !== modelName
                 );
-            }
-          })
-        );
+            })
+          );
+        },
+
+        getModels: () => {
+          const state = get();
+          const providers = state.config.aiSettings.providers;
+          const customModels = state.config.aiSettings.customModels;
+
+          // Return cached result if inputs are referentially identical
+          if (
+            providers === cachedProvidersRef &&
+            customModels === cachedCustomModelsRef
+          ) {
+            return cachedModels;
+          }
+
+          const models: { provider: string; label: string; value: string }[] =
+            [];
+          Object.entries(providers).forEach(([provider, cfg]) => {
+            cfg.models.forEach((m) => {
+              models.push({
+                provider,
+                label: `${m.modelName}`,
+                value: m.modelName,
+              });
+            });
+          });
+          customModels.forEach((m) => {
+            models.push({
+              provider: 'custom',
+              label: `custom:${m.modelName}`,
+              value: m.modelName,
+            });
+          });
+
+          cachedProvidersRef = providers;
+          cachedCustomModelsRef = customModels;
+          cachedModels = models;
+          return cachedModels;
+        },
       },
-
-      removeProvider: (provider: string) => {
-        set((state) =>
-          produce(state, (draft) => {
-            delete draft.config.aiSettings.providers[provider];
-          })
-        );
-      },
-
-      addCustomModel: (baseUrl: string, apiKey: string, modelName: string) => {
-        set((state) =>
-          produce(state, (draft) => {
-            const newCustomModel = {
-              baseUrl,
-              apiKey,
-              modelName,
-            };
-
-            // Check if a custom model with the same name already exists
-            const existingModelIndex =
-              draft.config.aiSettings.customModels.findIndex(
-                (model) =>
-                  model.modelName.toLowerCase() === modelName.toLowerCase()
-              );
-
-            if (existingModelIndex !== -1) {
-              // Update existing model
-              draft.config.aiSettings.customModels[existingModelIndex] =
-                newCustomModel;
-            } else {
-              // Add new model
-              draft.config.aiSettings.customModels.push(newCustomModel);
-            }
-          })
-        );
-      },
-
-      updateCustomModel: (
-        oldModelName: string,
-        baseUrl: string,
-        apiKey: string,
-        newModelName: string
-      ) => {
-        set((state) =>
-          produce(state, (draft) => {
-            // Find the model to update
-            const modelIndex = draft.config.aiSettings.customModels.findIndex(
-              (model) => model.modelName === oldModelName
-            );
-
-            if (modelIndex !== -1) {
-              // Check if the new name conflicts with another model (excluding the current one)
-              const conflictingModelIndex =
-                draft.config.aiSettings.customModels.findIndex(
-                  (model, index) =>
-                    index !== modelIndex &&
-                    model.modelName.toLowerCase() === newModelName.toLowerCase()
-                );
-
-              if (conflictingModelIndex === -1) {
-                // Update the model
-                draft.config.aiSettings.customModels[modelIndex] = {
-                  baseUrl,
-                  apiKey,
-                  modelName: newModelName,
-                };
-              }
-            }
-          })
-        );
-      },
-
-      removeCustomModel: (modelName: string) => {
-        set((state) =>
-          produce(state, (draft) => {
-            draft.config.aiSettings.customModels =
-              draft.config.aiSettings.customModels.filter(
-                (model) => model.modelName !== modelName
-              );
-          })
-        );
-      },
-    },
     };
   });

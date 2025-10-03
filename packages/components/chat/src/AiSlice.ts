@@ -3,7 +3,7 @@ import { z } from 'zod';
 import type React from 'react';
 import { AnalysisResultSchema, AnalysisSessionSchema } from './schemas';
 import { ChatStoreState, createSlice } from './store';
-import { DefaultChatTransport, UIMessage } from 'ai';
+import { DefaultChatTransport, UIMessage, ToolSet } from 'ai';
 import { UIMessagePart } from './schema/UIMessageSchema';
 import { produce } from 'immer';
 import {
@@ -29,30 +29,11 @@ export type DefaultToolsOptions = {
   autoSummary?: boolean;
 };
 
-// Tool type definition
-export const AiSliceToolSchema = z.object({
-  description: z.string(),
-  parameters: z.any(), // z.ZodTypeAny
-  execute: z.function({
-    output: z.promise(
-      z.object({
-        llmResult: z.unknown(),
-        additionalData: z.unknown().optional(),
-      })
-    )
-  }),
-  context: z.record(z.string(), z.unknown()).optional(),
-  component: z.any().optional(), // React.ComponentType
-  onToolCompleted: z.function({ output: z.void() }).optional(),
-});
-
-export type AiSliceTool = z.infer<typeof AiSliceToolSchema>;
-
 export const AiSliceState = z.object({
   ai: z.object({
     analysisPrompt: z.string(),
     isRunningAnalysis: z.boolean(),
-    tools: z.record(z.string(), AiSliceToolSchema),
+    tools: z.record(z.any(), z.any()),
     analysisAbortController: z.instanceof(AbortController).optional(),
     /** Optional remote endpoint to use for chat; if empty, local transport is used */
     endPoint: z.string().optional(),
@@ -113,10 +94,8 @@ export interface AiSliceActions {
  * Configuration options for creating an AI slice
  */
 export interface AiSliceOptions {
-  /** Initial prompt to display in the analysis input */
   initialAnalysisPrompt?: string;
-  /** Custom tools to add to the AI assistant */
-  customTools?: Record<string, AiSliceTool>;
+  tools?: ToolSet;
   getInstructions?: () => string;
   toolsOptions?: DefaultToolsOptions;
   defaultProvider?: string;
@@ -142,7 +121,7 @@ export const createAiSlice = (options: AiSliceOptions) =>
       defaultProvider = 'openai',
       defaultModel = 'gpt-4.1', // eslint-disable-line @typescript-eslint/no-unused-vars
       initialAnalysisPrompt = '',
-      customTools = {},
+      tools = {},
       toolsOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
       getApiKey,
       getBaseUrl,
@@ -155,11 +134,7 @@ export const createAiSlice = (options: AiSliceOptions) =>
       ai: {
         analysisPrompt: initialAnalysisPrompt,
         isRunningAnalysis: false,
-
-        tools: {
-          ...customTools,
-        },
-
+        tools,
         setAiOptions: (incoming) => {
           set(
             (state): Partial<ChatStoreState> =>

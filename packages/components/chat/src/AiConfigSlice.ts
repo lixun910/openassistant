@@ -50,7 +50,7 @@ export function createDefaultAiConfig(
 
 export type AiConfigSlice = AiConfigState & AiConfigActions;
 
-export const createAiConfigSlice = createSlice<AiConfigSlice>((set, get) => ({
+export const createAiConfigSlice = createSlice<AiConfigSlice>((set) => ({
   ai: {
     ...createDefaultAiConfig({}).ai,
 
@@ -83,47 +83,86 @@ export const createAiConfigSlice = createSlice<AiConfigSlice>((set, get) => ({
      * Rename an existing session
      */
     renameSession: (sessionId: string, name: string) => {
-      const session = get().config.ai.sessions.find((s) => s.id === sessionId);
-      if (session) {
-        session.name = name;
-      }
+      set((state) =>
+        produce(state, (draft) => {
+          const session = draft.config.ai.sessions.find((s) => s.id === sessionId);
+          if (session) {
+            session.name = name;
+          }
+        })
+      );
     },
 
     /**
      * Delete a session
      */
     deleteSession: (sessionId: string) => {
-      const sessionIndex = get().config.ai.sessions.findIndex(
-        (s) => s.id === sessionId
-      );
-      if (sessionIndex !== -1) {
-        // Don't delete the last session
-        if (get().config.ai.sessions.length > 1) {
-          get().config.ai.sessions.splice(sessionIndex, 1);
-          // If we deleted the current session, switch to another one
-          if (get().config.ai.currentSessionId === sessionId) {
-            // Make sure there's at least one session before accessing its id
-            if (get().config.ai.sessions.length > 0) {
-              const firstSession = get().config.ai.sessions[0];
-              if (firstSession) {
-                get().config.ai.currentSessionId = firstSession.id;
+      set((state) =>
+        produce(state, (draft) => {
+          const sessionIndex = draft.config.ai.sessions.findIndex(
+            (s) => s.id === sessionId
+          );
+          if (sessionIndex !== -1) {
+            // Don't delete the last session
+            if (draft.config.ai.sessions.length > 1) {
+              draft.config.ai.sessions.splice(sessionIndex, 1);
+              // If we deleted the current session, switch to another one
+              if (draft.config.ai.currentSessionId === sessionId) {
+                // Make sure there's at least one session before accessing its id
+                if (draft.config.ai.sessions.length > 0) {
+                  const firstSession = draft.config.ai.sessions[0];
+                  if (firstSession) {
+                    draft.config.ai.currentSessionId = firstSession.id;
+                  }
+                }
               }
             }
           }
-        }
-      }
+        })
+      );
     },
 
     /**
      * Delete an analysis result from a session
      */
     deleteAnalysisResult: (sessionId: string, resultId: string) => {
-      const session = get().config.ai.sessions.find((s) => s.id === sessionId);
-      if (session) {
-        session.analysisResults = session.analysisResults.filter(
-          (r) => r.id !== resultId
-        );
-      }
+      set((state) =>
+        produce(state, (draft) => {
+          const session = draft.config.ai.sessions.find((s) => s.id === sessionId);
+          if (session) {
+            // Remove the UI messages that correspond to this analysis result
+            // We need to remove both the user message and the assistant response
+            const userMessageIndex = session.uiMessages.findIndex(
+              (msg) => msg.id === resultId
+            );
+            
+            if (userMessageIndex !== -1) {
+              // Find the corresponding assistant message
+              let assistantMessageIndex = -1;
+              for (let i = userMessageIndex + 1; i < session.uiMessages.length; i++) {
+                if (session.uiMessages[i]?.role === 'assistant') {
+                  assistantMessageIndex = i;
+                  break;
+                } else if (session.uiMessages[i]?.role === 'user') {
+                  // Stop at next user message
+                  break;
+                }
+              }
+              
+              // Remove messages (assistant first to maintain indices)
+              if (assistantMessageIndex !== -1) {
+                session.uiMessages.splice(assistantMessageIndex, 1);
+              }
+              session.uiMessages.splice(userMessageIndex, 1);
+            }
+            
+            // Also remove from analysisResults if it exists there
+            session.analysisResults = session.analysisResults.filter(
+              (r) => r.id !== resultId
+            );
+          }
+        })
+      );
     },
   },
 }));

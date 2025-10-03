@@ -29,7 +29,7 @@ export * from './AiSlice';
 
 export type { AiSettingsSlice } from './AiSettingsSlice';
 export type { AiConfigSlice } from './AiConfigSlice';
-export type { AiSlice, AiSliceTool } from './AiSlice';
+export type { AiSlice } from './AiSlice';
 
 export { AiSettingsPanel } from './components/settings/AiSettingsPanel';
 export { AiProvidersSettings } from './components/settings/AiProvidersSettings';

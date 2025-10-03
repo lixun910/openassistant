@@ -23486,6 +23486,7 @@ __metadata:
   resolution: "sqlrooms_ai_example@workspace:examples/sqlrooms_ai_example"
   dependencies:
     "@openassistant/chat": "workspace:*"
+    "@openassistant/duckdb": "workspace:*"
     "@sqlrooms/ui": "npm:^0.24.27"
     "@types/react": "npm:^18.3.1"
     "@types/react-dom": "npm:^18.3.1"
