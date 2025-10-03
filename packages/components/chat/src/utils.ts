@@ -1,7 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Tool } from 'ai';
-import { AiSliceTool } from './AiSlice';
-
 /**
  * Capitalizes the first letter of a string
  */
@@ -47,31 +44,4 @@ export function getErrorMessageForDisplay(error: unknown): string {
  */
 export function createId(): string {
   return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
-}
-
-export function convertToVercelAiTool({
-  tool,
-  onToolCompleted,
-}: {
-  tool: AiSliceTool;
-  onToolCompleted: (toolCallId: string, additionalData: unknown) => void;
-}): Tool {
-  const vercelAiTool = {
-    description: tool.description,
-    inputSchema: tool.parameters,
-    // outputSchema: tool.outputSchema,
-    execute: async (args: Record<string, unknown>, options: any) => {
-      const result = await (tool.execute as any)(args, {
-        ...options,
-        context: tool.context,
-      });
-
-      if (onToolCompleted) {
-        onToolCompleted(options.toolCallId, result.additionalData);
-      }
-
-      return result.llmResult;
-    },
-  };
-  return vercelAiTool;
 }

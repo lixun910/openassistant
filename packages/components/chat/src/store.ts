@@ -45,7 +45,7 @@ export const createChatStore = (options: ChatStoreOptions = {}) => {
         },
         ...createAiSlice({
           initialAnalysisPrompt: '',
-          customTools: {},
+          tools: {},
           ...options.ai,
         })(set, get, store),
         setInitialized: (initialized) => set({ initialized }),

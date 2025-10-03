@@ -7,8 +7,8 @@ import {
 import type { LanguageModel } from 'ai';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { produce } from 'immer';
-import { getErrorMessageForDisplay, convertToVercelAiTool, createId } from './utils';
-import type { AiSlice, AiSliceTool } from './AiSlice';
+import { getErrorMessageForDisplay, createId } from './utils';
+import type { AiSlice } from './AiSlice';
 import type { AnalysisSessionSchema as AnalysisSession } from './schemas';
 
 type GetState = AiSlice & {
@@ -89,40 +89,13 @@ export function createLocalChatTransportFactory({
       const parsed = body ? JSON.parse(body) : {};
       const messagesCopy = JSON.parse(JSON.stringify(parsed.messages || []));
 
-      // Build tool wrappers for AI SDK v5 streamText
-      const onToolCompleted = (toolCallId: string, additionalData: unknown) => {
-        const sessionId = get().config.ai.currentSessionId;
-        if (!sessionId) return;
-        get().ai.setSessionToolAdditionalData(
-          sessionId,
-          (prev: Record<string, unknown>) => ({
-            ...prev,
-            [toolCallId]: additionalData,
-          })
-        );
-      };
-
-      const tools = Object.entries(state.ai.tools || {}).reduce(
-        (
-          acc: Record<string, ReturnType<typeof convertToVercelAiTool>>,
-          [name, tool]: [string, AiSliceTool]
-        ) => {
-          acc[name] = convertToVercelAiTool({
-            tool,
-            onToolCompleted,
-          });
-          return acc;
-        },
-        {} as Record<string, ReturnType<typeof convertToVercelAiTool>>
-      );
-
       // get system instructions
       const systemInstructions = instructions;
 
       const result = streamText({
         model,
         messages: convertToModelMessages(messagesCopy),
-        tools,
+        tools: state.ai.tools,
         system: systemInstructions,
         abortSignal: state.ai.analysisAbortController?.signal,
       });

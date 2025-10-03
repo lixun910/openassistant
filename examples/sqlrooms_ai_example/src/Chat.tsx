@@ -8,53 +8,64 @@ import {
   ChatStoreOptions,
   createChatStore,
   ChatStoreProvider,
-  useChatStore,
 } from '@openassistant/chat';
+import { QueryDuckDBComponent } from '@openassistant/tables';
 import { Button, useDisclosure } from '@sqlrooms/ui';
 import { Settings } from 'lucide-react';
+import { LocalQueryTool } from '@openassistant/duckdb';
+import { tool } from 'ai';
 import { AI_SETTINGS } from './config';
 
-type Model = { provider: string; label: string; value: string };
+// Removed local buildModels in favor of store-derived models
 
-function buildModels(
-  providers: Record<string, { models: { modelName: string }[] }>,
-  customModels: { modelName: string }[]
-): Model[] {
-  const models: Model[] = [];
-  Object.entries(providers).forEach(([provider, cfg]) => {
-    cfg.models.forEach((m) => {
-      models.push({
-        provider,
-        label: `${provider}:${m.modelName}`,
-        value: m.modelName,
-      });
-    });
-  });
-  customModels.forEach((m) => {
-    models.push({
-      provider: 'custom',
-      label: `custom:${m.modelName}`,
-      value: m.modelName,
-    });
-  });
-  return models;
-}
+// Sample dataset for demonstration
+const SAMPLE_DATASETS = {
+  venues: [
+    { name: 'Golden Gate Park', city: 'San Francisco', rating: 4.5 },
+    { name: "Fisherman's Wharf", city: 'San Francisco', rating: 4.2 },
+    { name: 'Alcatraz Island', city: 'San Francisco', rating: 4.7 },
+  ],
+};
+
+// Create tool with custom context
+const localQueryTool = new LocalQueryTool({
+  context: {
+    getValues: async (datasetName: string, variableName: string) => {
+      // Get the values of the variable from your dataset
+      const dataset =
+        SAMPLE_DATASETS[datasetName as keyof typeof SAMPLE_DATASETS];
+      if (!dataset) {
+        throw new Error(`Dataset '${datasetName}' not found`);
+      }
+      return dataset.map((item) => item[variableName as keyof typeof item]);
+    },
+  },
+  onToolCompleted: (toolCallId, additionalData) => {
+    console.log('Query completed:', toolCallId, additionalData);
+  },
+  component: QueryDuckDBComponent,
+});
 
 export default function Chat() {
-  // Create an app-local store instance and provide it via Provider
-  const useChatStore = createChatStore({
-    aiSettings: {
-      initialSettings: AI_SETTINGS,
-    },
-  } as ChatStoreOptions);
+  // Create an app-local store instance and provide it via Provider (memoized)
+  const useChatStore = React.useMemo(
+    () =>
+      createChatStore({
+        aiSettings: {
+          initialSettings: AI_SETTINGS,
+        },
+        ai: {
+          getInstructions: () =>
+            "You are a helpful assistant that can answer questions and help with tasks. Your name is George. You can use the following datasets to answer the user's question: \nDatasetName: venues, \nFields: name, city, rating",
+          tools: { localQuery: localQueryTool.toVercelAiTool(tool) },
+          // toolComponent: { localQuery: QueryDuckDBComponent },
+        },
+      } as ChatStoreOptions),
+    []
+  );
 
   const currentSessionId = useChatStore((s) => s.config.ai.currentSessionId);
-  const providers = useChatStore((s) => s.config.aiSettings.providers);
-  const customModels = useChatStore((s) => s.config.aiSettings.customModels);
-  const models = React.useMemo(
-    () => buildModels(providers, customModels),
-    [providers, customModels]
-  );
+  const models = useChatStore((s) => s.config.aiSettings.getModels());
   const settingsPanelOpen = useDisclosure();
 
   return (
@@ -92,7 +103,7 @@ export default function Chat() {
               <AnalysisResultsContainer key={currentSessionId} />
             </div>
 
-            <QueryControls placeholder="Type here what would you like to learn about the data? Something like 'What is the max magnitude of the earthquakes by year?'">
+            <QueryControls placeholder="">
               <div className="flex items-center justify-end gap-2">
                 <ModelSelector models={models} />
               </div>
