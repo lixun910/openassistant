@@ -1,6 +1,6 @@
 {
   "name": "@openassistant/geoda",
-  "version": "0.5.18",
+  "version": "0.5.20",
   "author": "Xun Li<lixun910@gmail.com>",
   "description": "The GeoDa spatial analysis tools for OpenAssistant",
   "main": "dist/index.cjs.js",
@@ -36,8 +36,7 @@
     "@loaders.gl/schema": "^4.3.3",
     "@openassistant/plots": "workspace:*",
     "@openassistant/utils": "workspace:*",
-    "@turf/bbox": "^7.2.0",
-    "zod": "^4.1.8"
+    "@turf/bbox": "^7.2.0"
   },
   "peerDependencies": {
     "react": ">=18.2",

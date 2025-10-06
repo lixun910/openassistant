@@ -121,6 +121,7 @@ export function QueryDuckDBComponent({
   getValues: (datasetName: string, variableName: string) => Promise<unknown[]>;
 }): JSX.Element | null {
   const queryInProgress = useRef<Promise<void> | null>(null);
+  const isRunningRef = useRef(false);
   const [columnData, setColumnData] = useState<{ [key: string]: unknown[] }>(
     {}
   );
@@ -151,10 +152,12 @@ export function QueryDuckDBComponent({
 
   useEffect(() => {
     const query = async () => {
-      // If a query is already in progress, wait for it to complete
-      if (queryInProgress.current) {
-        await queryInProgress.current;
+      // Prevent concurrent runs (React Strict Mode double-invokes effects)
+      if (isRunningRef.current) {
+        console.log('Query already running, skipping duplicate invocation');
+        return;
       }
+      isRunningRef.current = true;
 
       // Create a new promise for this query
       queryInProgress.current = (async () => {
@@ -166,37 +169,163 @@ export function QueryDuckDBComponent({
 
           const conn = await db.connect();
 
-          // check if dbTableName exists
+          // list tables for debugging (optional)
           const tableNames = await conn.query('SHOW TABLES');
           const tableNamesArray = tableNames
             .toArray()
             .map((row) => row.toJSON());
-          const tableExists = tableNamesArray.find(
+          console.log('Existing tables before recreate:', tableNamesArray);
+          // Always drop and recreate the table to ensure consistency
+          console.log('Dropping table if exists:', dbTableName);
+          await conn.query(`DROP TABLE IF EXISTS ${dbTableName}`);
+          
+          console.log('Creating table:', dbTableName);
+          // create the table
+          // get values for each variable
+          const columnData = {};
+          for (const varName of variableNames) {
+            console.log('Getting values for variable:', varName);
+            const values = await getValues(datasetName, varName);
+            console.log('Values for', varName, ':', values?.length, 'items');
+            columnData[varName] = values;
+          }
+          console.log('Column data structure:', Object.keys(columnData));
+          setColumnData(columnData);
+
+          // Create Arrow Table from column data with explicit type
+          console.log('Creating Arrow table from column data...');
+          const arrowTable: ArrowTable = tableFromArrays(columnData);
+          console.log('Arrow table created successfully:', {
+            numRows: arrowTable.numRows,
+            numCols: arrowTable.numCols,
+            schema: arrowTable.schema.fields.map(f => ({ name: f.name, type: f.type.toString() }))
+          });
+          
+          console.log('Inserting Arrow table into DuckDB...');
+          await conn.insertArrowTable(arrowTable, {
+            name: dbTableName,
+            create: true,
+          });
+          console.log('Arrow table inserted successfully into DuckDB');
+          
+          // Try to query the table directly to see if it exists
+          console.log('Testing table existence by querying it directly...');
+          try {
+            const testQuery = `SELECT COUNT(*) as count FROM ${dbTableName}`;
+            const testResult = await conn.query(testQuery);
+            const count = testResult.toArray()[0].toJSON().count;
+            console.log('Direct query test successful, row count:', count);
+          } catch (testError) {
+            console.error('Direct query test failed:', testError);
+          }
+          
+          // Verify the table was created by checking tables again
+          const tablesAfterInsert = await conn.query('SHOW TABLES');
+          const tablesAfterInsertArray = tablesAfterInsert
+            .toArray()
+            .map((row) => row.toJSON());
+          console.log('Tables after insert:', tablesAfterInsertArray);
+          const tableExistsAfterInsert = tablesAfterInsertArray.find(
             (table) => table.name === dbTableName
           );
-          if (!tableExists) {
-            // create the table
-            // get values for each variable
-            const columnData = {};
-            for (const varName of variableNames) {
-              columnData[varName] = await getValues(datasetName, varName);
-            }
-            setColumnData(columnData);
-
-            // Create Arrow Table from column data with explicit type
-            const arrowTable: ArrowTable = tableFromArrays(columnData);
-            const conn = await db.connect();
+          console.log('Table exists after insert:', !!tableExistsAfterInsert);
+          
+          // Fallback: if the table is still not visible, explicitly create it with a schema
+          if (!tableExistsAfterInsert) {
+            console.log('Fallback: creating table explicitly with schema');
+            const escapeIdent = (s: string) => '"' + String(s).replace(/"/g, '""') + '"';
+            const inferDuckDBType = (values: unknown[]): string => {
+              const first = values.find((v) => v !== null && v !== undefined);
+              if (typeof first === 'boolean') return 'BOOLEAN';
+              if (typeof first === 'number') {
+                return Number.isInteger(first) ? 'BIGINT' : 'DOUBLE';
+              }
+              if (typeof first === 'string') return 'VARCHAR';
+              // default to VARCHAR for complex types
+              return 'VARCHAR';
+            };
+            const columnDefs = Object.entries(columnData)
+              .map(([colName, values]) => `${escapeIdent(colName)} ${inferDuckDBType(values as unknown[])}`)
+              .join(', ');
+            const createSql = `CREATE TABLE ${escapeIdent(dbTableName)} (${columnDefs})`;
+            console.log('Executing explicit CREATE TABLE:', createSql);
+            await conn.query(createSql);
+            console.log('Explicit CREATE TABLE done, inserting rows...');
             await conn.insertArrowTable(arrowTable, {
               name: dbTableName,
-              create: true,
+              create: false,
             });
+            console.log('Rows inserted after explicit CREATE TABLE');
+            const tablesAfterCreate = await conn.query('SHOW TABLES');
+            const tablesAfterCreateArray = tablesAfterCreate
+              .toArray()
+              .map((row) => row.toJSON());
+            console.log('Tables after explicit create:', tablesAfterCreateArray);
+
+            // Post-insert sanity checks
+            try {
+              const countRes = await conn.query(`SELECT COUNT(*) AS count FROM ${escapeIdent(dbTableName)}`);
+              let insertedCount = countRes.toArray()[0].toJSON().count;
+              console.log('Row count after explicit insert:', insertedCount);
+              if (!insertedCount || insertedCount === 0 || insertedCount === 0n) {
+                console.log('Fallback insert path: inserting rows one-by-one');
+                const escapeSqlString = (s: unknown) => {
+                  if (s === null || s === undefined) return 'NULL';
+                  if (typeof s === 'number' || typeof s === 'bigint') return String(s);
+                  if (typeof s === 'boolean') return s ? 'TRUE' : 'FALSE';
+                  return '\'' + String(s).replace(/'/g, "''") + '\'';
+                };
+                const colNames = Object.keys(columnData);
+                const numRowsToInsert = (columnData[colNames[0]] as unknown[]).length;
+                for (let i = 0; i < numRowsToInsert; i++) {
+                  const valuesSql = colNames
+                    .map((c) => escapeSqlString((columnData[c] as unknown[])[i]))
+                    .join(', ');
+                  const insertSql = `INSERT INTO ${escapeIdent(dbTableName)} (${colNames.map(escapeIdent).join(', ')}) VALUES (${valuesSql})`;
+                  await conn.query(insertSql);
+                }
+                const recountRes = await conn.query(`SELECT COUNT(*) AS count FROM ${escapeIdent(dbTableName)}`);
+                insertedCount = recountRes.toArray()[0].toJSON().count;
+                console.log('Row count after manual inserts:', insertedCount);
+              }
+              const previewRes = await conn.query(`SELECT * FROM ${escapeIdent(dbTableName)} LIMIT 5`);
+              const previewJson = previewRes.toArray().map((r) => r.toJSON());
+              console.log('Preview rows after explicit insert:', previewJson);
+            } catch (postCheckErr) {
+              console.error('Post-insert sanity check failed:', postCheckErr);
+            }
           }
 
           // query the table
+          console.log('Executing query:', sql);
+          console.log('Using connection for query...');
           const arrowResult = await conn.query(sql);
+          console.log('Query executed successfully');
 
           // get query results
           const queryResult = arrowResult.toArray().map((row) => row.toJSON());
+          console.log('Query returned rows:', queryResult.length, 'First row:', queryResult[0] ?? null);
+          if (queryResult.length === 0) {
+            try {
+              const countAllRes = await conn.query(`SELECT COUNT(*) AS count FROM "${dbTableName}"`);
+              const totalRows = countAllRes.toArray()[0].toJSON().count;
+              console.log('Total rows in source table:', totalRows);
+              const previewAllRes = await conn.query(`SELECT * FROM "${dbTableName}" LIMIT 5`);
+              const previewAll = previewAllRes.toArray().map((r) => r.toJSON());
+              console.log('Preview of source table (first 5):', previewAll);
+              for (const varName of variableNames) {
+                try {
+                  const distinctRes = await conn.query(`SELECT DISTINCT "${varName}" AS v FROM "${dbTableName}" LIMIT 10`);
+                  const vals = distinctRes.toArray().map((r) => r.toJSON().v);
+                  console.log(`Distinct ${varName} (up to 10):`, vals);
+                } catch (dErr) {
+                  console.warn(`Failed to fetch distinct values for ${varName}:`, dErr);
+                }
+              }
+            } catch (diagErr) {
+              console.warn('Diagnostics after zero-row query failed:', diagErr);
+            }
+          }
           setQueryResult(queryResult);
 
           await conn.close();
@@ -204,6 +333,7 @@ export function QueryDuckDBComponent({
           setError(error instanceof Error ? error.message : String(error));
         } finally {
           queryInProgress.current = null;
+          isRunningRef.current = false;
         }
       })();
 
@@ -259,7 +389,7 @@ export function QueryDuckDBComponent({
     datasetName,
   ]);
 
-  return error ? (
+  return error && error !== 'DuckDB instance is not initialized' ? (
     <div>
       <p className="text-tiny">Something went wrong with the query.</p>
       {error}
@@ -347,5 +477,7 @@ export function QueryDuckDBComponent({
         )}
       </div>
     </div>
-  ) : null;
+  ) : (
+    <div className="text-tiny p-2">No results.</div>
+  );
 }

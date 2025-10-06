@@ -1,12 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import {
-  OpenAssistantTool,
-  OpenAssistantToolOptions,
-  OpenAssistantToolExecutionOptions,
-  OpenAssistantExecuteFunctionResult,
-} from '@openassistant/utils';
+import { extendedTool } from '@openassistant/utils';
 import { z } from 'zod';
 import {
   equalIntervalBreaks,
@@ -19,11 +14,11 @@ import {
 } from '@geoda/core';
 import { GetValues } from '../types';
 
-export const DataClassifyArgs = z.object({
-  datasetName: z.string(),
-  variableName: z.string(),
-  method: z
-    .enum([
+export type DataClassifyFunctionArgs = z.ZodObject<{
+  datasetName: z.ZodString;
+  variableName: z.ZodString;
+  method: z.ZodEnum<
+    [
       'quantile',
       'natural breaks',
       'equal interval',
@@ -31,19 +26,11 @@ export const DataClassifyArgs = z.object({
       'box',
       'standard deviation',
       'unique values',
-    ])
-    .describe('The classification method.'),
-  k: z
-    .number()
-    .optional()
-    .describe(
-      'The number of bins or classes. This is only required for quantile, natural breaks, equal interval.'
-    ),
-  hinge: z
-    .number()
-    .optional()
-    .describe('The hinge value when box method is used. Default is 1.5.'),
-});
+    ]
+  >;
+  k: z.ZodOptional<z.ZodNumber>;
+  hinge: z.ZodOptional<z.ZodNumber>;
+}>;
 
 export type DataClassifyLlmResult = {
   success: boolean;
@@ -71,6 +58,91 @@ export type DataClassifyAdditionalData = {
 export type DataClassifyFunctionContext = {
   getValues: GetValues;
 };
+
+/**
+ * ## dataClassify Tool
+ * 
+ * This tool is used to classify the data into k bins or classes.
+ *
+ * ### Classification Methods
+ *
+ * The classification method can be one of the following types:
+ * - quantile
+ * - natural breaks
+ * - equal interval
+ * - percentile
+ * - box
+ * - standard deviation
+ * - unique values.
+ *
+ * **Example user prompts:**
+ * - "Can you classify the data of population into 5 classes?"
+ *
+ * @example
+ * ```typescript
+ * import { dataClassify, DataClassifyTool } from "@openassistant/geoda";
+ * import { convertToVercelAiTool } from "@openassistant/utils";
+ *
+ * const classifyTool: DataClassifyTool = {
+ *   ...dataClassify,
+ *   toolContext: {
+ *     getValues: async (datasetName: string, variableName: string) => {
+ *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ *     },
+ *   },
+ * };
+ *
+ * const result = await generateText({
+ *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   prompt: 'Can you classify the data of population into 5 classes?',
+ *   tools: {dataClassify: convertToVercelAiTool(classifyTool)},
+ * });
+ *
+ * ```
+ *
+ * For a more complete example, see the [Geoda Tools Example using Next.js + Vercel AI SDK](https://github.com/openassistant/openassistant/tree/main/examples/vercel_geoda_example).
+ */
+export const dataClassify = extendedTool<
+  DataClassifyFunctionArgs,
+  DataClassifyLlmResult,
+  DataClassifyAdditionalData,
+  DataClassifyFunctionContext
+>({
+  description: 'Classify the data into k bins or categories, and return k-1 or k (for unique values) break values.',
+  parameters: z.object({
+    datasetName: z.string(),
+    variableName: z.string(),
+    method: z
+      .enum([
+        'quantile',
+        'natural breaks',
+        'equal interval',
+        'percentile',
+        'box',
+        'standard deviation',
+        'unique values',
+      ])
+      .describe('The classification method.'),
+    k: z
+      .number()
+      .optional()
+      .describe(
+        'The number of bins or classes. This is only required for quantile, natural breaks, equal interval.'
+      ),
+    hinge: z
+      .number()
+      .optional()
+      .describe('The hinge value when box method is used. Default is 1.5.'),
+  }),
+  execute: executeDataClassify,
+  context: {
+    getValues: () => {
+      throw new Error('getValues() of DataClassifyTool is not implemented');
+    },
+  },
+});
+
+export type DataClassifyTool = typeof dataClassify;
 
 type DataClassifyToolArgs = {
   datasetName: string;
@@ -104,128 +176,45 @@ function isDataClassifyContext(
   );
 }
 
-/**
- * ## DataClassifyTool Class
- *
- * Classifies a numeric variable into bins/classes and returns break values.
- *
- * ### Supported methods
- * - quantile
- * - natural breaks
- * - equal interval
- * - percentile
- * - box (Tukey hinge: `hinge` = 1.5 by default; set 3.0 for 3×IQR)
- * - standard deviation
- * - unique values (returns the set of distinct values instead of breaks)
- *
- * ### Parameters
- * - `datasetName` (string): Source dataset id/name
- * - `variableName` (string): Numeric column to classify
- * - `method` (enum): One of the supported methods above
- * - `k` (number, optional): Number of classes; required for `quantile`, `natural breaks`, `equal interval`
- * - `hinge` (number, optional): Only used for `box` method; default is 1.5
- *
- * ### Result
- * Returns `{ success, result?, error?, instruction? }` where `result` includes
- * `originalDatasetName`, `variableName`, `method`, `k`, optional `hinge`, and
- * either `breaks` or `uniqueValues` depending on the method.
- *
- * @example
- * ```typescript
- * import { DataClassifyTool } from '@openassistant/geoda';
- * import { generateText, tool } from 'ai';
- *
- * const SAMPLE_DATASETS = {
- *   regions: [
- *     { "location": "New York", "latitude": 40.7128, "longitude": -74.0060, "population": 12500000 },
- *     { "location": "Chicago", "latitude": 41.8781, "longitude": -87.6298, "population": 2700000 },
- *     { "location": "Houston", "latitude": 29.7604, "longitude": -95.3698, "population": 2300000 },
- *     { "location": "Phoenix", "latitude": 33.4484, "longitude": -112.074, "population": 1600000 },
- *     { "location": "Philadelphia", "latitude": 39.9526, "longitude": -75.1652, "population": 1580000 },
- *     { "location": "San Antonio", "latitude": 29.4241, "longitude": -98.4936, "population": 1540000 },
- *     { "location": "San Diego", "latitude": 32.7157, "longitude": -117.1611, "population": 1420000 },
- *   ]
- * };
- *
- * const classifyTool = new DataClassifyTool({
- *   context: {
- *     getValues: async (datasetName: string, variableName: string) =>
- *       SAMPLE_DATASETS[datasetName].map((d) => d[variableName]),
- *   },
- * });
- *
- * const out = await generateText({
- *   model: openai('gpt-4.1', { apiKey: process.env.OPENAI_API_KEY }),
- *   system: 'You are a helpful assistant that can answer questions and help with tasks. The following datasets are available for tools: \nDatasetName: regions, \nFields: location, latitude, longitude, population',
- *   prompt: 'Classify population into 3 classes using natural breaks',
- *   tools: { dataClassify: classifyTool.toVercelAiTool(tool) },
- * });
- * ```
- */
-export class DataClassifyTool extends OpenAssistantTool<
-  typeof DataClassifyArgs
-> {
-  protected getDefaultDescription(): string {
-    return 'Classify the data into k bins or categories, and return k-1 or k (for unique values) break values.';
-  }
+export type ExecuteDataClassifyResult = {
+  llmResult: DataClassifyLlmResult;
+  additionalData?: DataClassifyAdditionalData;
+};
 
-  protected getDefaultParameters() {
-    return DataClassifyArgs;
-  }
+async function executeDataClassify(
+  args,
+  options
+): Promise<ExecuteDataClassifyResult> {
+  try {
+    if (!isDataClassifyToolArgs(args)) {
+      throw new Error('Invalid arguments for dataClassify tool');
+    }
 
-  constructor(options: OpenAssistantToolOptions<typeof DataClassifyArgs> = {}) {
-    super({
-      ...options,
-      context: options.context || {
-        getValues: () => {
-          throw new Error('getValues() of DataClassifyTool is not implemented');
-        },
-      },
+    if (!options.context || !isDataClassifyContext(options.context)) {
+      throw new Error('Invalid context for dataClassify tool');
+    }
+
+    const { datasetName, variableName, method, k, hinge } = args;
+    const { getValues } = options.context;
+
+    return runDataClassify({
+      datasetName,
+      variableName,
+      method,
+      k,
+      hinge,
+      getValues,
     });
-  }
-
-  async execute(
-    args: z.infer<typeof DataClassifyArgs>,
-    options?: OpenAssistantToolExecutionOptions & {
-      context?: Record<string, unknown>;
-    }
-  ): Promise<
-    OpenAssistantExecuteFunctionResult<
-      DataClassifyLlmResult,
-      DataClassifyAdditionalData
-    >
-  > {
-    try {
-      if (!isDataClassifyToolArgs(args)) {
-        throw new Error('Invalid arguments for dataClassify tool');
-      }
-
-      if (!options?.context || !isDataClassifyContext(options.context)) {
-        throw new Error('Invalid context for dataClassify tool');
-      }
-
-      const { datasetName, variableName, method, k, hinge } = args;
-      const { getValues } = options.context;
-
-      return runDataClassify({
-        datasetName,
-        variableName,
-        method,
-        k,
-        hinge,
-        getValues,
-      });
-    } catch (error) {
-      console.error('Error executing dataClassify tool:', error);
-      return {
-        llmResult: {
-          success: false,
-          error: error instanceof Error ? error.message : String(error),
-          instruction:
-            'Please explain the error and give a plan to fix the error. Then try again with a different query.',
-        },
-      };
-    }
+  } catch (error) {
+    console.error('Error executing dataClassify tool:', error);
+    return {
+      llmResult: {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+        instruction:
+          'Please explain the error and give a plan to fix the error. Then try again with a different query.',
+      },
+    };
   }
 }
 

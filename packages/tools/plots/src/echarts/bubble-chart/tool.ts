@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, OpenAssistantToolOptions, generateId, z } from '@openassistant/utils';
-import { isEChartsToolContext, OnSelected } from '../../types';
+import { z } from 'zod';
+import { extendedTool, generateId } from '@openassistant/utils';
+import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../types';
 
 /**
- * The BubbleChartTool class creates bubble charts for given datasets and variables.
- * This tool extends OpenAssistantTool and provides a class-based approach for creating
- * interactive bubble chart visualizations using ECharts.
+ * The bubble chart tool is used to create a bubble chart for a given dataset and variables.
  *
  * **Example user prompts:**
  * - "Can you create a bubble chart of the population and income for each location in dataset myVenues, and use the size of the bubble to represent the revenue?"
@@ -15,84 +14,66 @@ import { isEChartsToolContext, OnSelected } from '../../types';
  *
  * @example
  * ```ts
- * import { BubbleChartTool } from '@openassistant/plots';
+ * import { bubbleChart, BubbleChartTool } from '@openassistant/plots';
+ * import { convertToVercelAiTool } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
- * // Simple usage with defaults
- * const bubbleChartTool = new BubbleChartTool();
- *
- * // Or with custom context and callbacks
- * const bubbleChartTool = new BubbleChartTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
- *     getValues: async (datasetName, variableName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
- *     },
+ * const toolContext = {
+ *   getValues: async (datasetName, variableName) => {
+ *     return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
  *   },
- *   BubbleChartComponent,
- *   (toolCallId, additionalData) => {
- *     console.log('Tool call completed:', toolCallId, additionalData);
- *     // render the bubble chart using <BubbleChartComponentContainer props={additionalData} />
- *   }
- * );
+ * };
+ *
+ * const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
+ *   console.log('Tool call completed:', toolCallId, additionalData);
+ *   // render the bubble chart using <BubbleChartComponentContainer props={additionalData} />
+ * };
+ *
+ * const bubbleChartTool: BubbleChartTool = {
+ *   ...bubbleChart,
+ *   context: toolContext,
+ *   onToolCompleted,
+ * };
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Can you create a bubble chart of the population and income for each location in dataset myVenues, and use the size of the bubble to represent the revenue?',
  *   tools: {
- *     bubbleChart: bubbleChartTool.toVercelAiTool(),
+ *     bubbleChart: convertToVercelAiTool(bubbleChartTool),
  *   },
  * });
  * ```
  */
-export class BubbleChartTool extends OpenAssistantTool<typeof BubbleChartArgs> {
-  protected getDefaultDescription(): string {
-    return 'Create bubble charts for data visualization using ECharts';
-  }
-  
-  protected getDefaultParameters() {
-    return BubbleChartArgs;
-  }
-
-  constructor(options: OpenAssistantToolOptions<typeof BubbleChartArgs> = {}) {
-    super({
-      ...options,
-      context: options.context || {
-        getValues: () => {
-          throw new Error('getValues() of BubbleChartTool is not implemented');
-        },
-        onSelected: () => {},
-        config: {
-          isDraggable: false,
-          theme: 'light',
-        },
-      },
-    });
-  }
-
-  async execute(
-    params: z.infer<typeof BubbleChartArgs>,
-    options?: { context?: Record<string, unknown> }
-  ): Promise<ExecuteBubbleChartResult> {
-    return executeBubbleChart(params, options);
-  }
-}
-
-export const BubbleChartArgs = z.object({
-  datasetName: z.string(),
-  variableX: z.string(),
-  variableY: z.string(),
-  variableSize: z
-    .string()
-    .describe('The name of the variable to use for bubble size.'),
-  variableColor: z.string().optional(),
+export const bubbleChart = extendedTool<
+  BubbleChartToolArgs,
+  BubbleChartLlmResult,
+  BubbleChartAdditionalData,
+  EChartsToolContext
+>({
+  description: 'create a bubble chart',
+  parameters: z.object({
+    datasetName: z.string(),
+    variableX: z.string(),
+    variableY: z.string(),
+    variableSize: z
+      .string()
+      .describe('The name of the variable to use for bubble size.'),
+    variableColor: z.string().optional(),
+  }),
+  execute: executeBubbleChart,
+  context: {
+    getValues: () => {
+      throw new Error('getValues() of BubbleChartTool is not implemented');
+    },
+    onSelected: () => {},
+    config: {
+      isDraggable: false,
+      theme: 'light',
+    },
+  },
 });
 
-// For backward compatibility, create a default instance
-export const bubbleChart = new BubbleChartTool();
-
-export type { BubbleChartTool };
+export type BubbleChartTool = typeof bubbleChart;
 
 export type BubbleChartToolArgs = z.ZodObject<{
   datasetName: z.ZodString;

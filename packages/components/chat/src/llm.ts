@@ -3,13 +3,15 @@ import {
   UIMessage,
   convertToModelMessages,
   streamText,
+  tool as vercelTool,
 } from 'ai';
-import type { LanguageModel } from 'ai';
+import type { LanguageModel, StepResult, ToolSet } from 'ai';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { produce } from 'immer';
 import { getErrorMessageForDisplay, createId } from './utils';
 import type { AiSlice } from './AiSlice';
 import type { AnalysisSessionSchema as AnalysisSession } from './schemas';
+import { convertToVercelAiTool } from '@openassistant/utils';
 
 type GetState = AiSlice & {
   config: { ai: { currentSessionId?: string; sessions: AnalysisSession[] } };
@@ -95,9 +97,42 @@ export function createLocalChatTransportFactory({
       const result = streamText({
         model,
         messages: convertToModelMessages(messagesCopy),
-        tools: state.ai.tools,
+        tools: Object.values(state.ai.tools).reduce((acc, tool) => {
+          // Create a modified tool by saving additionalData into the session
+          const enhancedTool = {
+            ...tool,
+            onToolCompleted: (toolCallId: string, additionalData?: unknown) => {
+              const currentSessionId = get().config.ai.currentSessionId;
+              if (!currentSessionId) return;
+              get().ai.setSessionToolAdditionalData(
+                currentSessionId,
+                (prev) => ({
+                  ...prev,
+                  [toolCallId]: additionalData,
+                })
+              );
+              // Call the original onToolCompleted if it exists
+              if (tool.onToolCompleted) {
+                tool.onToolCompleted(toolCallId, additionalData);
+              }
+            },
+          };
+          acc[tool.name] = vercelTool(convertToVercelAiTool(enhancedTool));
+          return acc;
+        }, {}) as ToolSet,
         system: systemInstructions,
         abortSignal: state.ai.analysisAbortController?.signal,
+        onStepFinish: async ({
+          finishReason,
+          content,
+        }: StepResult<ToolSet>) => {
+          console.log('onStepFinish', finishReason, content);
+        },
+        onChunk: async ({ chunk }) => {
+          if (chunk.type === 'tool-call' && chunk.toolCallId) {
+            console.log('onChunk', chunk);
+          }
+        },
       });
 
       return result.toUIMessageStreamResponse();

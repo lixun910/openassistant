@@ -32,3 +32,4 @@ export * from './rate/tool';
 
 export * from './types';
 export * from './utils';
+export * from './register-tools';

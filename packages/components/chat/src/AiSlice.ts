@@ -1,9 +1,8 @@
 import { createId } from './utils';
 import { z } from 'zod';
-import type React from 'react';
 import { AnalysisResultSchema, AnalysisSessionSchema } from './schemas';
 import { ChatStoreState, createSlice } from './store';
-import { DefaultChatTransport, UIMessage, ToolSet } from 'ai';
+import { DefaultChatTransport, UIMessage } from 'ai';
 import { UIMessagePart } from './schema/UIMessageSchema';
 import { produce } from 'immer';
 import {
@@ -12,6 +11,7 @@ import {
   createRemoteChatTransportFactory,
   LlmDeps,
 } from './llm';
+import { OpenAssistantToolSet } from '@openassistant/utils';
 
 export type DefaultToolsOptions = {
   /**
@@ -33,7 +33,7 @@ export const AiSliceState = z.object({
   ai: z.object({
     analysisPrompt: z.string(),
     isRunningAnalysis: z.boolean(),
-    tools: z.record(z.any(), z.any()),
+    tools: z.record(z.string(), z.any()),
     analysisAbortController: z.instanceof(AbortController).optional(),
     /** Optional remote endpoint to use for chat; if empty, local transport is used */
     endPoint: z.string().optional(),
@@ -48,7 +48,12 @@ export interface AiSliceActions {
   ai: {
     setAnalysisPrompt: (prompt: string) => void;
     setAiOptions: (
-      options: Partial<Pick<AiSliceState['ai'], 'analysisPrompt' | 'tools' | 'endPoint' | 'headers'>>
+      options: Partial<
+        Pick<
+          AiSliceState['ai'],
+          'analysisPrompt' | 'tools' | 'endPoint' | 'headers'
+        >
+      >
     ) => void;
     startAnalysis: (
       sendMessage: (message: { text: string }) => void
@@ -61,7 +66,7 @@ export interface AiSliceActions {
       model?: string
     ) => void;
     getCurrentSession: () => AnalysisSessionSchema | undefined;
-    findToolComponent: (toolName: string) => React.ComponentType | undefined;
+    findToolComponent: (toolName: string) => unknown | undefined;
     getApiKeyFromSettings: () => string;
     getBaseUrlFromSettings: () => string | undefined;
     getMaxStepsFromSettings: () => number;
@@ -95,7 +100,7 @@ export interface AiSliceActions {
  */
 export interface AiSliceOptions {
   initialAnalysisPrompt?: string;
-  tools?: ToolSet;
+  tools?: OpenAssistantToolSet;
   getInstructions?: () => string;
   toolsOptions?: DefaultToolsOptions;
   defaultProvider?: string;
@@ -153,7 +158,9 @@ export const createAiSlice = (options: AiSliceOptions) =>
                   draft.ai.endPoint = incoming.endPoint as string | undefined;
                 }
                 if (incoming.headers !== undefined) {
-                  draft.ai.headers = incoming.headers as Record<string, string> | undefined;
+                  draft.ai.headers = incoming.headers as
+                    | Record<string, string>
+                    | undefined;
                 }
               })
           );
@@ -290,9 +297,9 @@ export const createAiSlice = (options: AiSliceOptions) =>
         },
 
         findToolComponent: (toolName: string) => {
-          return Object.entries(get().ai.tools).find(
-            ([name]) => name === toolName
-          )?.[1]?.component as React.ComponentType;
+          const map = get().ai.tools as OpenAssistantToolSet;
+          const tool = map[toolName];
+          return tool?.component;
         },
 
         getBaseUrlFromSettings: () => {

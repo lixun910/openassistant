@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, OpenAssistantToolOptions, generateId, z } from '@openassistant/utils';
+import { z } from 'zod';
+import { extendedTool, generateId } from '@openassistant/utils';
 import { computeRegression } from './utils';
-import { isEChartsToolContext, OnSelected } from '../../types';
+import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../types';
 
 /**
- * The ScatterplotTool class creates scatter plots for given datasets and variables.
- * This tool extends OpenAssistantTool and provides a class-based approach for creating
- * interactive scatter plot visualizations using ECharts.
+ * The scatterplot tool is used to create a scatterplot chart for a given dataset and variables.
  *
  * **Example user prompts:**
  * - "Can you create a scatter plot of the population and income for each location in dataset myVenues?"
@@ -17,33 +16,32 @@ import { isEChartsToolContext, OnSelected } from '../../types';
  *
  * @example
  * ```typescript
- * import { ScatterplotTool } from '@openassistant/plots';
+ * import { scatterplot, ScatterplotTool } from '@openassistant/plots';
+ * import { convertToVercelAiTool } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
- * // Simple usage with defaults
- * const scatterplotTool = new ScatterplotTool();
- *
- * // Or with custom context and callbacks
- * const scatterplotTool = new ScatterplotTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
- *     getValues: async (datasetName: string, variableName: string) => {
- *       // get the values of the variable from dataset, e.g.
- *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
- *     },
+ * const toolContext = {
+ *   getValues: async (datasetName: string, variableName: string) => {
+ *     // get the values of the variable from dataset, e.g.
+ *     return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
  *   },
- *   ScatterplotComponent,
- *   (toolCallId, additionalData) => {
- *     console.log('Tool call completed:', toolCallId, additionalData);
- *     // render the scatterplot using <ScatterplotComponentContainer props={additionalData} />
- *   }
- * );
+ * };
+ *
+ * const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
+ *   console.log('Tool call completed:', toolCallId, additionalData);
+ *   // render the scatterplot using <ScatterplotComponentContainer props={additionalData} />
+ * };
+ *
+ * const scatterplotTool: ScatterplotTool = {
+ *   ...scatterplot,
+ *   context: toolContext,
+ *   onToolCompleted,
+ * };
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'What is the relationship between population and income?',
- *   tools: {scatterplot: scatterplotTool.toVercelAiTool()},
+ *   tools: {scatterplot: convertToVercelAiTool(scatterplotTool)},
  * });
  * ```
  *
@@ -58,52 +56,35 @@ import { isEChartsToolContext, OnSelected } from '../../types';
  * - get the values of **population** from dataset: getValues('myVenues', 'population')
  * - get the values of **income** from dataset: getValues('myVenues', 'income')
  */
-export class ScatterplotTool extends OpenAssistantTool<typeof ScatterplotArgs> {
-  protected getDefaultDescription(): string {
-    return 'Create scatter plots for data visualization using ECharts';
-  }
-  
-  protected getDefaultParameters() {
-    return ScatterplotArgs;
-  }
-
-  constructor(options: OpenAssistantToolOptions<typeof ScatterplotArgs> = {}) {
-    super({
-      ...options,
-      context: options.context || {
-        getValues: () => {
-          throw new Error('getValues() of ScatterplotTool is not implemented');
-        },
-        onSelected: () => {},
-        config: {
-          isDraggable: false,
-          isExpanded: false,
-          theme: 'light',
-          showLoess: false,
-          showRegressionLine: true,
-        },
-      },
-    });
-  }
-
-  async execute(
-    params: z.infer<typeof ScatterplotArgs>,
-    options?: { context?: Record<string, unknown> }
-  ): Promise<ExecuteScatterplotResult> {
-    return executeScatterplot(params, options);
-  }
-}
-
-export const ScatterplotArgs = z.object({
-  datasetName: z.string().describe('The name of the dataset.'),
-  xVariableName: z.string().describe('The name of the x-axis variable.'),
-  yVariableName: z.string().describe('The name of the y-axis variable.'),
+export const scatterplot = extendedTool<
+  ScatterplotFunctionArgs,
+  ScatterplotLlmResult,
+  ScatterplotAdditionalData,
+  EChartsToolContext
+>({
+  description: 'create a scatterplot',
+  parameters: z.object({
+    datasetName: z.string().describe('The name of the dataset.'),
+    xVariableName: z.string().describe('The name of the x-axis variable.'),
+    yVariableName: z.string().describe('The name of the y-axis variable.'),
+  }),
+  execute: executeScatterplot,
+  context: {
+    getValues: () => {
+      throw new Error('getValues() of ScatterplotTool is not implemented');
+    },
+    onSelected: () => {},
+    config: {
+      isDraggable: false,
+      isExpanded: false,
+      theme: 'light',
+      showLoess: false,
+      showRegressionLine: true,
+    },
+  },
 });
 
-// For backward compatibility, create a default instance
-export const scatterplot = new ScatterplotTool();
-
-export type { ScatterplotTool };
+export type ScatterplotTool = typeof scatterplot;
 
 export type ScatterplotFunctionArgs = z.ZodObject<{
   datasetName: z.ZodString;
@@ -181,19 +162,19 @@ export type ExecuteScatterplotResult = {
 };
 
 async function executeScatterplot(
-  params: z.infer<typeof ScatterplotArgs>,
-  options?: { context?: Record<string, unknown> }
+  args,
+  options
 ): Promise<ExecuteScatterplotResult> {
   try {
-    if (!isScatterplotToolArgs(params)) {
+    if (!isScatterplotToolArgs(args)) {
       throw new Error('Invalid scatterplot function arguments.');
     }
-    if (!options?.context || !isEChartsToolContext(options.context)) {
+    if (!isEChartsToolContext(options.context)) {
       throw new Error('Invalid scatterplot function context.');
     }
 
     const { getValues, config, onSelected } = options.context;
-    const { datasetName, xVariableName, yVariableName } = params;
+    const { datasetName, xVariableName, yVariableName } = args;
     const xData = await getValues(datasetName, xVariableName);
     const yData = await getValues(datasetName, yVariableName);
 
