@@ -1,6 +1,6 @@
 {
   "name": "@openassistant/duckdb",
-  "version": "0.5.18",
+  "version": "0.5.20",
   "description": "The duckdb SQL query addon for OpenAssistant",
   "author": "Xun Li<lixun910@gmail.com>",
   "license": "MIT",
@@ -34,7 +34,7 @@
     "@duckdb/duckdb-wasm": "^1.29.0",
     "@openassistant/utils": "workspace:*",
     "apache-arrow": "^17.0.0",
-    "zod": "^4.1.8"
+    "zod": "^3.24.4"
   },
   "peerDependencies": {
     "react": ">=18.2",

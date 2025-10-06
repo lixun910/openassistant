@@ -11,18 +11,34 @@ npm install @openassistant/utils
 ## Usage
 
 ```typescript
-import { tool } from '@openassistant/utils';
+import { z } from 'zod';
+import {
+  type OpenAssistantTool,
+  convertToAiTool,
+  convertToLangchainTool,
+} from '@openassistant/utils';
 
-// Define your tool
-const myTool = tool({
+// Define your OpenAssistant tool
+const myTool: OpenAssistantTool = {
+  name: 'my-tool',
   description: 'My tool description',
   parameters: z.object({
     // your parameters
   }),
+  context: {},
   execute: async (args) => {
     // your implementation
+    return { llmResult: 'result' };
   },
-});
+};
+
+// Convert for AI SDK v5 (vercel/ai)
+import { tool as aiToolFactory } from 'ai';
+const aiTool = convertToAiTool(myTool, aiToolFactory);
+
+// Convert for LangChain 0.3.x
+import { tool as lcToolFactory } from '@langchain/core/tools';
+const lcTool = convertToLangchainTool(myTool, lcToolFactory);
 ```
 
 ## ConversationCache
@@ -42,6 +58,7 @@ The cache uses a multi-strategy approach to generate unique conversation IDs:
 4. **Random ID**: Last resort - generates random ID (cache won't persist across requests)
 
 **Recommended Message Structure:**
+
 ```typescript
 interface RecommendedMessage {
   id: string;              // Unique message ID (preferred)

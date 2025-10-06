@@ -2,8 +2,8 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { generateId, OpenAssistantTool, OpenAssistantToolOptions } from '@openassistant/utils';
-import { isSearchAPIToolContext } from './register-tools';
+import { generateId, extendedTool } from '@openassistant/utils';
+import { isSearchAPIToolContext, SearchAPIToolContext } from './register-tools';
 
 // Types for SearchAPI response
 interface SearchAPISearchMetadata {
@@ -109,11 +109,10 @@ export type ExecuteWebSearchResult = {
 };
 
 /**
- * ## WebSearchTool Class
+ * ## Web Search Tool
  *
- * The WebSearchTool class performs web searches using the SearchAPI with Google search engine.
- * This tool extends OpenAssistantTool and provides a class-based approach for web search
- * functionality that returns structured search results for LLMs and can save data as JSON datasets.
+ * This tool performs web searches using the SearchAPI with Google search engine. It takes a query string
+ * and returns structured search results that can be used by LLMs and saved as JSON datasets.
  *
  * Example user prompts:
  * - "Search for information about artificial intelligence"
@@ -124,124 +123,77 @@ export type ExecuteWebSearchResult = {
  *
  * @example
  * ```typescript
- * import { WebSearchTool } from "@openassistant/places";
- * import { ToolCache } from '@openassistant/utils';
+ * import { webSearch, WebSearchTool } from "@openassistant/places";
+ * import { convertToVercelAiTool, ToolCache } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
- * // Simple usage with defaults
- * const webSearchTool = new WebSearchTool();
- *
- * // Or with custom context and callbacks
+ * // you can use ToolCache to save the web search dataset for later use
  * const toolResultCache = ToolCache.getInstance();
- * const webSearchTool = new WebSearchTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
+ *
+ * const webSearchTool: WebSearchTool = {
+ *   ...webSearch,
+ *   toolContext: {
  *     getSearchAPIKey: () => process.env.SEARCH_API_KEY!,
  *   },
- *   WebSearchComponent,
- *   (toolCallId, additionalData) => {
+ *   onToolCompleted: (toolCallId, additionalData) => {
  *     toolResultCache.addDataset(toolCallId, additionalData);
- *   }
- * );
+ *   },
+ * };
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Search for information about artificial intelligence',
  *   tools: {
- *     webSearch: webSearchTool.toVercelAiTool(),
+ *     webSearch: convertToVercelAiTool(webSearchTool),
  *   },
  * });
  * ```
  */
-export class WebSearchTool extends OpenAssistantTool<typeof WebSearchArgs> {
-  protected getDefaultDescription(): string {
-    return 'Search the web using Google search engine via SearchAPI';
-  }
-  
-  protected getDefaultParameters() {
-    return WebSearchArgs;
-  }
-
-  constructor(options: OpenAssistantToolOptions<typeof WebSearchArgs> = {}) {
-    super({
-      ...options,
-      context: options.context || {
-        getSearchAPIKey: () => {
-          throw new Error('getSearchAPIKey not implemented.');
-        },
-      },
-    });
-  }
-
-  async execute(
-    params: z.infer<typeof WebSearchArgs>,
-    options?: { context?: Record<string, unknown> }
-  ): Promise<ExecuteWebSearchResult> {
-    return executeWebSearch(params, options);
-  }
-}
-
-export const WebSearchArgs = z.object({
-  query: z
-    .string()
-    .describe(
-      'The search query to perform (e.g., "artificial intelligence", "latest news")'
-    ),
-  engine: z
-    .string()
-    .describe('The search engine to use (default: google)')
-    .optional(),
-  device: z
-    .string()
-    .describe('The device type for search results (default: desktop)')
-    .optional(),
-  google_domain: z
-    .string()
-    .describe('The Google domain to use (default: google.com)')
-    .optional(),
-  hl: z
-    .string()
-    .describe('The language for search results (default: en)')
-    .optional(),
-  gl: z
-    .string()
-    .describe('The country for search results (default: us)')
-    .optional(),
-  num: z
-    .number()
-    .min(1)
-    .max(20)
-    .describe('Number of search results to return (1-20, default: 10)')
-    .optional(),
-});
-
-// For backward compatibility, create a default instance
-export const webSearch = new WebSearchTool();
-
-// Export the class as the main type
-export type { WebSearchTool };
-
-async function executeWebSearch(
-  params: z.infer<typeof WebSearchArgs>,
-  options?: { context?: Record<string, unknown> }
-): Promise<ExecuteWebSearchResult> {
-  const {
-    query,
-    engine = 'google',
-    device = 'desktop',
-    google_domain = 'google.com',
-    hl = 'en',
-    gl = 'us',
-    num = 10,
-  } = params;
-  
-  // Use the variables to avoid linting errors
-  console.log('Search parameters:', { query, engine, device, google_domain, hl, gl, num });
-  console.log(
-    '🔍 webSearch.execute called with args:',
-    JSON.stringify(params, null, 2)
-  );
+export const webSearch = extendedTool<
+  WebSearchFunctionArgs,
+  WebSearchLlmResult,
+  WebSearchAdditionalData,
+  SearchAPIToolContext
+>({
+  description: 'Search the web using Google search engine via SearchAPI.',
+  parameters: z.object({
+    query: z
+      .string()
+      .describe(
+        'The search query to perform (e.g., "artificial intelligence", "latest news")'
+      ),
+    engine: z
+      .string()
+      .describe('The search engine to use (default: google)')
+      .optional(),
+    device: z
+      .string()
+      .describe('The device type for search results (default: desktop)')
+      .optional(),
+    google_domain: z
+      .string()
+      .describe('The Google domain to use (default: google.com)')
+      .optional(),
+    hl: z
+      .string()
+      .describe('The language for search results (default: en)')
+      .optional(),
+    gl: z
+      .string()
+      .describe('The country for search results (default: us)')
+      .optional(),
+    num: z
+      .number()
+      .min(1)
+      .max(20)
+      .describe('Number of search results to return (1-20, default: 10)')
+      .optional(),
+  }),
+  execute: async (args, options): Promise<ExecuteWebSearchResult> => {
+    console.log(
+      '🔍 webSearch.execute called with args:',
+      JSON.stringify(args, null, 2)
+    );
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -394,9 +346,14 @@ async function executeWebSearch(
         },
       };
     }
-  }
+  },
+  context: {
+    getSearchAPIKey: () => {
+      throw new Error('getSearchAPIKey not implemented.');
+    },
+  },
+});
 
-// Legacy type for backward compatibility
 export type WebSearchTool = typeof webSearch;
 
 export type WebSearchToolContext = {

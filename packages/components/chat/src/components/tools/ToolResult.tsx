@@ -51,7 +51,7 @@ export const ToolResult: React.FC<ToolResultProps> = ({
   const text = args.reasoning || '';
 
   const ToolComponent = useChatStore((state) =>
-    state.ai.findToolComponent(toolName)
+    state.ai.findToolComponent(toolName) as React.ComponentType<unknown>
   );
 
   // check if args has a property called 'reason'

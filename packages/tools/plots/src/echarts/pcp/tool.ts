@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, OpenAssistantToolOptions, generateId, z } from '@openassistant/utils';
+import { z } from 'zod';
+import { extendedTool, generateId } from '@openassistant/utils';
 import {
   ParallelCoordinateDataProps,
   processParallelCoordinateData,
 } from './utils';
 import {
+  EChartsToolContext,
   isEChartsToolContext,
   OnSelected,
 } from '../../types';
 
 /**
- * The PCPTool class creates parallel coordinates plots for given datasets and variables.
- * This tool extends OpenAssistantTool and provides a class-based approach for creating
- * interactive parallel coordinate visualizations using ECharts.
+ * The PCP tool is used to create a parallel coordinates plot for a given dataset and variables.
  *
  * **Example user prompts:**
  * - "Can you create a PCP of the population and income for each location in dataset myVenues?"
@@ -23,85 +23,67 @@ import {
  *
  * @example
  * ```typescript
- * import { PCPTool } from '@openassistant/plots';
+ * import { pcp, PCPTool } from '@openassistant/plots';
+ * import { convertToVercelAiTool } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
- * // Simple usage with defaults
- * const pcpTool = new PCPTool();
- *
- * // Or with custom context and callbacks
- * const pcpTool = new PCPTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
- *     getValues: async (datasetName, variableName) => {
- *       // get the values of the variable from dataset, e.g.
- *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
- *     },
+ * const toolContext = {
+ *   getValues: async (datasetName, variableName) => {
+ *     // get the values of the variable from dataset, e.g.
+ *     return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
  *   },
- *   ParallelCoordinateComponent,
- *   (toolCallId, additionalData) => {
- *     console.log('Tool call completed:', toolCallId, additionalData);
- *     // render the PCP using <ParallelCoordinateComponentContainer props={additionalData} />
- *   }
- * );
+ * };
+ *
+ * const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
+ *   console.log('Tool call completed:', toolCallId, additionalData);
+ *   // render the PCP using <ParallelCoordinateComponentContainer props={additionalData} />
+ * };
+ *
+ * const pcpTool: PCPTool = {
+ *   ...pcp,
+ *   context: toolContext,
+ *   onToolCompleted,
+ * };
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Can you create a PCP of the population and income?',
  *   tools: {
- *     pcp: pcpTool.toVercelAiTool(),
+ *     pcp: convertToVercelAiTool(pcpTool),
  *   },
  * });
  * ```
  */
-export class PCPTool extends OpenAssistantTool<typeof PCPArgs> {
-  protected getDefaultDescription(): string {
-    return 'Create parallel coordinates plots for data visualization using ECharts';
-  }
-  
-  protected getDefaultParameters() {
-    return PCPArgs;
-  }
-
-  constructor(options: OpenAssistantToolOptions<typeof PCPArgs> = {}) {
-    super({
-      ...options,
-      context: options.context || {
-        getValues: () => {
-          throw new Error('getValues() of PCPTool is not implemented');
-        },
-        onSelected: () => {},
-        config: {
-          isDraggable: false,
-          isExpanded: false,
-          theme: 'light',
-        },
-      },
-    });
-  }
-
-  async execute(
-    params: z.infer<typeof PCPArgs>,
-    options?: { context?: Record<string, unknown> }
-  ): Promise<ExecutePCPResult> {
-    return executePCP(params, options);
-  }
-}
-
-export const PCPArgs = z.object({
-  datasetName: z.string().describe('The name of the dataset.'),
-  variableNames: z
-    .array(z.string())
-    .describe(
-      'Make sure the user provide at least two variables to create a PCP.'
-    ),
+export const pcp = extendedTool<
+  PCPFunctionArgs,
+  PCPLlmResult,
+  PCPAdditionalData,
+  EChartsToolContext
+>({
+  description: 'create a parallel coordinates plot',
+  parameters: z.object({
+    datasetName: z.string().describe('The name of the dataset.'),
+    variableNames: z
+      .array(z.string())
+      .describe(
+        'Make sure the user provide at least two variables to create a PCP.'
+      ),
+  }),
+  execute: executePCP,
+  context: {
+    getValues: () => {
+      throw new Error('getValues() of PCPTool is not implemented');
+    },
+    onSelected: () => {},
+    config: {
+      isDraggable: false,
+      isExpanded: false,
+      theme: 'light',
+    },
+  },
 });
 
-// For backward compatibility, create a default instance
-export const pcp = new PCPTool();
-
-export type { PCPTool };
+export type PCPTool = typeof pcp;
 
 export type PCPFunctionArgs = z.ZodObject<{
   datasetName: z.ZodString;

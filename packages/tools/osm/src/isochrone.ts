@@ -2,9 +2,9 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { generateId, OpenAssistantTool, OpenAssistantToolOptions } from '@openassistant/utils';
+import { generateId, extendedTool } from '@openassistant/utils';
 import { FeatureCollection } from 'geojson';
-import { isMapboxToolContext } from './register-tools';
+import { isMapboxToolContext, MapboxToolContext } from './register-tools';
 import { mapboxRateLimiter } from './utils/rateLimiter';
 
 interface MapboxIsochroneResponse {
@@ -28,31 +28,18 @@ interface MapboxIsochroneResponse {
   }>;
 }
 
-export const IsochroneArgs = z.object({
-  origin: z.object({
-    longitude: z.number().describe('The longitude of the origin point'),
-    latitude: z.number().describe('The latitude of the origin point'),
-  }),
-  timeLimit: z
-    .number()
-    .describe('The time limit in minutes for the isochrone')
-    .default(10)
-    .optional(),
-  distanceLimit: z
-    .number()
-    .describe('The distance limit in meters for the isochrone')
-    .optional(),
-  profile: z
-    .enum(['driving', 'walking', 'cycling'])
-    .describe('The routing profile to use')
-    .default('driving')
-    .optional(),
-  polygons: z
-    .boolean()
-    .describe('Whether to return the contours as polygons or linestrings')
-    .default(true)
-    .optional(),
-});
+export type IsochroneFunctionArgs = z.ZodObject<{
+  origin: z.ZodObject<{
+    longitude: z.ZodNumber;
+    latitude: z.ZodNumber;
+  }>;
+  timeLimit: z.ZodOptional<z.ZodDefault<z.ZodNumber>>;
+  distanceLimit: z.ZodOptional<z.ZodNumber>;
+  profile: z.ZodOptional<
+    z.ZodDefault<z.ZodEnum<['driving', 'walking', 'cycling']>>
+  >;
+  polygons: z.ZodOptional<z.ZodDefault<z.ZodBoolean>>;
+}>;
 
 export type IsochroneLlmResult = {
   success: boolean;
@@ -84,7 +71,7 @@ export type ExecuteIsochroneResult = {
 };
 
 /**
- * ## IsochroneTool
+ * ## Isochrone Tool
  * 
  * This tool generates isochrone polygons showing reachable areas within a given time or distance limit
  * from a starting point using Mapbox's Isochrone API. It supports different transportation modes
@@ -101,62 +88,68 @@ export type ExecuteIsochroneResult = {
  *
  * @example
  * ```typescript
- * import { IsochroneTool } from "@openassistant/osm";
- * import { ToolCache } from '@openassistant/utils';
+ * import { isochrone, IsochroneTool } from "@openassistant/osm";
+ * import { convertToVercelAiTool, ToolCache } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
- * // Simple usage with defaults
- * const isochroneTool = new IsochroneTool();
- *
- * // Or with custom context and callbacks
+ * // you can use ToolCache to save the isochrone dataset for later use
  * const toolResultCache = ToolCache.getInstance();
- * const isochroneTool = new IsochroneTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
+ *
+ * const isochroneTool: IsochroneTool = {
+ *   ...isochrone,
+ *   toolContext: {
  *     getMapboxToken: () => process.env.MAPBOX_TOKEN!,
  *   },
- *   undefined, // component
- *   (toolCallId, additionalData) => {
+ *   onToolCompleted: (toolCallId, additionalData) => {
  *     toolResultCache.addDataset(toolCallId, additionalData);
- *   }
- * );
+ *   },
+ * };
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'What areas can I reach within 2km of the Eiffel Tower on foot?',
  *   tools: {
- *     isochrone: isochroneTool.toVercelAiTool(),
+ *     isochrone: convertToVercelAiTool(isochroneTool),
  *   },
  * });
  * ```
  *
  * For a more complete example, see the [OSM Tools Example using Next.js + Vercel AI SDK](https://github.com/openassistant/openassistant/tree/main/examples/vercel_osm_example).
  */
-export class IsochroneTool extends OpenAssistantTool<typeof IsochroneArgs> {
-  protected getDefaultDescription(): string {
-    return 'Get isochrone polygons showing reachable areas within a given time limit from a starting point using Mapbox Isochrone API';
-  }
-  
-  protected getDefaultParameters() {
-    return IsochroneArgs;
-  }
-
-  constructor(options: OpenAssistantToolOptions<typeof IsochroneArgs> = {}) {
-    super({
-      ...options,
-      context: options.context || {
-        getMapboxToken: () => {
-          throw new Error('getMapboxToken not implemented.');
-        },
-      },
-    });
-  }
-
-  async execute(
-    args: z.infer<typeof IsochroneArgs>,
-    options?: { context?: Record<string, unknown> }
-  ): Promise<ExecuteIsochroneResult> {
+export const isochrone = extendedTool<
+  IsochroneFunctionArgs,
+  IsochroneLlmResult,
+  IsochroneAdditionalData,
+  MapboxToolContext
+>({
+  description:
+    'Get isochrone polygons showing reachable areas within a given time limit from a starting point using Mapbox Isochrone API',
+  parameters: z.object({
+    origin: z.object({
+      longitude: z.number().describe('The longitude of the origin point'),
+      latitude: z.number().describe('The latitude of the origin point'),
+    }),
+    timeLimit: z
+      .number()
+      .describe('The time limit in minutes for the isochrone')
+      .default(10)
+      .optional(),
+    distanceLimit: z
+      .number()
+      .describe('The distance limit in meters for the isochrone')
+      .optional(),
+    profile: z
+      .enum(['driving', 'walking', 'cycling'])
+      .describe('The routing profile to use')
+      .default('driving')
+      .optional(),
+    polygons: z
+      .boolean()
+      .describe('Whether to return the contours as polygons or linestrings')
+      .default(true)
+      .optional(),
+  }),
+  execute: async (args, options): Promise<ExecuteIsochroneResult> => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
     try {
@@ -257,8 +250,15 @@ export class IsochroneTool extends OpenAssistantTool<typeof IsochroneArgs> {
         },
       };
     }
-  }
-}
+  },
+  context: {
+    getMapboxToken: () => {
+      throw new Error('getMapboxToken not implemented.');
+    },
+  },
+});
+
+export type IsochroneTool = typeof isochrone;
 
 export type IsochroneToolContext = {
   getMapboxToken: () => string;

@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, OpenAssistantToolOptions, z } from '@openassistant/utils';
+import { extendedTool } from '@openassistant/utils';
+import { z } from 'zod';
 import { getArea } from '@geoda/core';
+import { SpatialToolContext } from '../types';
 import { isSpatialToolContext } from '../utils';
 
 export type AreaFunctionArgs = z.ZodObject<{
@@ -26,11 +28,9 @@ export type AreaAdditionalData = {
 };
 
 /**
- * ## AreaTool Class
+ * ## area Tool
  *
- * The AreaTool class calculates the area of geometries in a GeoJSON dataset.
- * This tool extends OpenAssistantTool and provides a class-based approach for
- * spatial area calculations.
+ * This tool calculates the area of geometries in a GeoJSON dataset.
  *
  * ### Area Calculation
  *
@@ -44,72 +44,52 @@ export type AreaAdditionalData = {
  *
  * Example code:
  * ```typescript
- * import { AreaTool } from '@openassistant/geoda';
+ * import { area } from '@openassistant/geoda';
+ * import { convertToVercelAiTool } from '@openassistant/utils';
  * import { generateText } from 'ai';
  * 
- * // Simple usage with defaults
- * const areaTool = new AreaTool();
- *
- * // Or with custom context
- * const areaTool = new AreaTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
- *     getGeometries: (datasetName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
- *     },
- *   }
- * );
+ * const toolContext = {
+ *   getGeometries: (datasetName) => {
+ *     return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
+ *   },
+ * };
+ * const areaTool: AreaTool = {
+ *   ...area,
+ *   context: toolContext,
+ * };
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Calculate the area of these counties in square kilometers',
- *   tools: {area: areaTool.toVercelAiTool()},
+ *   tools: {area: convertToVercelAiTool(area)},
  * });
  * ```
  *
  * You can also use this tool with other tools, e.g. geocoding, so you don't need to provide the `getGeometries` function.
  * The geometries from geocoding tool will be used as the input for this tool.
+ * ```
  */
-export const AreaArgs = z.object({
-  geojson: z
-    .string()
-    .optional()
-    .describe(
-      'GeoJSON string of the geometry to calculate area for. Important: it needs to be wrapped in a FeatureCollection object!'
-    ),
-  datasetName: z
-    .string()
-    .optional()
-    .describe('Name of the dataset with geometries to calculate area for'),
-  distanceUnit: z.enum(['KM', 'Mile']).default('KM'),
-});
-
-export class AreaTool extends OpenAssistantTool<typeof AreaArgs> {
-  protected getDefaultDescription(): string {
-    return 'Calculate area of geometries in a GeoJSON dataset';
-  }
-  
-  protected getDefaultParameters() {
-    return AreaArgs;
-  }
-
-  constructor(options: OpenAssistantToolOptions<typeof AreaArgs> = {}) {
-    super({
-      ...options,
-      context: options.context || {
-        getGeometries: async () => null,
-      },
-    });
-  }
-
-  async execute(
-    args: z.infer<typeof AreaArgs>,
-    options?: { context?: Record<string, unknown> }
-  ): Promise<{
-    llmResult: AreaLlmResult;
-    additionalData?: AreaAdditionalData;
-  }> {
+export const area = extendedTool<
+  AreaFunctionArgs,
+  AreaLlmResult,
+  AreaAdditionalData,
+  SpatialToolContext
+>({
+  description: 'Calculate area of geometries',
+  parameters: z.object({
+    geojson: z
+      .string()
+      .optional()
+      .describe(
+        'GeoJSON string of the geometry to calculate area for. Important: it needs to be wrapped in a FeatureCollection object!'
+      ),
+    datasetName: z
+      .string()
+      .optional()
+      .describe('Name of the dataset with geometries to calculate area for'),
+    distanceUnit: z.enum(['KM', 'Mile']).default('KM'),
+  }),
+  execute: async (args, options) => {
     const { datasetName, geojson, distanceUnit = 'KM' } = args;
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(
@@ -142,12 +122,11 @@ export class AreaTool extends OpenAssistantTool<typeof AreaArgs> {
         areas,
         distanceUnit,
       },
-      additionalData: {
-        datasetName,
-        geojson,
-        distanceUnit,
-        areas,
-      },
     };
-  }
-}
+  },
+  context: {
+    getGeometries: async () => null,
+  },
+});
+
+export type AreaTool = typeof area;

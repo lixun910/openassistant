@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { cacheData, getCachedData, OpenAssistantTool, z } from '@openassistant/utils';
+import { z } from 'zod';
+import { cacheData, getCachedData, extendedTool } from '@openassistant/utils';
 import { githubRateLimiter } from '../utils/rateLimiter';
 
 export type QueryZipcodeFunctionArgs = z.ZodObject<{
@@ -64,26 +65,32 @@ export type ExecuteQueryUSZipcodesResult = {
  *
  * For a more complete example, see the [OSM Tools Example using Next.js + Vercel AI SDK](https://github.com/openassistant/openassistant/tree/main/examples/vercel_osm_example).
  */
-export class QueryUSZipcodesTool extends OpenAssistantTool<typeof QueryUSZipcodesArgs> {
-  constructor(
-    context: object = {},
-    component?: React.ReactNode,
-    onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void
-  ) {
-    super(
-      'Query US zipcodes within a given map bounds',
-      QueryUSZipcodesArgs,
-      context,
-      component,
-      onToolCompleted
-    );
-  }
-
-  async execute(
-    params: z.infer<typeof QueryUSZipcodesArgs>
-  ): Promise<ExecuteQueryUSZipcodesResult> {
+export const queryUSZipcodes = extendedTool<
+  QueryZipcodeFunctionArgs,
+  QueryZipcodeLlmResult,
+  QueryZipcodeAdditionalData,
+  object
+>({
+  description: 'Query US zipcodes within a given map bounds',
+  parameters: z.object({
+    mapBounds: z.object({
+      northwest: z
+        .object({
+          longitude: z.number(),
+          latitude: z.number(),
+        })
+        .describe('Northwest coordinates [longitude, latitude]'),
+      southeast: z
+        .object({
+          longitude: z.number(),
+          latitude: z.number(),
+        })
+        .describe('Southeast coordinates [longitude, latitude]'),
+    }),
+  }),
+  execute: async (args): Promise<ExecuteQueryUSZipcodesResult> => {
     try {
-      const { mapBounds } = params;
+      const { mapBounds } = args;
       const { northwest, southeast } = mapBounds;
       const zipcodeCentroidsDatasetName = 'us_zipcodes_centroids';
 
@@ -144,27 +151,8 @@ export class QueryUSZipcodesTool extends OpenAssistantTool<typeof QueryUSZipcode
         },
       };
     }
-  }
-}
-
-export const QueryUSZipcodesArgs = z.object({
-  mapBounds: z.object({
-    northwest: z
-      .object({
-        longitude: z.number(),
-        latitude: z.number(),
-      })
-      .describe('Northwest coordinates [longitude, latitude]'),
-    southeast: z
-      .object({
-        longitude: z.number(),
-        latitude: z.number(),
-      })
-      .describe('Southeast coordinates [longitude, latitude]'),
-  }),
+  },
+  context: {},
 });
 
-// For backward compatibility, create a default instance
-export const queryUSZipcodes = new QueryUSZipcodesTool();
-
-export type { QueryUSZipcodesTool };
+export type QueryUSZipcodesTool = typeof queryUSZipcodes;

@@ -1,6 +1,6 @@
 {
   "name": "@openassistant/places",
-  "version": "0.5.18",
+  "version": "0.5.20",
   "author": "Xun Li<lixun910@gmail.com>",
   "description": "The Places tools for OpenAssistant",
   "main": "dist/index.cjs.js",
@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "@openassistant/utils": "workspace:*",
-    "zod": "^3.25.76"
+    "zod": "^3.24.4"
   },
   "publishConfig": {
     "access": "public"

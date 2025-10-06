@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, OpenAssistantToolOptions, generateId } from '@openassistant/utils';
+import { extendedTool, generateId } from '@openassistant/utils';
 import { z } from 'zod';
 import {
   Feature,
@@ -19,33 +19,25 @@ import { polygon } from '@turf/helpers';
 import { binaryToGeojson } from '@loaders.gl/gis';
 
 import { isSpatialToolContext } from '../utils';
+import { SpatialToolContext } from '../types';
 
-export const GridArgs = z.object({
-  datasetName: z
-    .string()
-    .optional()
-    .describe(
-      'Name of the dataset with boundary geometry to create grid within'
-    ),
-  mapBounds: z
-    .object({
-      northwest: z.object({
-        longitude: z.number().describe('Longitude of northwest corner'),
-        latitude: z.number().describe('Latitude of northwest corner'),
-      }),
-      southeast: z.object({
-        longitude: z.number().describe('Longitude of southeast corner'),
-        latitude: z.number().describe('Latitude of southeast corner'),
-      }),
-    })
-    .optional()
-    .describe('Map bounds defined by northwest and southeast coordinates'),
-  rows: z.number().positive().describe('Number of rows in the grid (N)'),
-  columns: z
-    .number()
-    .positive()
-    .describe('Number of columns in the grid (M)'),
-});
+export type GridFunctionArgs = z.ZodObject<{
+  datasetName: z.ZodOptional<z.ZodString>;
+  mapBounds: z.ZodOptional<
+    z.ZodObject<{
+      northwest: z.ZodObject<{
+        longitude: z.ZodNumber;
+        latitude: z.ZodNumber;
+      }>;
+      southeast: z.ZodObject<{
+        longitude: z.ZodNumber;
+        latitude: z.ZodNumber;
+      }>;
+    }>
+  >;
+  rows: z.ZodNumber;
+  columns: z.ZodNumber;
+}>;
 
 export type GridLlmResult = {
   success: boolean;
@@ -135,7 +127,7 @@ function spatialGeometryToGeoJSON(
 }
 
 /**
- * ## GridTool
+ * ## grid Tool
  *
  * This tool creates a grid of polygons that divides a given area into N rows and M columns.
  *
@@ -162,59 +154,66 @@ function spatialGeometryToGeoJSON(
  *
  * Example code:
  * ```typescript
- * import { GridTool } from '@openassistant/geoda';
+ * import { grid, GridTool } from '@openassistant/geoda';
+ * import { convertToVercelAiTool } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
- * // Simple usage with defaults
- * const gridTool = new GridTool();
- *
- * // Or with custom context and callbacks
- * const gridTool = new GridTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
- *     getGeometries: (datasetName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
- *     },
+ * const gridTool: GridTool = {
+ *   ...grid,
+ *   context: {
+ *   getGeometries: (datasetName) => {
+ *     return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
  *   },
- *   undefined, // component
- *   (toolCallId, additionalData) => {
+ *   },
+ * },
+ *   onToolCompleted: (toolCallId, additionalData) => {
  *     console.log(toolCallId, additionalData);
  *     // do something like save the grid result in additionalData
- *   }
- * );
+ *   },
+ * };
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Create a 5x5 grid over this area',
- *   tools: {grid: gridTool.toVercelAiTool()},
+ *   tools: {grid: convertToVercelAiTool(gridTool)},
  * });
  * ```
  */
-export class GridTool extends OpenAssistantTool<typeof GridArgs> {
-  protected getDefaultDescription(): string {
-    return 'Create a grid of polygons that divides a map boundary into rows and columns. The map boundary can be the boundary of a given dataset or the current map view bounds.';
-  }
-  
-  protected getDefaultParameters() {
-    return GridArgs;
-  }
-
-  constructor(options: OpenAssistantToolOptions<typeof GridArgs> = {}) {
-    super({
-      ...options,
-      context: options.context || {
-        getGeometries: async () => null,
-      },
-    });
-  }
-  async execute(
-    args: z.infer<typeof GridArgs>,
-    options?: { context?: Record<string, unknown> }
-  ): Promise<{
-    llmResult: GridLlmResult;
-    additionalData?: GridAdditionalData;
-  }> {
+export const grid = extendedTool<
+  GridFunctionArgs,
+  GridLlmResult,
+  GridAdditionalData,
+  SpatialToolContext
+>({
+  description:
+    'Create a grid of polygons that divides a map boundary into rows and columns. The map boundary can be the boundary of a given dataset or the current map view bounds.',
+  parameters: z.object({
+    datasetName: z
+      .string()
+      .optional()
+      .describe(
+        'Name of the dataset with boundary geometry to create grid within'
+      ),
+    mapBounds: z
+      .object({
+        northwest: z.object({
+          longitude: z.number().describe('Longitude of northwest corner'),
+          latitude: z.number().describe('Latitude of northwest corner'),
+        }),
+        southeast: z.object({
+          longitude: z.number().describe('Longitude of southeast corner'),
+          latitude: z.number().describe('Latitude of southeast corner'),
+        }),
+      })
+      .optional()
+      .describe('Map bounds defined by northwest and southeast coordinates'),
+    rows: z.number().positive().describe('Number of rows in the grid (N)'),
+    columns: z
+      .number()
+      .positive()
+      .describe('Number of columns in the grid (M)'),
+  }),
+  execute: async (args, options) => {
     const { datasetName, mapBounds, rows, columns } = args;
 
     if (!options?.context || !isSpatialToolContext(options.context)) {
@@ -321,5 +320,10 @@ export class GridTool extends OpenAssistantTool<typeof GridArgs> {
         },
       },
     };
-  }
-}
+  },
+  context: {
+    getGeometries: async () => null,
+  },
+});
+
+export type GridTool = typeof grid;

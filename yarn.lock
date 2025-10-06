@@ -6211,7 +6211,7 @@ __metadata:
     "@duckdb/duckdb-wasm": "npm:^1.29.0"
     "@openassistant/utils": "workspace:*"
     apache-arrow: "npm:^17.0.0"
-    zod: "npm:^4.1.8"
+    zod: "npm:^3.24.4"
   peerDependencies:
     react: ">=18.2"
     react-dom: ">=18.2"
@@ -6250,10 +6250,19 @@ __metadata:
     "@openassistant/plots": "workspace:*"
     "@openassistant/utils": "workspace:*"
     "@turf/bbox": "npm:^7.2.0"
-    zod: "npm:^4.1.8"
   peerDependencies:
     react: ">=18.2"
     react-dom: ">=18.2"
+  languageName: unknown
+  linkType: soft
+
+"@openassistant/h3@workspace:packages/tools/h3":
+  version: 0.0.0-use.local
+  resolution: "@openassistant/h3@workspace:packages/tools/h3"
+  dependencies:
+    "@openassistant/utils": "workspace:*"
+    h3-js: "npm:^4.1.0"
+    zod: "npm:^3.24.4"
   languageName: unknown
   linkType: soft
 
@@ -6320,7 +6329,7 @@ __metadata:
     "@openassistant/utils": "workspace:*"
     apache-arrow: "npm:^17.0.0"
     type-analyzer: "npm:^0.4.0"
-    zod: "npm:^3.25.76"
+    zod: "npm:^3.24.4"
   languageName: unknown
   linkType: soft
 
@@ -6330,7 +6339,7 @@ __metadata:
   dependencies:
     "@openassistant/utils": "workspace:*"
     zip3: "npm:^1.0.4"
-    zod: "npm:^3.25.76"
+    zod: "npm:^3.24.4"
   languageName: unknown
   linkType: soft
 
@@ -6339,7 +6348,7 @@ __metadata:
   resolution: "@openassistant/places@workspace:packages/tools/places"
   dependencies:
     "@openassistant/utils": "workspace:*"
-    zod: "npm:^3.25.76"
+    zod: "npm:^3.24.4"
   languageName: unknown
   linkType: soft
 
@@ -6352,7 +6361,7 @@ __metadata:
     d3-array: "npm:^3.2.4"
     jstat: "npm:^1.9.6"
     simple-statistics: "npm:^7.8.7"
-    zod: "npm:^3.25.76"
+    zod: "npm:^3.24.4"
   peerDependencies:
     react: ">=18.2"
     react-dom: ">=18.2"
@@ -6386,10 +6395,6 @@ __metadata:
   resolution: "@openassistant/utils@workspace:packages/utils"
   dependencies:
     zod: "npm:^4.1.8"
-  peerDependencies:
-    "@anthropic-ai/claude-code": "*"
-    "@langchain/core": "*"
-    ai: "*"
   languageName: unknown
   linkType: soft
 
@@ -16415,6 +16420,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"h3-js@npm:^4.1.0":
+  version: 4.3.0
+  resolution: "h3-js@npm:4.3.0"
+  checksum: 29fa413374a36f32927e7352247e3267ca4295e2c22c1af4baa9013e9bcb5302239c1b37c8bbdf0e5199544edcd542aea9fca9a39c3839d3015c9b38c4aca957
+  languageName: node
+  linkType: hard
+
 "hammerjs@npm:^2.0.8":
   version: 2.0.8
   resolution: "hammerjs@npm:2.0.8"
@@ -23487,6 +23499,7 @@ __metadata:
   dependencies:
     "@openassistant/chat": "workspace:*"
     "@openassistant/duckdb": "workspace:*"
+    "@openassistant/tables": "workspace:*"
     "@sqlrooms/ui": "npm:^0.24.27"
     "@types/react": "npm:^18.3.1"
     "@types/react-dom": "npm:^18.3.1"

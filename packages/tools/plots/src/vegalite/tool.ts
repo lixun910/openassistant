@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, OpenAssistantToolOptions, z } from '@openassistant/utils';
+import { extendedTool } from '@openassistant/utils';
+import { z } from 'zod';
 
 import { EChartsToolContext } from '../types';
+
+export type VegaLitePlotTool = typeof vegaLitePlot;
 
 export type VegaLitePlotToolArgs = z.ZodObject<{
   datasetName: z.ZodString;
@@ -25,11 +28,9 @@ export type VegaLitePlotAdditionalData = {
 };
 
 /**
- * VegaLitePlotTool Class
+ * vegaLitePlot Tool
  * 
- * The VegaLitePlotTool class creates Vega-Lite plots from datasets and variables.
- * This tool extends OpenAssistantTool and provides a class-based approach for creating
- * interactive visualizations using the Vega-Lite specification language.
+ * This tool is used to create a Vega plot from a dataset and variables.
  *
  * There are many different plot types in Vega-Lite, you can find the full list of plot types [here](https://vega.github.io/vega-lite/examples/).
  *
@@ -43,71 +44,57 @@ export type VegaLitePlotAdditionalData = {
  *
  * @example
  * ```ts
- * import { VegaLitePlotTool } from '@openassistant/plots';
+ * import { vegaLitePlot, VegaLitePlotTool } from '@openassistant/plots';
+ * import { convertToVercelAiTool } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
- * // Simple usage with defaults
- * const vegaLitePlotTool = new VegaLitePlotTool();
- *
- * // Or with custom context and callbacks
- * const vegaLitePlotTool = new VegaLitePlotTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
+ * const vegaLitePlotTool: VegaLitePlotTool = {
+ *   ...vegaLitePlot,
+ *   context: {
  *     getValues: async (datasetName, variableName) => {
  *       // get the values of the variable from dataset, e.g.
  *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
  *     },
  *   },
- *   VegaPlotComponent,
- *   (toolCallId, additionalData) => {
+ *   onToolCompleted: (toolCallId, additionalData) => {
  *     console.log('Tool call completed:', toolCallId, additionalData);
  *     // you can import { VegaPlotComponent } from '@openassistant/vegalite'; 
  *     // render the Vega plot using <VegaPlotComponent props={additionalData} />
- *   }
- * );
+ *   },
+ * };
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Can you create a bar chart of the population for each location in dataset myVenues?',
  *   tools: {
- *     vegaLitePlot: vegaLitePlotTool.toVercelAiTool(),
+ *     vegaLitePlot: convertToVercelAiTool(vegaLitePlotTool),
  *   },
  * });
  * ```
  */
-export class VegaLitePlotTool extends OpenAssistantTool<typeof VegaLitePlotArgs> {
-  protected getDefaultDescription(): string {
-    return 'Create Vega-Lite plots from datasets and variables using Vega-Lite specification';
-  }
-  
-  protected getDefaultParameters() {
-    return VegaLitePlotArgs;
-  }
-
-  constructor(options: OpenAssistantToolOptions<typeof VegaLitePlotArgs> = {}) {
-    super({
-      ...options,
-      context: options.context || {
-        getValues: async () => {
-          throw new Error(
-            'context getValues() not implemented for vegaLitePlot tool'
-          );
-        },
-      },
-    });
-  }
-
-  async execute(
-    params: z.infer<typeof VegaLitePlotArgs>,
-    options?: { context?: Record<string, unknown> }
-  ): Promise<{
-    llmResult: VegaLitePlotLlmResult;
-    additionalData?: VegaLitePlotAdditionalData;
-  }> {
+export const vegaLitePlot = extendedTool<
+  VegaLitePlotToolArgs,
+  VegaLitePlotLlmResult,
+  VegaLitePlotAdditionalData,
+  EChartsToolContext
+>({
+  description:
+    'Create a plot using vega-lite. Please follow the vegaLite spec format.',
+  parameters: z.object({
+    datasetName: z.string(),
+    variableNames: z.array(z.string()),
+    vegaLiteSpec: z.string().describe(
+      `The Vega-Lite spec to use to create the plot.
+IMPORTANT: Use 'data-placeholder' as a placeholder to refer to the inline data.
+Example format: {"data": data-placeholder, "mark": "bar", "encoding": {...}, "$schema"}
+Use the following settings to avoid unnecessary axis range expansion for both x and y axes:
+- scale.zero: false on the axis avoids forcing the axis to start at zero.
+`
+    ),
+  }),
+  execute: async ({ datasetName, variableNames, vegaLiteSpec }, options) => {
     try {
       const { getValues } = options?.context as EChartsToolContext;
-      const { datasetName, variableNames, vegaLiteSpec } = params;
 
       const data = {};
       await Promise.all(
@@ -148,41 +135,28 @@ export class VegaLitePlotTool extends OpenAssistantTool<typeof VegaLitePlotArgs>
         llmResult: {
           success: true,
           vegaLiteSpec,
-          plotType: 'vega-lite',
+          result: 'Successfully created Vega-Lite plot',
         },
         additionalData: {
           vegaLiteSpec: vegaLiteSpecWithData,
           datasetName,
           variableNames,
-          plotType: 'vega-lite',
         },
       };
-    } catch {
+    } catch (error) {
       return {
         llmResult: {
           success: false,
-          vegaLiteSpec: '',
-          plotType: 'vega-lite',
+          result: `Failed to create Vega-Lite plot: ${error}`,
         },
       };
     }
-  }
-}
-
-export const VegaLitePlotArgs = z.object({
-  datasetName: z.string(),
-  variableNames: z.array(z.string()),
-  vegaLiteSpec: z.string().describe(
-    `The Vega-Lite spec to use to create the plot.
-IMPORTANT: Use 'data-placeholder' as a placeholder to refer to the inline data.
-Example format: {"data": data-placeholder, "mark": "bar", "encoding": {...}, "$schema"}
-Use the following settings to avoid unnecessary axis range expansion for both x and y axes:
-- scale.zero: false on the axis avoids forcing the axis to start at zero.
-`
-  ),
+  },
+  context: {
+    getValues: async () => {
+      throw new Error(
+        'context getValues() not implemented for vegaLitePlot tool'
+      );
+    },
+  },
 });
-
-// For backward compatibility, create a default instance
-export const vegaLitePlot = new VegaLitePlotTool();
-
-export type { VegaLitePlotTool };

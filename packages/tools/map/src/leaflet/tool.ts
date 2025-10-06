@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, OpenAssistantToolOptions, getBoundsFromGeoJSON } from '@openassistant/utils';
+import { extendedTool, getBoundsFromGeoJSON } from '@openassistant/utils';
 import { z } from 'zod';
 
-import { isMapToolContext } from '../register-tools';
+import { isMapToolContext, MapToolContext } from '../register-tools';
 
 export type LeafletToolLlmResult = {
   success: boolean;
@@ -24,18 +24,18 @@ export type LeafletToolAdditionalData = {
   zoom: number;
 };
 
-export const LeafletToolArgs = z.object({
-  datasetName: z.string(),
-  colorBy: z.string().optional(),
-  colorType: z.enum(['breaks', 'unique']).optional(),
-  breaks: z.array(z.number()).optional(),
-  uniqueValues: z.array(z.union([z.string(), z.number()])).optional(),
-  colors: z.array(z.string()).optional(),
-});
+export type LeafletToolArgs = z.ZodObject<{
+  datasetName: z.ZodString;
+  colorBy: z.ZodOptional<z.ZodString>;
+  colorType: z.ZodOptional<z.ZodEnum<['breaks', 'unique']>>;
+  breaks: z.ZodOptional<z.ZodArray<z.ZodNumber>>;
+  uniqueValues: z.ZodOptional<
+    z.ZodArray<z.ZodUnion<[z.ZodString, z.ZodNumber]>>
+  >;
+  colors: z.ZodOptional<z.ZodArray<z.ZodString>>;
+}>;
 
 /**
- * LeafletTool
- *
  * The leaflet tool is used to create a leaflet map from GeoJSON data.
  *
  * :::note
@@ -44,27 +44,23 @@ export const LeafletToolArgs = z.object({
  *
  * ### Example
  * ```ts
- * import { LeafletTool } from '@openassistant/map';
+ * import { leaflet, LeafletTool } from '@openassistant/map';
+ * import { convertToVercelAiTool, ToolCache } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
- * // Simple usage with defaults
- * const leafletTool = new LeafletTool();
- *
- * // Or with custom context
- * const leafletTool = new LeafletTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
+ * const leafletTool: LeafletTool = {
+ *   ...leaflet,
+ *   context: {
  *     getDataset: async (datasetName) => {
  *       return YOUR_DATASET;
  *     },
- *   }
- * );
+ *   },
+ * };
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Create a leaflet map using the dataset "my_venues"',
- *   tools: {createMap: leafletTool.toVercelAiTool()},
+ *   tools: {createMap: convertToVercelAiTool(leafletTool)},
  * });
  * ```
  *
@@ -74,26 +70,22 @@ export const LeafletToolArgs = z.object({
  *
  * ### Example
  * ```ts
- * import { DownloadMapDataTool, LeafletTool } from '@openassistant/map';
- * import { ToolCache } from '@openassistant/utils';
+ * import { downloadMapData, isDownloadMapAdditionalData, leaflet, LeafletTool } from '@openassistant/map';
+ * import { convertToVercelAiTool, ToolCache } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
  * const toolResultCache = ToolCache.getInstance();
  *
- * const downloadMapTool = new DownloadMapDataTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {}, // context
- *   undefined, // component
- *   (toolCallId: string, additionalData?: unknown) => {
+ * const downloadMapTool = {
+ *   ...downloadMapData,
+ *   onToolCompleted: (toolCallId: string, additionalData?: unknown) => {
  *     toolResultCache.addDataset(toolCallId, additionalData);
- *   }
- * );
+ *   },
+ * };
  *
- * const leafletTool = new LeafletTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
+ * const leafletTool: LeafletTool = {
+ *   ...leaflet,
+ *   context: {
  *     getDataset: async (datasetName) => {
  *       // find dataset based on datasetName first
  *       // return MYDATASETS[datasetName];
@@ -104,46 +96,41 @@ export const LeafletToolArgs = z.object({
  *       }
  *       throw new Error(`Dataset ${datasetName} not found`);
  *     },
- *   }
- * );
+ *   },
+ * };
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Create a leaflet map using the dataset "my_venues"',
- *   tools: {createMap: leafletTool.toVercelAiTool(), downloadMapData: downloadMapTool.toVercelAiTool()},
+ *   tools: {createMap: convertToVercelAiTool(leafletTool), downloadMapData: convertToVercelAiTool(downloadMapTool)},
  * });
  * ```
  */
-export class LeafletTool extends OpenAssistantTool<typeof LeafletToolArgs> {
-  protected getDefaultDescription(): string {
-    return `Create a leaflet map from GeoJSON data. For basic map visualization, you can omit color related parameters.
+export const leaflet = extendedTool<
+  LeafletToolArgs,
+  LeafletToolLlmResult,
+  LeafletToolAdditionalData,
+  MapToolContext
+>({
+  description: `Create a leaflet map from GeoJSON data. For basic map visualization, you can omit color related parameters.
 - When creating a map for a variable, please use dataClassify tool to classify the data into bins or unique values first.
 - Colors are required when colorBy is provided (e.g. ['#f7fcb9', '#addd8e', '#31a354'].
 - For colorType 'breaks', the number of colors must equal to the number of breaks + 1.
 - For colorType 'unique', the number of colors must equal to the number of unique values. Please try to use colorbrewer divergent colors (e.g. BrBG).
 - Please use colorBrewer colors (e.g. YlGn) if user does not provide colors.
-`;
-  }
-  
-  protected getDefaultParameters() {
-    return LeafletToolArgs;
-  }
-
-  constructor(options: OpenAssistantToolOptions<typeof LeafletToolArgs> = {}) {
-    super({
-      ...options,
-      context: options.context || {},
-    });
-  }
-
-  async execute(
-    args: z.infer<typeof LeafletToolArgs>,
-    options?: { context?: Record<string, unknown> }
-  ): Promise<{
-    llmResult: LeafletToolLlmResult;
-    additionalData?: LeafletToolAdditionalData;
-  }> {
-    const { datasetName, colorBy, colorType, breaks, uniqueValues, colors } = args;
+`,
+  parameters: z.object({
+    datasetName: z.string(),
+    colorBy: z.string().optional(),
+    colorType: z.enum(['breaks', 'unique']).optional(),
+    breaks: z.array(z.number()).optional(),
+    uniqueValues: z.array(z.union([z.string(), z.number()])).optional(),
+    colors: z.array(z.string()).optional(),
+  }),
+  execute: async (
+    { datasetName, colorBy, colorType, breaks, uniqueValues, colors },
+    options
+  ) => {
     try {
       const context = options?.context;
       if (!isMapToolContext(context)) {
@@ -230,5 +217,6 @@ export class LeafletTool extends OpenAssistantTool<typeof LeafletToolArgs> {
         },
       };
     }
-  }
-}
+  },
+  context: {},
+});

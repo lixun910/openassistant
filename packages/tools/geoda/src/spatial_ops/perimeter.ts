@@ -1,26 +1,17 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, OpenAssistantToolOptions } from '@openassistant/utils';
+import { extendedTool } from '@openassistant/utils';
 import { z } from 'zod';
 import { getPerimeter } from '@geoda/core';
+import { SpatialToolContext } from '../types';
 import { isSpatialToolContext } from '../utils';
 
-export const PerimeterArgs = z.object({
-  geojson: z
-    .string()
-    .optional()
-    .describe(
-      'GeoJSON string of the geometry to calculate perimeter for. Important: it needs to be wrapped in a FeatureCollection object!'
-    ),
-  datasetName: z
-    .string()
-    .optional()
-    .describe(
-      'Name of the dataset with geometries to calculate perimeter for'
-    ),
-  distanceUnit: z.enum(['KM', 'Mile']).default('KM'),
-});
+export type PerimeterFunctionArgs = z.ZodObject<{
+  geojson: z.ZodOptional<z.ZodString>;
+  datasetName: z.ZodOptional<z.ZodString>;
+  distanceUnit: z.ZodDefault<z.ZodEnum<['KM', 'Mile']>>;
+}>;
 
 export type PerimeterLlmResult = {
   success: boolean;
@@ -37,7 +28,7 @@ export type PerimeterAdditionalData = {
 };
 
 /**
- * ## PerimeterTool
+ * ## perimeter Tool
  *
  * This tool calculates the perimeter of geometries in a GeoJSON dataset.
  *
@@ -54,55 +45,49 @@ export type PerimeterAdditionalData = {
  * ### Example
  * 
  * ```typescript
- * import { PerimeterTool } from '@openassistant/geoda';
+ * import { perimeter, PerimeterTool } from '@openassistant/geoda';
+ * import { convertToVercelAiTool } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
- * // Simple usage with defaults
- * const perimeterTool = new PerimeterTool();
- *
- * // Or with custom context
- * const perimeterTool = new PerimeterTool(
- *   undefined, // use default description
- *   undefined, // use default parameters
- *   {
+ * const perimeterTool: PerimeterTool = {
+ *   ...perimeter,
+ *   context: {
  *     getGeometries: (datasetName) => {
  *       return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
  *     },
- *   }
- * );
+ *   },
+ * };
  *
  * generateText({
  *   model: openai('gpt-4o-mini', { apiKey: key }),
  *   prompt: 'Calculate the perimeter of these polygons in kilometers',
- *   tools: { perimeter: perimeterTool.toVercelAiTool() },
+ *   tools: { perimeter: convertToVercelAiTool(perimeterTool) },
  * });
  * ```
  */
-export class PerimeterTool extends OpenAssistantTool<typeof PerimeterArgs> {
-  protected getDefaultDescription(): string {
-    return 'Calculate perimeter of geometries';
-  }
-  
-  protected getDefaultParameters() {
-    return PerimeterArgs;
-  }
-
-  constructor(options: OpenAssistantToolOptions<typeof PerimeterArgs> = {}) {
-    super({
-      ...options,
-      context: options.context || {
-        getGeometries: async () => null,
-      },
-    });
-  }
-
-  async execute(
-    args: z.infer<typeof PerimeterArgs>,
-    options?: { context?: Record<string, unknown> }
-  ): Promise<{
-    llmResult: PerimeterLlmResult;
-    additionalData?: PerimeterAdditionalData;
-  }> {
+export const perimeter = extendedTool<
+  PerimeterFunctionArgs,
+  PerimeterLlmResult,
+  PerimeterAdditionalData,
+  SpatialToolContext
+>({
+  description: 'Calculate perimeter of geometries',
+  parameters: z.object({
+    geojson: z
+      .string()
+      .optional()
+      .describe(
+        'GeoJSON string of the geometry to calculate perimeter for. Important: it needs to be wrapped in a FeatureCollection object!'
+      ),
+    datasetName: z
+      .string()
+      .optional()
+      .describe(
+        'Name of the dataset with geometries to calculate perimeter for'
+      ),
+    distanceUnit: z.enum(['KM', 'Mile']).default('KM'),
+  }),
+  execute: async (args, options) => {
     const { datasetName, geojson, distanceUnit = 'KM' } = args;
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(
@@ -132,5 +117,10 @@ export class PerimeterTool extends OpenAssistantTool<typeof PerimeterArgs> {
         distanceUnit,
       },
     };
-  }
-}
+  },
+  context: {
+    getGeometries: async () => null,
+  },
+});
+
+export type PerimeterTool = typeof perimeter;

@@ -9,11 +9,13 @@ import {
   createChatStore,
   ChatStoreProvider,
 } from '@openassistant/chat';
-import { QueryDuckDBComponent } from '@openassistant/tables';
+import {
+  QueryDuckDBComponent,
+  QueryDuckDBOutputData,
+} from '@openassistant/tables';
 import { Button, useDisclosure } from '@sqlrooms/ui';
 import { Settings } from 'lucide-react';
-import { LocalQueryTool } from '@openassistant/duckdb';
-import { tool } from 'ai';
+import { localQuery, getDuckDB } from '@openassistant/duckdb';
 import { AI_SETTINGS } from './config';
 
 // Removed local buildModels in favor of store-derived models
@@ -27,24 +29,32 @@ const SAMPLE_DATASETS = {
   ],
 };
 
+const getValues = async (datasetName: string, variableName: string) => {
+  // Get the values of the variable from your dataset
+  const dataset = SAMPLE_DATASETS[datasetName as keyof typeof SAMPLE_DATASETS];
+  if (!dataset) {
+    throw new Error(`Dataset '${datasetName}' not found`);
+  }
+  return dataset.map((item) => item[variableName as keyof typeof item]);
+};
+
 // Create tool with custom context
-const localQueryTool = new LocalQueryTool({
-  context: {
-    getValues: async (datasetName: string, variableName: string) => {
-      // Get the values of the variable from your dataset
-      const dataset =
-        SAMPLE_DATASETS[datasetName as keyof typeof SAMPLE_DATASETS];
-      if (!dataset) {
-        throw new Error(`Dataset '${datasetName}' not found`);
-      }
-      return dataset.map((item) => item[variableName as keyof typeof item]);
-    },
-  },
-  onToolCompleted: (toolCallId, additionalData) => {
+const localQueryTool = {
+  ...localQuery,
+  context: { getValues },
+  onToolCompleted: (toolCallId: string, additionalData: unknown) => {
     console.log('Query completed:', toolCallId, additionalData);
   },
-  component: QueryDuckDBComponent,
-});
+  component: (props: QueryDuckDBOutputData) => {
+    return (
+      <QueryDuckDBComponent
+        {...props}
+        getDuckDB={getDuckDB}
+        getValues={getValues}
+      />
+    );
+  },
+};
 
 export default function Chat() {
   // Create an app-local store instance and provide it via Provider (memoized)
@@ -57,8 +67,7 @@ export default function Chat() {
         ai: {
           getInstructions: () =>
             "You are a helpful assistant that can answer questions and help with tasks. Your name is George. You can use the following datasets to answer the user's question: \nDatasetName: venues, \nFields: name, city, rating",
-          tools: { localQuery: localQueryTool.toVercelAiTool(tool) },
-          // toolComponent: { localQuery: QueryDuckDBComponent },
+          tools: { localQuery: localQueryTool },
         },
       } as ChatStoreOptions),
     []

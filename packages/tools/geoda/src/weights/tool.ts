@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, OpenAssistantToolOptions, OpenAssistantToolExecutionOptions, OpenAssistantExecuteFunctionResult } from '@openassistant/utils';
+import { extendedTool } from '@openassistant/utils';
 import { z } from 'zod';
 import { createWeights, WeightsMeta, CreateWeightsProps } from '@geoda/core';
 import { WeightsProps, GetGeometries } from '../types';
@@ -41,19 +41,15 @@ export type SpatialWeightsAdditionalData = {
   weightsId: string;
 } & {
   [id: string]: {
-    type: 'weights';
-    content: {
-      weights: number[][];
-      weightsMeta: WeightsMeta;
-    };
+    weights: number[][];
+    weightsMeta: WeightsMeta;
   };
 };
 
 /**
- * ## SpatialWeightsTool Class
+ * ## spatialWeights Tool
  * 
- * The SpatialWeightsTool class creates spatial weights matrices for spatial analysis.
- * This tool extends OpenAssistantTool and provides a class-based approach for spatial weights creation.
+ * This tool creates spatial weights matrices for spatial analysis. It supports multiple types of weights:
  *
  * ### Spatial Weights Types
  *
@@ -71,168 +67,78 @@ export type SpatialWeightsAdditionalData = {
  *
  * Example code:
  * ```typescript
- * import { SpatialWeightsTool } from '@openassistant/geoda';
- * import { generateText, tool } from 'ai';
+ * import { spatialWeights, SpatialWeightsTool } from '@openassistant/geoda';
+ * import { convertToVercelAiTool } from '@openassistant/utils';
+ * import { generateText } from 'ai';
  *
- * // Simple usage with defaults
- * const spatialWeightsTool = new SpatialWeightsTool();
+ * const spatialWeightsTool: SpatialWeightsTool = {
+ *   ...spatialWeights,
+ *   context: {
+ *     getGeometries: (datasetName) => {
+ *       return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
+ *     },
+ *   },
+ *   onToolCompleted: (toolCallId, additionalData) => {
+ *     console.log(toolCallId, additionalData);
+ *     // do something like save the weights result in additionalData
+ *   },
+ * };
  *
-* // Or with custom context
-* const spatialWeightsTool = new SpatialWeightsTool({
-*   context: {
-*     getGeometries: (datasetName) =>
-*       SAMPLE_DATASETS[datasetName].map((item) => item.geometry),
-*   },
-* });
- *
-* const out = await generateText({
-*   model: openai('gpt-4.1', { apiKey: process.env.OPENAI_API_KEY }),
-*   prompt: 'Create a queen contiguity weights for regions',
-*   tools: { spatialWeights: spatialWeightsTool.toVercelAiTool(tool) },
-* });
+ * generateText({
+ *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   prompt: 'Create a queen contiguity weights matrix for these counties',
+ *   tools: {spatialWeights: convertToVercelAiTool(spatialWeightsTool)},
+ * });
  * ```
  */
-export const SpatialWeightsArgs = z.object({
-  datasetName: z.string(),
-  type: z.enum(['knn', 'queen', 'rook', 'threshold']),
-  k: z
-    .number()
-    .optional()
-    .describe('Only for k nearest neighbor (knn) weights'),
-  orderOfContiguity: z.number().optional(),
-  includeLowerOrder: z.boolean().optional(),
-  precisionThreshold: z
-    .number()
-    .optional()
-    .describe(
-      'For queen/rook weights: precision threshold for matching coordinates to determine neighboring polygons. Default: 0.'
-    ),
-  distanceThreshold: z
-    .number()
-    .optional()
-    .describe(
-      'Only for distance based weights. It represents the distance threshold used to search nearby neighbors.'
-    ),
-  useCentroids: z
-    .boolean()
-    .optional()
-    .describe(
-      'Whether to use centroids for neighbor calculations. The default value is False.'
-    ),
-  isMile: z.boolean().optional().describe('Only for distance based weights.'),
-  mapBounds: z.array(z.number()).optional(),
+export const spatialWeights = extendedTool<
+  SpatialWeightsFunctionArgs,
+  SpatialWeightsLlmResult,
+  SpatialWeightsAdditionalData,
+  SpatialWeightsFunctionContext
+>({
+  description: 'Create a spatial weights.',
+  parameters: z.object({
+    datasetName: z.string(),
+    type: z.enum(['knn', 'queen', 'rook', 'threshold']),
+    k: z
+      .number()
+      .optional()
+      .describe('Only for k nearest neighbor (knn) weights'),
+    orderOfContiguity: z.number().optional(),
+    includeLowerOrder: z.boolean().optional(),
+    precisionThreshold: z
+      .number()
+      .optional()
+      .describe(
+        'For queen/rook weights: precision threshold for matching coordinates to determine neighboring polygons. Default: 0.'
+      ),
+    distanceThreshold: z
+      .number()
+      .optional()
+      .describe(
+        'Only for distance based weights. It represents the distance threshold used to search nearby neighbors.'
+      ),
+    useCentroids: z
+      .boolean()
+      .optional()
+      .describe(
+        'Whether to use centroids for neighbor calculations. The default value is False.'
+      ),
+    isMile: z.boolean().optional().describe('Only for distance based weights.'),
+    mapBounds: z.array(z.number()).optional(),
+  }),
+  execute: executeSpatialWeights,
+  context: {
+    getGeometries: () => {
+      throw new Error(
+        'getGeometries() of SpatialWeightsTool is not implemented'
+      );
+    },
+  },
 });
 
-export class SpatialWeightsTool extends OpenAssistantTool<typeof SpatialWeightsArgs> {
-  protected getDefaultDescription(): string {
-    return 'Create spatial weights matrices for spatial analysis';
-  }
-  
-  protected getDefaultParameters() {
-    return SpatialWeightsArgs;
-  }
-
-  constructor(options: OpenAssistantToolOptions<typeof SpatialWeightsArgs> = {}) {
-    super({
-      ...options,
-      context: options.context || {
-        getGeometries: () => {
-          throw new Error(
-            'getGeometries() of SpatialWeightsTool is not implemented'
-          );
-        },
-      },
-    });
-  }
-
-  async execute(
-    args: z.infer<typeof SpatialWeightsArgs>,
-    options?: OpenAssistantToolExecutionOptions & { context?: Record<string, unknown> }
-  ): Promise<OpenAssistantExecuteFunctionResult<SpatialWeightsLlmResult, SpatialWeightsAdditionalData>> {
-    if (!isSpatialWeightsArgs(args)) {
-      throw new Error('Invalid arguments for spatialWeights tool');
-    }
-
-    if (!options?.context || !isSpatialWeightsContext(options.context)) {
-      throw new Error('Invalid context for spatialWeights tool');
-    }
-
-    const {
-      datasetName,
-      type,
-      k,
-      orderOfContiguity,
-      includeLowerOrder,
-      precisionThreshold,
-      distanceThreshold,
-      isMile,
-      useCentroids,
-      mapBounds,
-    } = args;
-    const { getGeometries } = options.context;
-    const geometries = await getGeometries(datasetName);
-
-    if (!geometries) {
-      throw new Error(
-        `Error: geometries are empty. Please implement the getGeometries() context function.`
-      );
-    }
-
-    const weightsProps: CreateWeightsProps = {
-      weightsType: type,
-      k,
-      isQueen: type === 'queen',
-      distanceThreshold,
-      isMile,
-      useCentroids,
-      precisionThreshold,
-      orderOfContiguity,
-      includeLowerOrder,
-      geometries,
-    };
-
-    const id = getWeightsId(datasetName, weightsProps, mapBounds);
-
-    let w: { weightsMeta: WeightsMeta; weights: number[][] } | null = null;
-
-    const existingWeightData = globalWeightsData[id];
-    if (existingWeightData) {
-      w = {
-        weightsMeta: existingWeightData.weightsMeta,
-        weights: existingWeightData.weights,
-      };
-    } else {
-      const result = await createWeights(weightsProps);
-      w = {
-        weightsMeta: result.weightsMeta,
-        weights: result.weights,
-      };
-    }
-    w!.weightsMeta.id = id;
-
-    globalWeightsData[id] = {
-      datasetId: datasetName,
-      ...w!,
-    };
-
-    return {
-      llmResult: {
-        success: true,
-        result: `Weights created successfully and the weights are saved using weightsId: ${id}.`,
-      },
-      additionalData: {
-        weightsId: id,
-        [id]: {
-          type: 'weights',
-          content: {
-            weights: w!.weights,
-            weightsMeta: w!.weightsMeta,
-          },
-        },
-      },
-    };
-  }
-}
+export type SpatialWeightsTool = typeof spatialWeights;
 
 export type SpatialWeightsFunctionContext = {
   getGeometries: GetGeometries;
@@ -305,7 +211,99 @@ function isSpatialWeightsContext(
   );
 }
 
-// (previous executeSpatialWeights helper removed; logic now inlined in execute())
+async function executeSpatialWeights(
+  args,
+  options
+): Promise<ExecuteSpatialWeightsResult> {
+  if (!isSpatialWeightsArgs(args)) {
+    throw new Error('Invalid arguments for spatialWeights tool');
+  }
+
+  if (!isSpatialWeightsContext(options.context)) {
+    throw new Error('Invalid context for spatialWeights tool');
+  }
+
+  const {
+    datasetName,
+    type,
+    k,
+    orderOfContiguity,
+    includeLowerOrder,
+    precisionThreshold,
+    distanceThreshold,
+    isMile,
+    useCentroids,
+    mapBounds,
+  } = args;
+  const { getGeometries } = options.context;
+  const geometries = await getGeometries(datasetName);
+
+  if (!geometries) {
+    throw new Error(
+      `Error: geometries are empty. Please implement the getGeometries() context function.`
+    );
+  }
+
+  const weightsProps: CreateWeightsProps = {
+    weightsType: type,
+    k,
+    isQueen: type === 'queen',
+    distanceThreshold,
+    isMile,
+    useCentroids,
+    precisionThreshold,
+    orderOfContiguity,
+    includeLowerOrder,
+    geometries,
+  };
+
+  const id = getWeightsId(datasetName, weightsProps, mapBounds);
+
+  let w: { weightsMeta: WeightsMeta; weights: number[][] } | null = null;
+
+  // check if the weights already exist in the global variable
+  const existingWeightData = globalWeightsData[id];
+  if (existingWeightData) {
+    w = {
+      weightsMeta: existingWeightData.weightsMeta,
+      weights: existingWeightData.weights,
+    };
+  } else {
+    // create the weights if it does not exist
+    const result = await createWeights(weightsProps);
+    w = {
+      weightsMeta: result.weightsMeta,
+      weights: result.weights,
+    };
+  }
+  // set the id to the weights meta
+  w.weightsMeta.id = id;
+
+  // cache the weights to the global variable, so that it can be reused across tool calls e.g. lisa, spatial regression
+  globalWeightsData[id] = {
+    datasetId: datasetName,
+    ...w,
+  };
+
+  return {
+    llmResult: {
+      success: true,
+      weightsId: id,
+      weightsMeta: w.weightsMeta,
+      result: `Weights created successfully and the weights are saved using weightsId: ${id}.`,
+    },
+    additionalData: {
+      weightsId: id,
+      [id]: {
+        type: 'weights',
+        content: {
+          weights: w.weights,
+          weightsMeta: w.weightsMeta,
+        },
+      },
+    },
+  };
+}
 
 export function getWeightsId(
   datasetId: string,
