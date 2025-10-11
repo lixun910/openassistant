@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { extendedTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, generateId } from '@openassistant/utils';
 import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../types';
 
 /**
@@ -36,7 +36,7 @@ import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../type
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Can you create a bubble chart of the population and income for each location in dataset myVenues, and use the size of the bubble to represent the revenue?',
  *   tools: {
  *     bubbleChart: convertToVercelAiTool(bubbleChartTool),
@@ -44,12 +44,13 @@ import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../type
  * });
  * ```
  */
-export const bubbleChart = extendedTool<
+export const bubbleChart: OpenAssistantTool<
   BubbleChartToolArgs,
   BubbleChartLlmResult,
   BubbleChartAdditionalData,
   EChartsToolContext
->({
+> = {
+  name: 'bubbleChart',
   description: 'create a bubble chart',
   parameters: z.object({
     datasetName: z.string(),
@@ -71,7 +72,7 @@ export const bubbleChart = extendedTool<
       theme: 'light',
     },
   },
-});
+};
 
 export type BubbleChartTool = typeof bubbleChart;
 
@@ -137,7 +138,7 @@ export function isBubbleChartFunctionArgs(
 
 async function executeBubbleChart(
   args,
-  options
+  options?: { toolCallId: string; context?: EChartsToolContext }
 ): Promise<ExecuteBubbleChartResult> {
   try {
     if (!isBubbleChartFunctionArgs(args)) {
@@ -148,7 +149,7 @@ async function executeBubbleChart(
     const { datasetName, variableX, variableY, variableSize, variableColor } =
       args;
 
-    if (!isEChartsToolContext(options.context)) {
+    if (!options?.context || !isEChartsToolContext(options.context)) {
       throw new Error(
         'Invalid context for bubbleChart tool. Please provide a valid context.'
       );

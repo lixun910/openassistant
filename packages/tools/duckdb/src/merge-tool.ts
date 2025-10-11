@@ -194,17 +194,17 @@ IMPORTANT:
   },
 };
 
-export type MergeTablesArgs = {
-  datasetNameA: string;
-  datasetNameB: string;
-  columnNamesA: string[];
-  columnNamesB: string[];
-  mergeType: 'horizontal' | 'vertical';
-  keyColumn?: string;
-  dbTableNameA: string;
-  dbTableNameB: string;
-  sql: string;
-};
+export type MergeTablesArgs = z.ZodObject<{
+  datasetNameA: z.ZodString;
+  datasetNameB: z.ZodString;
+  columnNamesA: z.ZodArray<z.ZodString>;
+  columnNamesB: z.ZodArray<z.ZodString>;
+  mergeType: z.ZodEnum<{ horizontal: 'horizontal'; vertical: 'vertical' }>;
+  keyColumn: z.ZodOptional<z.ZodString>;
+  dbTableNameA: z.ZodString;
+  dbTableNameB: z.ZodString;
+  sql: z.ZodString;
+}>;
 
 export type MergeTablesLllmResult = {
   success: boolean;

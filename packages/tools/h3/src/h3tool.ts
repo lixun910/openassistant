@@ -1,4 +1,4 @@
-import { ToolExecutionOptions } from '@openassistant/utils';
+import { OpenAssistantTool } from '@openassistant/utils';
 import {
   cellToChildren,
   getResolution,
@@ -7,39 +7,6 @@ import {
 } from 'h3-js';
 import z from 'zod';
 import { FeatureCollection } from 'geojson';
-
-export type OpenAssistantTool = {
-  description: string;
-  parameters: z.ZodTypeAny;
-  execute: (
-    args: Record<string, unknown>,
-    options: ToolExecutionOptions & { context?: unknown }
-  ) => Promise<{
-    llmResult: unknown;
-    additionalData?: unknown;
-  }>;
-  context?: unknown;
-  component?: React.ElementType;
-  onToolCompleted?: (toolCallId: string, additionalData?: unknown) => void;
-};
-
-// A generic, typed variant of OpenAssistantTool that narrows parameters, context and return types
-export type TypedOpenAssistantTool<
-  PARAMETERS extends z.ZodTypeAny,
-  RETURN_TYPE,
-  ADDITIONAL_DATA = unknown,
-  CONTEXT = unknown,
-> = Omit<OpenAssistantTool, 'parameters' | 'execute' | 'context'> & {
-  parameters: PARAMETERS;
-  execute: (
-    args: z.infer<PARAMETERS>,
-    options: ToolExecutionOptions & { context?: CONTEXT }
-  ) => Promise<{
-    llmResult: RETURN_TYPE;
-    additionalData?: ADDITIONAL_DATA;
-  }>;
-  context?: CONTEXT;
-};
 
 // Schema strictly guarding the allowed parameters for the h3Cell tool
 const h3CellParameters = z
@@ -55,11 +22,12 @@ type H3CellReturn = string;
 type H3CellAdditionalData = { cell: string };
 
 
-export const h3Cell: TypedOpenAssistantTool<
+export const h3Cell: OpenAssistantTool<
   typeof h3CellParameters,
   H3CellReturn,
   H3CellAdditionalData
 > = {
+  name: 'h3Cell',
   description: 'Get the H3 cell for a given latitude, longitude and resolution',
   parameters: h3CellParameters,
   execute: async (args: H3CellParams, _options) => {
@@ -73,9 +41,11 @@ export const h3Cell: TypedOpenAssistantTool<
       },
     };
   },
+  context: {},
 };
 
 export const h3CellToChildren: OpenAssistantTool = {
+  name: 'h3CellToChildren',
   description: 'Get the children of a given H3 cell',
   parameters: z.object({
     cell: z.string(),
@@ -94,9 +64,11 @@ export const h3CellToChildren: OpenAssistantTool = {
       },
     };
   },
+  context: {},
 };
 
 export const h3CellsFromPolygon: OpenAssistantTool = {
+  name: 'h3CellsFromPolygon',
   description:
     'Get the H3 cells for a given polygon geojson at a given resolution',
   parameters: z.object({
@@ -109,7 +81,7 @@ export const h3CellsFromPolygon: OpenAssistantTool = {
         polygonDatasetName: string;
         resolution: number;
       };
-      const { getGeometries } = options.context as {
+      const { getGeometries } = (options?.context || {}) as {
         getGeometries: (datasetName: string) => Promise<FeatureCollection[]>;
       };
       const featureCollections = await getGeometries(polygonDatasetName);
@@ -155,4 +127,5 @@ export const h3CellsFromPolygon: OpenAssistantTool = {
       };
     }
   },
+  context: {},
 };

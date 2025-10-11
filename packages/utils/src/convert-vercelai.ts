@@ -31,7 +31,7 @@ import { z } from 'zod';
  * ```
  */
 export function convertToVercelAiTool(
-  tool: OpenAssistantTool<unknown, unknown, unknown, unknown>
+  tool: OpenAssistantTool<z.ZodTypeAny, unknown, unknown, unknown>
 ) {
   // Convert the OpenAssistant tool to AI SDK v5 tool configuration
   return {
@@ -55,7 +55,10 @@ export function convertToVercelAiTool(
       try {
         const result = await tool.execute(args, {
           ...options,
-          context: { ...(tool.context || {}), ...options.context },
+          context: { 
+            ...(tool.context && typeof tool.context === 'object' ? tool.context : {}), 
+            ...options.context 
+          },
         });
 
         const { additionalData, llmResult } = result;

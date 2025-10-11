@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { getCartogram } from '@geoda/core';
-import { extendedTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantExecuteFunctionResult, generateId } from '@openassistant/utils';
 import { isSpatialToolContext } from '../utils';
 import { z } from 'zod';
 import { Feature } from 'geojson';
@@ -10,46 +10,58 @@ import { SpatialToolContext } from '../types';
 
 /**
  * ## cartogram Tool
- *
- * This tool is used to create a dorling cartogram from a given geometries and a variable.
+ * 
+ * This tool creates a Dorling cartogram from given geometries and a variable.
+ * A cartogram is a map where the size of geographic units is proportional to a variable value rather than their actual geographic area.
  *
  * ### Cartogram Creation
  *
- * A cartogram is a map type where the original layout of the areal unit is replaced by a geometric form (usually a circle, rectangle, or hexagon) that is proportional to the value of the variable for the location. This is in contrast to a standard choropleth map, where the size of the polygon corresponds to the area of the location in question. The cartogram has a long history and many variants have been suggested, some quite creative. In essence, the construction of a cartogram is an example of a nonlinear optimization problem, where the geometric forms have to be located such that they reflect the topology (spatial arrangement) of the locations as closely as possible (see Tobler 2004, for an extensive discussion of various aspects of the cartogram).
+ * A cartogram replaces the original layout of areal units with geometric forms (usually circles) that are proportional to the variable value.
+ * This is useful for visualizing data where geographic size doesn't reflect the importance of the data.
  *
- * <img width="1152" src="https://github.com/user-attachments/assets/eef1834e-e4c0-4ab1-84b1-50a8937b1a86" />
+ * ### Parameters
+ * - `datasetName`: Name of the dataset containing the geometries and variable
+ * - `variableName`: Name of the variable to use for sizing the cartogram elements
+ * - `iterations`: Number of iterations for cartogram optimization (default: 100)
  *
- * ## Example
- * ```ts
- * import { cartogram, CartogramTool } from '@openassistant/geoda';
- * import { convertToVercelAiTool } from '@openassistant/utils';
- * import { generateText } from 'ai';
+ * **Example user prompts:**
+ * - "Create a Dorling cartogram from the geometries and the variable 'population'"
+ * - "Generate a cartogram showing GDP by country"
+ * - "Make a cartogram of election results by state"
  *
- * const cartogramTool: CartogramTool = {
+ * ### Example
+ * ```typescript
+ * import { cartogram } from "@openassistant/geoda";
+ * import { convertToVercelAiTool } from "@openassistant/utils";
+ *
+ * const cartogramTool = {
  *   ...cartogram,
  *   context: {
- *     getGeometries: (datasetName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
+ *     getGeometries: async (datasetName: string) => {
+ *       // Implementation to retrieve geometries from your data source
+ *       return geometries;
  *     },
- *     getValues: (datasetName, variableName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ *     getValues: async (datasetName: string, variableName: string) => {
+ *       // Implementation to retrieve values from your data source
+ *       return [100, 200, 150, 300, 250];
  *     },
  *   },
- * });
+ * };
  *
- * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
- *   prompt: 'Create a dorling cartogram from the geometries and the variable "population"',
+ * const result = await generateText({
+ *   model: openai('gpt-4.1', { apiKey: key }),
+ *   prompt: 'Create a Dorling cartogram from the geometries and the variable "population"',
  *   tools: { cartogram: convertToVercelAiTool(cartogramTool) },
  * });
  * ```
  */
-export const cartogram = extendedTool<
+export const cartogram: OpenAssistantTool<
   CartogramFunctionArgs,
   CartogramLlmResult,
   CartogramAdditionalData,
   SpatialToolContext
->({
+> = {
+  name: 'cartogram',
   description:
     'Create a dorling cartogram from a given geometries and a variable',
   parameters: z.object({
@@ -57,7 +69,11 @@ export const cartogram = extendedTool<
     variableName: z.string(),
     iterations: z.number().optional(),
   }),
-  execute: async (args, options) => {
+  execute: async (args: z.infer<CartogramFunctionArgs>, options?: {
+    toolCallId: string;
+    abortSignal?: AbortSignal;
+    context?: SpatialToolContext;
+  }): Promise<OpenAssistantExecuteFunctionResult<CartogramLlmResult, CartogramAdditionalData>> => {
     const { datasetName, variableName, iterations } = args;
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(
@@ -119,7 +135,7 @@ export const cartogram = extendedTool<
     getGeometries: async () => null,
     getValues: async () => [],
   },
-});
+};
 
 export type CartogramFunctionArgs = z.ZodObject<{
   datasetName: z.ZodString;

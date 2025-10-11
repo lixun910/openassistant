@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { extendedTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, generateId } from '@openassistant/utils';
 import { computeRegression } from './utils';
 import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../types';
 
@@ -39,7 +39,7 @@ import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../type
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'What is the relationship between population and income?',
  *   tools: {scatterplot: convertToVercelAiTool(scatterplotTool)},
  * });
@@ -56,12 +56,13 @@ import { EChartsToolContext, isEChartsToolContext, OnSelected } from '../../type
  * - get the values of **population** from dataset: getValues('myVenues', 'population')
  * - get the values of **income** from dataset: getValues('myVenues', 'income')
  */
-export const scatterplot = extendedTool<
+export const scatterplot: OpenAssistantTool<
   ScatterplotFunctionArgs,
   ScatterplotLlmResult,
   ScatterplotAdditionalData,
   EChartsToolContext
->({
+> = {
+  name: 'scatterplot',
   description: 'create a scatterplot',
   parameters: z.object({
     datasetName: z.string().describe('The name of the dataset.'),
@@ -82,7 +83,7 @@ export const scatterplot = extendedTool<
       showRegressionLine: true,
     },
   },
-});
+};
 
 export type ScatterplotTool = typeof scatterplot;
 
@@ -163,13 +164,13 @@ export type ExecuteScatterplotResult = {
 
 async function executeScatterplot(
   args,
-  options
+  options?: { toolCallId: string; context?: EChartsToolContext }
 ): Promise<ExecuteScatterplotResult> {
   try {
     if (!isScatterplotToolArgs(args)) {
       throw new Error('Invalid scatterplot function arguments.');
     }
-    if (!isEChartsToolContext(options.context)) {
+    if (!options?.context || !isEChartsToolContext(options.context)) {
       throw new Error('Invalid scatterplot function context.');
     }
 

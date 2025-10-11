@@ -11,6 +11,7 @@
   "dependencies": {
     "@openassistant/chat": "workspace:*",
     "@openassistant/duckdb": "workspace:*",
+    "@openassistant/geoda": "workspace:*",
     "@openassistant/tables": "workspace:*",
     "@sqlrooms/ui": "^0.24.27",
     "lucide-react": "^0.544.0",

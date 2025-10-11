@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, generateId } from '@openassistant/utils';
 import { z } from 'zod';
 
 import {
@@ -16,15 +16,13 @@ import { GetValues } from '@openassistant/plots';
 export type StandardizeVariableToolArgs = z.ZodObject<{
   datasetName: z.ZodString;
   variableName: z.ZodString;
-  standardizationMethod: z.ZodEnum<
-    [
-      'deviationFromMean',
-      'standardizeMAD',
-      'rangeAdjust',
-      'rangeStandardize',
-      'standardize',
-    ]
-  >;
+  standardizationMethod: z.ZodEnum<{
+    deviationFromMean: 'deviationFromMean';
+    standardizeMAD: 'standardizeMAD';
+    rangeAdjust: 'rangeAdjust';
+    rangeStandardize: 'rangeStandardize';
+    standardize: 'standardize';
+  }>;
   saveData: z.ZodOptional<z.ZodBoolean>;
 }>;
 
@@ -57,45 +55,59 @@ export type StandardizeVariableToolContext = {
 
 /**
  * ## standardizeVariable Tool
- * 
- * This tool is used to standardize the data of a variable using one of the following methods:
+ *
+ * This tool standardizes a variable using various statistical methods.
+ * Standardization transforms data to have a mean of 0 and standard deviation of 1, making different variables comparable.
  *
  * ### Standardization Methods
  *
- * - deviation from mean
- * - standardize MAD
- * - range adjust
- * - range standardize
- * - standardize (Z-score)
+ * The tool supports various standardization methods:
+ * - **deviationFromMean**: Standardizes to mean=0, std=1 (most common)
+ * - **standardizeMAD**: Uses median and MAD instead of mean and std
+ * - **rangeAdjust**: Scales to range [0,1]
+ * - **rangeStandardize**: Scales using interquartile range
+ * - **standardize**: Z-score standardization
  *
- * ## Example Code
- * ```ts
- * import { standardizeVariable, StandardizeVariableTool } from '@openassistant/geoda';
- * import { convertToVercelAiTool } from '@openassistant/utils';
- * import { generateText } from 'ai';
+ * ### Parameters
+ * - `datasetName`: Name of the dataset containing the variable
+ * - `variableName`: Name of the variable to standardize
+ * - `standardizationMethod`: Standardization method to use (see above)
+ * - `saveData`: Whether to save the standardized values (optional)
  *
- * const standardizeVariableTool: StandardizeVariableTool = {
+ * **Example user prompts:**
+ * - "Standardize the population variable using z-score method"
+ * - "Normalize the income data using min-max scaling"
+ * - "Apply robust standardization to the housing prices"
+ *
+ * ### Example
+ * ```typescript
+ * import { standardizeVariable } from "@openassistant/geoda";
+ * import { convertToVercelAiTool } from "@openassistant/utils";
+ *
+ * const standardizeTool = {
  *   ...standardizeVariable,
  *   context: {
- *     getValues: (datasetName, variableName) => {
- *       return getValues(datasetName, variableName);
+ *     getValues: async (datasetName: string, variableName: string) => {
+ *       // Implementation to retrieve values from your data source
+ *       return [100, 200, 150, 300, 250, 180, 220, 190, 280, 210];
  *     },
  *   },
  * };
  *
- * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
- *   prompt: 'Standardize the data of the variable "income" of the dataset "income_data" using the deviation from mean method',
- *   tools: { standardizeVariable: convertToVercelAiTool(standardizeVariableTool) },
+ * const result = await generateText({
+ *   model: openai('gpt-4.1', { apiKey: key }),
+ *   prompt: 'Standardize the population variable using z-score method',
+ *   tools: { standardizeVariable: convertToVercelAiTool(standardizeTool) },
  * });
  * ```
  */
-export const standardizeVariable = extendedTool<
+export const standardizeVariable: OpenAssistantTool<
   StandardizeVariableToolArgs,
   StandardizeVariableToolLlmResult,
   StandardizeVariableToolAdditionalData,
   StandardizeVariableToolContext
->({
+> = {
+  name: 'standardizeVariable',
   description:
     'Standardize the data of a variable using one of the following methods: deviation from mean, standardize MAD, range adjust, range standardize, standardize (Z-score)',
   parameters: z.object({
@@ -117,7 +129,14 @@ export const standardizeVariable = extendedTool<
       );
     },
   },
-  execute: async (args, options): Promise<StandardizeVariableToolResult> => {
+  execute: async (
+    args: z.infer<StandardizeVariableToolArgs>,
+    options?: {
+      toolCallId: string;
+      abortSignal?: AbortSignal;
+      context?: StandardizeVariableToolContext;
+    }
+  ): Promise<StandardizeVariableToolResult> => {
     try {
       const { datasetName, variableName, standardizationMethod, saveData } =
         args;
@@ -192,6 +211,6 @@ export const standardizeVariable = extendedTool<
       };
     }
   },
-});
+};
 
 export type StandardizeVariableTool = typeof standardizeVariable;

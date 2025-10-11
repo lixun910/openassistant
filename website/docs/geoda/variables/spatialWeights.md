@@ -42,7 +42,7 @@ const spatialWeightsTool: SpatialWeightsTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Create a queen contiguity weights matrix for these counties',
   tools: {spatialWeights: convertToVercelAiTool(spatialWeightsTool)},
 });

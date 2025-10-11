@@ -68,7 +68,7 @@ export type ExecuteGetUsZipcodeGeojsonResult = {
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Get all zipcodes in California',
  *   tools: {
  *     zipcode: convertToVercelAiTool(zipcodeTool),

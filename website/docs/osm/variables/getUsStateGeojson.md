@@ -39,7 +39,7 @@ const stateTool: GetUsStateGeojsonTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Get the GeoJSON for California',
   tools: {
     state: convertToVercelAiTool(stateTool),

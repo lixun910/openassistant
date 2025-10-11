@@ -35,7 +35,7 @@ const bubbleChartTool: BubbleChartTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Can you create a bubble chart of the population and income for each location in dataset myVenues, and use the size of the bubble to represent the revenue?',
   tools: {
     bubbleChart: convertToVercelAiTool(bubbleChartTool),

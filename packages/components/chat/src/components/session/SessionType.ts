@@ -7,7 +7,7 @@
  *   id: "session_123",
  *   name: "My Analysis Session",
  *   modelProvider: "openai",
- *   model: "gpt-4o-mini"
+ *   model: "gpt-4.1"
  * };
  * ```
  */
@@ -21,6 +21,6 @@ export type SessionType = {
   /** Provider of the AI model (e.g., "openai") */
   modelProvider?: string;
 
-  /** Name of the AI model being used (e.g., "gpt-4o-mini") */
+  /** Name of the AI model being used (e.g., "gpt-4.1") */
   model?: string;
 };

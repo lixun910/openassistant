@@ -48,7 +48,7 @@ const bufferTool: BufferTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Can you create a 5km buffer around these roads?',
   tools: {buffer: convertToVercelAiTool(bufferTool)},
 });

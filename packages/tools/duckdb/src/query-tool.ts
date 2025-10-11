@@ -1,21 +1,46 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { OpenAssistantTool, OpenAssistantExecuteFunctionResult, generateId } from '@openassistant/utils';
+import {
+  OpenAssistantTool,
+  OpenAssistantExecuteFunctionResult,
+  generateId,
+} from '@openassistant/utils';
 import { Table as ArrowTable, tableFromArrays } from 'apache-arrow';
 import { z } from 'zod';
 import { getDuckDB } from './query';
-import {
-  LocalQueryArgs,
-  LocalQueryContext,
-  LocalQueryResult,
-} from './types';
-import { convertArrowRowToObject } from './mergeTool';
+import { LocalQueryArgs, LocalQueryContext, LocalQueryResult } from './types';
+import { convertArrowRowToObject } from './merge-tool';
 import { Feature } from 'geojson';
 
 /**
+ * Truncates values by converting them to strings and limiting length
+ * @param obj - The object to truncate
+ * @param maxLength - Maximum length for string representation
+ * @returns Object with truncated string values
+ */
+function truncateObjectValues(obj: unknown, maxLength: number): unknown {
+  if (!obj || typeof obj !== 'object') {
+    return obj;
+  }
+
+  const truncated: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(obj)) {
+    const stringValue = JSON.stringify(value);
+    if (stringValue.length > maxLength) {
+      truncated[key] = stringValue.substring(0, maxLength) + '...';
+    } else {
+      truncated[key] = value;
+    }
+  }
+
+  return truncated;
+}
+
+/**
  * ## localQuery Tool
- * 
+ *
  * This tool is used to execute a query against a local dataset.
  *
  * :::note
@@ -47,7 +72,7 @@ import { Feature } from 'geojson';
  * ```
  */
 export const localQuery: OpenAssistantTool<
-  z.infer<LocalQueryArgs>,
+  LocalQueryArgs,
   LocalQueryResult['llmResult'],
   LocalQueryResult['additionalData']
 > = {
@@ -82,16 +107,26 @@ export const localQuery: OpenAssistantTool<
 };
 
 async function executeLocalQuery(
-  { datasetName, variableNames, sql, dbTableName }: z.infer<LocalQueryArgs>,
+  { datasetName, variableNames, sql, dbTableName },
   options?: {
     toolCallId: string;
     abortSignal?: AbortSignal;
     context?: Record<string, unknown>;
   }
-): Promise<OpenAssistantExecuteFunctionResult<LocalQueryResult['llmResult'], LocalQueryResult['additionalData']>> {
+): Promise<
+  OpenAssistantExecuteFunctionResult<
+    LocalQueryResult['llmResult'],
+    LocalQueryResult['additionalData']
+  >
+> {
   try {
-    const { getValues, getDuckDB: getUserDuckDB } =
-      (options?.context as LocalQueryContext) || {};
+    const {
+      getValues,
+      getDuckDB: getUserDuckDB,
+      getMaxQueryResultLength,
+    } = (options?.context as LocalQueryContext) || {};
+
+    const maxQueryResultLength = (await getMaxQueryResultLength?.()) || 1000;
 
     // get values for each variable
     const columnData = {};
@@ -166,8 +201,14 @@ async function executeLocalQuery(
       .toArray()
       .map((row) => convertArrowRowToObject(row));
 
-    // Get first row of the result as a json object to LLM
-    const firstRow = jsonResult[0];
+    let truncatedQueryResult = '';
+
+    for (const row of jsonResult) {
+      truncatedQueryResult += JSON.stringify(truncateObjectValues(row, 100)) + '\n';
+      if (truncatedQueryResult.length > maxQueryResultLength) {
+        break;
+      }
+    }
 
     const queryDatasetName = `query_${generateId()}`;
 
@@ -175,8 +216,8 @@ async function executeLocalQuery(
       llmResult: {
         success: true,
         datasetName: queryDatasetName,
-        firstRow,
-        instruction: `Query successfully. The query result is stored in the dataset ${queryDatasetName}. You can use the first row of the result as a sample to understand the query result.`,
+        truncatedQueryResult,
+        instruction: `Query executed successfully. The complete query result is available in the dataset ${queryDatasetName} and will be displayed in the table component. The truncated result shown here is just a preview - the full dataset contains all ${jsonResult.length} rows and is ready for analysis.`,
       },
       additionalData: {
         sql,
