@@ -53,7 +53,7 @@ const spatialJoinTool: SpatialJoinTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Can you join the population data with county boundaries?',
   tools: {spatialJoin: convertToVercelAiTool(spatialJoinTool)},
 });

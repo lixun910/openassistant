@@ -35,7 +35,7 @@ const perimeterTool: PerimeterTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Calculate the perimeter of these polygons in kilometers',
   tools: { perimeter: convertToVercelAiTool(perimeterTool) },
 });

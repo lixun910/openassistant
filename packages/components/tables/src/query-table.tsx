@@ -3,7 +3,7 @@
 
 import { ChangeEvent, useEffect, useMemo, useState, useRef } from 'react';
 import { Table as ArrowTable, tableFromArrays } from 'apache-arrow';
-import { AsyncDuckDB } from '@duckdb/duckdb-wasm';
+import { AsyncDuckDB, AsyncDuckDBConnection } from '@duckdb/duckdb-wasm';
 import {
   Table,
   TableColumn,
@@ -17,6 +17,68 @@ import { Select, SelectItem } from '@heroui/select';
 import { Pagination } from '@heroui/pagination';
 import { Checkbox } from '@heroui/checkbox';
 import './index.css';
+
+/**
+ * Inserts columnar data into a DuckDB table with fallback mechanisms
+ * @param conn - DuckDB connection
+ * @param columnData - Object with column names as keys and arrays of values as values
+ * @param dbTableName - Name of the table to create/insert into
+ * @param arrowTable - Arrow table representation of the data
+ */
+async function insertColumnarData(
+  conn: AsyncDuckDBConnection,
+  columnData: Record<string, unknown[]>,
+  dbTableName: string,
+  arrowTable: ArrowTable
+): Promise<void> {
+  const escapeIdent = (s: string) => '"' + String(s).replace(/"/g, '""') + '"';
+  
+  const inferDuckDBType = (values: unknown[]): string => {
+    const first = values.find((v) => v !== null && v !== undefined);
+    if (typeof first === 'boolean') return 'BOOLEAN';
+    if (typeof first === 'number') {
+      return Number.isInteger(first) ? 'BIGINT' : 'DOUBLE';
+    }
+    if (typeof first === 'string') return 'VARCHAR';
+    // default to VARCHAR for complex types
+    return 'VARCHAR';
+  };
+
+  const columnDefs = Object.entries(columnData)
+    .map(([colName, values]) => `${escapeIdent(colName)} ${inferDuckDBType(values as unknown[])}`)
+    .join(', ');
+  const createSql = `CREATE TABLE ${escapeIdent(dbTableName)} (${columnDefs})`;
+  await conn.query(createSql);
+  
+  await conn.insertArrowTable(arrowTable, {
+    name: dbTableName,
+    create: false,
+  });
+
+  // Verify insertion was successful
+  const countRes = await conn.query(`SELECT COUNT(*) AS count FROM ${escapeIdent(dbTableName)}`);
+  const insertedCount = countRes.toArray()[0].toJSON().count;
+  
+  if (!insertedCount || insertedCount === 0 || insertedCount === BigInt(0)) {
+    const escapeSqlString = (s: unknown) => {
+      if (s === null || s === undefined) return 'NULL';
+      if (typeof s === 'number' || typeof s === 'bigint') return String(s);
+      if (typeof s === 'boolean') return s ? 'TRUE' : 'FALSE';
+      return '\'' + String(s).replace(/'/g, "''") + '\'';
+    };
+    
+    const colNames = Object.keys(columnData);
+    const numRowsToInsert = (columnData[colNames[0]] as unknown[]).length;
+    
+    for (let i = 0; i < numRowsToInsert; i++) {
+      const valuesSql = colNames
+        .map((c) => escapeSqlString((columnData[c] as unknown[])[i]))
+        .join(', ');
+      const insertSql = `INSERT INTO ${escapeIdent(dbTableName)} (${colNames.map(escapeIdent).join(', ')}) VALUES (${valuesSql})`;
+      await conn.query(insertSql);
+    }
+  }
+}
 
 // type guard for QueryDuckDBOutputData
 export function isQueryDuckDBOutputData(
@@ -49,60 +111,58 @@ export type QueryDuckDBOutputData = {
  * QueryDuckDBComponent is a component that displays a table of query results from DuckDB.
  * This component is designed to be used with `localQuery` tool from @openassistant/duckdb.
  *
- * If you are using `localQuery` tool using Vercel AI SDK `useChat()` and `streamText()` etc.
- * You can use `QueryDuckDBComponent` to render the results of `localQuery` tool.
+ * If you are using `localQuery` tool with Vercel AI SDK `useChat()` and `streamText()` etc.,
+ * you can use `QueryDuckDBComponent` to render the results of `localQuery` tool.
  *
- * ## Example with Vercel AI SDK
- * ```tsx
- *
- * ```
- *
- * If you using `@openassistant/ui` chat component, you can use `QueryDuckDBComponent` as the tool component of `localQuery` tool.
- *
- * ## Example with `@openassistant/ui`
+ * ## Example with sqlrooms/ai
  *
  * ```tsx
- * import { localQuery, LocalQueryTool, getDuckDB } from '@openassistant/duckdb';
+ * import { localQuery, getDuckDB } from '@openassistant/duckdb';
  * import { QueryDuckDBComponent, QueryDuckDBOutputData } from '@openassistant/tables';
- * import { SAMPLE_DATASETS } from './dataset';
+ * import { createChatStore } from 'sqlrooms/ai';
  *
- * function getValues(datasetName: string, variableName: string) {
- *   // simulate get values from a dataset by variable name
- *   return Promise.resolve(
- *     SAMPLE_DATASETS[datasetName as keyof typeof SAMPLE_DATASETS].map(
- *       (item) => item[variableName as keyof typeof item]
- *     )
- *   );
- * }
- *
- * // Here we need to wrap the QueryDuckDBComponent with a component that
- * // can get the values from the dataset by variable name via `getValues()` function and
- * // the duckdb instance which can be get via getDuckDB() function.
- * function QueryToolComponent(props: QueryDuckDBOutputData) {
- *   return (
- *     <QueryDuckDBComponent
- *       {...props}
- *       getValues={getValues}
- *       getDuckDB={getDuckDB}
- *     />
- *   );
- * }
- *
- * const localQueryTool: LocalQueryTool = {
- *   ...localQuery,
- *   context: {
- *     ...localQuery.context,
- *     getValues,
- *   },
- *   // use the wrapped QueryToolComponent as the component of the tool
- *   component: QueryToolComponent,
+ * const SAMPLE_DATASETS = {
+ *   venues: [
+ *     { name: 'Golden Gate Park', city: 'San Francisco', rating: 4.5 },
+ *     { name: "Fisherman's Wharf", city: 'San Francisco', rating: 4.2 },
+ *     { name: 'Alcatraz Island', city: 'San Francisco', rating: 4.7 },
+ *   ],
  * };
  *
- * // use the localQueryTool in the @openassistant/ui
- * <AiAssistant
- *   ...
- *   tools={localQueryTool}
- * />
+ * const getValues = async (datasetName: string, variableName: string) => {
+ *   // Get the values of the variable from your dataset
+ *   const dataset = SAMPLE_DATASETS[datasetName as keyof typeof SAMPLE_DATASETS];
+ *   if (!dataset) {
+ *     throw new Error(`Dataset '${datasetName}' not found`);
+ *   }
+ *   return dataset.map((item) => item[variableName as keyof typeof item]);
+ * };
+ *
+ * // Create tool with custom context
+ * const localQueryTool = {
+ *   ...localQuery,
+ *   context: { getValues },
+ *   onToolCompleted: (toolCallId: string, additionalData: unknown) => {
+ *     // Handle query completion
+ *   },
+ *   component: (props: QueryDuckDBOutputData) => {
+ *     return (
+ *       <QueryDuckDBComponent
+ *         {...props}
+ *         getDuckDB={getDuckDB}
+ *         getValues={getValues}
+ *       />
+ *     );
+ *   },
+ * };
+ *
+ * // Use sqlrooms/ai chat store
+ * const useChatStore = createChatStore({
+ *   ai: {
+ *     getInstructions: () => 'You are a helpful assistant that can answer questions and help with tasks.',
+ *     tools: { localQuery: localQueryTool },
+ *   },
+ * });
  * ```
  */
 export function QueryDuckDBComponent({
@@ -153,10 +213,7 @@ export function QueryDuckDBComponent({
   useEffect(() => {
     const query = async () => {
       // Prevent concurrent runs (React Strict Mode double-invokes effects)
-      if (isRunningRef.current) {
-        console.log('Query already running, skipping duplicate invocation');
-        return;
-      }
+      if (isRunningRef.current) return;
       isRunningRef.current = true;
 
       // Create a new promise for this query
@@ -169,163 +226,41 @@ export function QueryDuckDBComponent({
 
           const conn = await db.connect();
 
-          // list tables for debugging (optional)
-          const tableNames = await conn.query('SHOW TABLES');
-          const tableNamesArray = tableNames
-            .toArray()
-            .map((row) => row.toJSON());
-          console.log('Existing tables before recreate:', tableNamesArray);
-          // Always drop and recreate the table to ensure consistency
-          console.log('Dropping table if exists:', dbTableName);
           await conn.query(`DROP TABLE IF EXISTS ${dbTableName}`);
           
-          console.log('Creating table:', dbTableName);
           // create the table
           // get values for each variable
           const columnData = {};
           for (const varName of variableNames) {
-            console.log('Getting values for variable:', varName);
             const values = await getValues(datasetName, varName);
-            console.log('Values for', varName, ':', values?.length, 'items');
             columnData[varName] = values;
           }
-          console.log('Column data structure:', Object.keys(columnData));
           setColumnData(columnData);
 
           // Create Arrow Table from column data with explicit type
-          console.log('Creating Arrow table from column data...');
           const arrowTable: ArrowTable = tableFromArrays(columnData);
-          console.log('Arrow table created successfully:', {
-            numRows: arrowTable.numRows,
-            numCols: arrowTable.numCols,
-            schema: arrowTable.schema.fields.map(f => ({ name: f.name, type: f.type.toString() }))
-          });
-          
-          console.log('Inserting Arrow table into DuckDB...');
           await conn.insertArrowTable(arrowTable, {
             name: dbTableName,
             create: true,
           });
-          console.log('Arrow table inserted successfully into DuckDB');
-          
-          // Try to query the table directly to see if it exists
-          console.log('Testing table existence by querying it directly...');
-          try {
-            const testQuery = `SELECT COUNT(*) as count FROM ${dbTableName}`;
-            const testResult = await conn.query(testQuery);
-            const count = testResult.toArray()[0].toJSON().count;
-            console.log('Direct query test successful, row count:', count);
-          } catch (testError) {
-            console.error('Direct query test failed:', testError);
-          }
           
           // Verify the table was created by checking tables again
           const tablesAfterInsert = await conn.query('SHOW TABLES');
           const tablesAfterInsertArray = tablesAfterInsert
             .toArray()
             .map((row) => row.toJSON());
-          console.log('Tables after insert:', tablesAfterInsertArray);
           const tableExistsAfterInsert = tablesAfterInsertArray.find(
             (table) => table.name === dbTableName
           );
-          console.log('Table exists after insert:', !!tableExistsAfterInsert);
           
           // Fallback: if the table is still not visible, explicitly create it with a schema
           if (!tableExistsAfterInsert) {
-            console.log('Fallback: creating table explicitly with schema');
-            const escapeIdent = (s: string) => '"' + String(s).replace(/"/g, '""') + '"';
-            const inferDuckDBType = (values: unknown[]): string => {
-              const first = values.find((v) => v !== null && v !== undefined);
-              if (typeof first === 'boolean') return 'BOOLEAN';
-              if (typeof first === 'number') {
-                return Number.isInteger(first) ? 'BIGINT' : 'DOUBLE';
-              }
-              if (typeof first === 'string') return 'VARCHAR';
-              // default to VARCHAR for complex types
-              return 'VARCHAR';
-            };
-            const columnDefs = Object.entries(columnData)
-              .map(([colName, values]) => `${escapeIdent(colName)} ${inferDuckDBType(values as unknown[])}`)
-              .join(', ');
-            const createSql = `CREATE TABLE ${escapeIdent(dbTableName)} (${columnDefs})`;
-            console.log('Executing explicit CREATE TABLE:', createSql);
-            await conn.query(createSql);
-            console.log('Explicit CREATE TABLE done, inserting rows...');
-            await conn.insertArrowTable(arrowTable, {
-              name: dbTableName,
-              create: false,
-            });
-            console.log('Rows inserted after explicit CREATE TABLE');
-            const tablesAfterCreate = await conn.query('SHOW TABLES');
-            const tablesAfterCreateArray = tablesAfterCreate
-              .toArray()
-              .map((row) => row.toJSON());
-            console.log('Tables after explicit create:', tablesAfterCreateArray);
-
-            // Post-insert sanity checks
-            try {
-              const countRes = await conn.query(`SELECT COUNT(*) AS count FROM ${escapeIdent(dbTableName)}`);
-              let insertedCount = countRes.toArray()[0].toJSON().count;
-              console.log('Row count after explicit insert:', insertedCount);
-              if (!insertedCount || insertedCount === 0 || insertedCount === 0n) {
-                console.log('Fallback insert path: inserting rows one-by-one');
-                const escapeSqlString = (s: unknown) => {
-                  if (s === null || s === undefined) return 'NULL';
-                  if (typeof s === 'number' || typeof s === 'bigint') return String(s);
-                  if (typeof s === 'boolean') return s ? 'TRUE' : 'FALSE';
-                  return '\'' + String(s).replace(/'/g, "''") + '\'';
-                };
-                const colNames = Object.keys(columnData);
-                const numRowsToInsert = (columnData[colNames[0]] as unknown[]).length;
-                for (let i = 0; i < numRowsToInsert; i++) {
-                  const valuesSql = colNames
-                    .map((c) => escapeSqlString((columnData[c] as unknown[])[i]))
-                    .join(', ');
-                  const insertSql = `INSERT INTO ${escapeIdent(dbTableName)} (${colNames.map(escapeIdent).join(', ')}) VALUES (${valuesSql})`;
-                  await conn.query(insertSql);
-                }
-                const recountRes = await conn.query(`SELECT COUNT(*) AS count FROM ${escapeIdent(dbTableName)}`);
-                insertedCount = recountRes.toArray()[0].toJSON().count;
-                console.log('Row count after manual inserts:', insertedCount);
-              }
-              const previewRes = await conn.query(`SELECT * FROM ${escapeIdent(dbTableName)} LIMIT 5`);
-              const previewJson = previewRes.toArray().map((r) => r.toJSON());
-              console.log('Preview rows after explicit insert:', previewJson);
-            } catch (postCheckErr) {
-              console.error('Post-insert sanity check failed:', postCheckErr);
-            }
+            await insertColumnarData(conn, columnData, dbTableName, arrowTable);
           }
 
-          // query the table
-          console.log('Executing query:', sql);
-          console.log('Using connection for query...');
+          // Execute the query
           const arrowResult = await conn.query(sql);
-          console.log('Query executed successfully');
-
-          // get query results
           const queryResult = arrowResult.toArray().map((row) => row.toJSON());
-          console.log('Query returned rows:', queryResult.length, 'First row:', queryResult[0] ?? null);
-          if (queryResult.length === 0) {
-            try {
-              const countAllRes = await conn.query(`SELECT COUNT(*) AS count FROM "${dbTableName}"`);
-              const totalRows = countAllRes.toArray()[0].toJSON().count;
-              console.log('Total rows in source table:', totalRows);
-              const previewAllRes = await conn.query(`SELECT * FROM "${dbTableName}" LIMIT 5`);
-              const previewAll = previewAllRes.toArray().map((r) => r.toJSON());
-              console.log('Preview of source table (first 5):', previewAll);
-              for (const varName of variableNames) {
-                try {
-                  const distinctRes = await conn.query(`SELECT DISTINCT "${varName}" AS v FROM "${dbTableName}" LIMIT 10`);
-                  const vals = distinctRes.toArray().map((r) => r.toJSON().v);
-                  console.log(`Distinct ${varName} (up to 10):`, vals);
-                } catch (dErr) {
-                  console.warn(`Failed to fetch distinct values for ${varName}:`, dErr);
-                }
-              }
-            } catch (diagErr) {
-              console.warn('Diagnostics after zero-row query failed:', diagErr);
-            }
-          }
           setQueryResult(queryResult);
 
           await conn.close();
@@ -478,6 +413,6 @@ export function QueryDuckDBComponent({
       </div>
     </div>
   ) : (
-    <div className="text-tiny p-2">No results.</div>
+    <div className="text-tiny p-2"></div>
   );
 }

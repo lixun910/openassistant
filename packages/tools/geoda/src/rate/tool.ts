@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool, generateId } from '@openassistant/utils';
+import {
+  OpenAssistantTool,
+  OpenAssistantExecuteFunctionResult,
+  generateId,
+} from '@openassistant/utils';
 import { calculateRates } from '@geoda/core';
 import { z } from 'zod';
 
@@ -10,46 +14,63 @@ import { getWeights } from '../utils';
 
 /**
  * ## rate Tool
- * 
- * This tool is used to calculate the rates from a base variable and an event variable using one of the following methods:
- * 
+ *
+ * This tool calculates rates from a base variable and an event variable using various statistical methods.
+ * It's commonly used in epidemiology and spatial analysis to standardize rates across different populations.
+ *
  * ### Rate Methods
  *
- * - Raw Rates
- * - Excess Risk
- * - Empirical Bayes
- * - Spatial Rates
- * - Spatial Empirical Bayes
- * - EB Rate Standardization
+ * The rate calculation method can be one of the following types:
+ * - **Raw Rates**: Simple division of events by base population
+ * - **Excess Risk**: Measures excess risk compared to expected values
+ * - **Empirical Bayes**: Uses Bayesian smoothing to stabilize rates
+ * - **Spatial Rates**: Incorporates spatial information in rate calculation
+ * - **Spatial Empirical Bayes**: Combines spatial and Bayesian smoothing
+ * - **EB Rate Standardization**: Empirical Bayes with rate standardization
  *
- * ## Example
- * ```ts
- * import { rate, RateTool } from '@openassistant/geoda';
- * import { convertToVercelAiTool } from '@openassistant/utils';
- * import { generateText } from 'ai';
+ * ### Parameters
+ * - `datasetName`: Name of the dataset containing the variables
+ * - `baseVariableName`: Name of the base population variable (denominator)
+ * - `eventVariableName`: Name of the event variable (numerator)
+ * - `rateMethod`: Rate calculation method (see above)
+ * - `weightsID`: ID of spatial weights matrix (required for spatial methods)
+ * - `saveData`: Whether to save the calculated rates (optional)
+ * - `outputRateVariableName`: Custom name for the output rate variable (optional)
  *
- * const rateTool: RateTool = {
+ * **Example user prompts:**
+ * - "Calculate the excess risk rates from the base variable 'population' and the event variable 'crimes'"
+ * - "Compute spatial empirical Bayes rates for disease incidence"
+ * - "Calculate raw crime rates per capita"
+ *
+ * ### Example
+ * ```typescript
+ * import { rate } from "@openassistant/geoda";
+ * import { convertToVercelAiTool } from "@openassistant/utils";
+ *
+ * const rateTool = {
  *   ...rate,
  *   context: {
- *     getValues: (datasetName, variableName) => {
- *       return getValues(datasetName, variableName);
+ *     getValues: async (datasetName: string, variableName: string) => {
+ *       // Implementation to retrieve values from your data source
+ *       return [1000, 2000, 1500, 3000, 2500, 1800, 2200, 1900, 2800, 2100];
  *     },
  *   },
  * };
  *
- * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ * const result = await generateText({
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Calculate the excess risk rates from the base variable "population" and the event variable "crimes"',
  *   tools: { rate: convertToVercelAiTool(rateTool) },
  * });
  * ```
  */
-export const rate = extendedTool<
+export const rate: OpenAssistantTool<
   RateFunctionArgs,
   RateLlmResult,
   RateAdditionalData,
   RateContext
->({
+> = {
+  name: 'rate',
   description:
     'Calculate the rates from a base variable and an event variable.',
   parameters: z.object({
@@ -79,7 +100,16 @@ export const rate = extendedTool<
         'The weightsID of the spatial weights. Only required for spatial rates.'
       ),
   }),
-  execute: async (args, options) => {
+  execute: async (
+    args: z.infer<RateFunctionArgs>,
+    options?: {
+      toolCallId: string;
+      abortSignal?: AbortSignal;
+      context?: RateContext;
+    }
+  ): Promise<
+    OpenAssistantExecuteFunctionResult<RateLlmResult, RateAdditionalData>
+  > => {
     try {
       const {
         datasetName,
@@ -87,7 +117,6 @@ export const rate = extendedTool<
         eventVariableName,
         rateMethod,
         weightsID,
-        saveData,
         outputRateVariableName,
       } = args;
       if (!options?.context || !isRateContext(options.context)) {
@@ -132,8 +161,6 @@ export const rate = extendedTool<
           result: `The rates created successfully. The result is stored in the column ${outputVariableName} of the dataset ${outputDatasetName}.`,
         },
         additionalData: {
-          saveData: saveData ?? false,
-          originalDatasetName: datasetName,
           datasetName: outputDatasetName,
           [outputDatasetName]: {
             type: 'columnData',
@@ -152,22 +179,25 @@ export const rate = extendedTool<
       };
     }
   },
-});
+  context: {
+    getValues: () => {
+      throw new Error('getValues() of RateTool is not implemented');
+    },
+  },
+};
 
 export type RateFunctionArgs = z.ZodObject<{
   datasetName: z.ZodString;
   baseVariableName: z.ZodString;
   eventVariableName: z.ZodString;
-  rateMethod: z.ZodEnum<
-    [
-      'Raw Rates',
-      'Excess Risk',
-      'Empirical Bayes',
-      'Spatial Rates',
-      'Spatial Empirical Bayes',
-      'EB Rate Standardization',
-    ]
-  >;
+  rateMethod: z.ZodEnum<{
+    'Raw Rates': 'Raw Rates';
+    'Excess Risk': 'Excess Risk';
+    'Empirical Bayes': 'Empirical Bayes';
+    'Spatial Rates': 'Spatial Rates';
+    'Spatial Empirical Bayes': 'Spatial Empirical Bayes';
+    'EB Rate Standardization': 'EB Rate Standardization';
+  }>;
   weightsID: z.ZodOptional<z.ZodString>;
   saveData: z.ZodOptional<z.ZodBoolean>;
   outputRateVariableName: z.ZodOptional<z.ZodString>;
@@ -177,11 +207,11 @@ export type RateLlmResult = {
   success: boolean;
   error?: string;
   details?: string;
+  result?: string;
 };
 
 export type RateAdditionalData = {
   datasetName: string;
-  variableName: string;
   [key: string]: unknown;
 };
 

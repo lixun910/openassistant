@@ -36,7 +36,7 @@ const thiessenPolygonsTool: ThiessenPolygonsTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Generate thiessen polygons for this dataset',
   tools: { thiessenPolygons: convertToVercelAiTool(thiessenPolygonsTool) },
 });

@@ -21,7 +21,7 @@ const localQueryTool: LocalQueryTool = {
 };
 
 const tool = localQuery({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Get the values of the variable "income" for the dataset "census"',
   tools: { localQuery: convertToVercelAiTool(localQueryTool) },
 });

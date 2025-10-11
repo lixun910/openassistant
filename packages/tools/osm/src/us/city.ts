@@ -6,13 +6,21 @@ import {
   cacheData,
   generateId,
   getCachedData,
-  extendedTool,
+  OpenAssistantTool,
 } from '@openassistant/utils';
 import { githubRateLimiter } from '../utils/rateLimiter';
 
-export type GetUsCityGeojsonFunctionArgs = z.ZodObject<{
-  cityNames: z.ZodArray<z.ZodString>;
-}>;
+const getUsCityGeojsonParameters = z.object({
+  cityNames: z.array(
+    z
+      .string()
+      .describe(
+        'The city name in the format "state-code/city-name.json" (e.g., "ca/san-francisco.json" for San Francisco, CA or "az/chandler.json" for Chandler, AZ)'
+      )
+  ),
+});
+
+export type GetUsCityGeojsonFunctionArgs = z.infer<typeof getUsCityGeojsonParameters>;
 
 export type GetUsCityGeojsonLlmResult = {
   success: boolean;
@@ -68,7 +76,7 @@ export type ExecuteGetUsCityGeojsonResult = {
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'What are the boundaries of San Francisco?',
  *   tools: {
  *     city: convertToVercelAiTool(cityTool),
@@ -76,23 +84,16 @@ export type ExecuteGetUsCityGeojsonResult = {
  * });
  * ```
  */
-export const getUsCityGeojson = extendedTool<
-  GetUsCityGeojsonFunctionArgs,
+export const getUsCityGeojson: OpenAssistantTool<
+  typeof getUsCityGeojsonParameters,
   GetUsCityGeojsonLlmResult,
   GetUsCityGeojsonAdditionalData,
   object
->({
+> = {
+  name: 'getUsCityGeojson',
   description:
     'Get GeoJSON data for US cities by their state code and city name',
-  parameters: z.object({
-    cityNames: z.array(
-      z
-        .string()
-        .describe(
-          'The city name in the format "state-code/city-name.json" (e.g., "ca/san-francisco.json" for San Francisco, CA or "az/chandler.json" for Chandler, AZ)'
-        )
-    ),
-  }),
+  parameters: getUsCityGeojsonParameters,
   execute: async (args): Promise<ExecuteGetUsCityGeojsonResult> => {
     try {
       const { cityNames } = args;
@@ -155,6 +156,6 @@ export const getUsCityGeojson = extendedTool<
     }
   },
   context: {},
-});
+};
 
 export type GetUsCityGeojsonTool = typeof getUsCityGeojson;

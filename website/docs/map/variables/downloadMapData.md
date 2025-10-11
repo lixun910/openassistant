@@ -44,7 +44,7 @@ const keplerglTool: KeplerglTool = {
 };
 
 * generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Create a from https://geodacenter.github.io/data-and-lab//data/Chi_Carjackings.geojson',
   tools: {
     createMap: convertToVercelAiTool(keplerglTool),

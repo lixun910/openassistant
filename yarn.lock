@@ -23499,6 +23499,7 @@ __metadata:
   dependencies:
     "@openassistant/chat": "workspace:*"
     "@openassistant/duckdb": "workspace:*"
+    "@openassistant/geoda": "workspace:*"
     "@openassistant/tables": "workspace:*"
     "@sqlrooms/ui": "npm:^0.24.27"
     "@types/react": "npm:^18.3.1"

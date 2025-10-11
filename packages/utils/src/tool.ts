@@ -1,4 +1,5 @@
 import type { ZodType } from 'zod';
+import { z } from 'zod';
 
 export type OpenAssistantToolParameters = ZodType<unknown>;
 
@@ -24,7 +25,7 @@ export type OpenAssistantExecuteFunction<
   TArgs = unknown,
   TLlmResult = unknown,
   TAdditionalData = unknown,
-  TContext = Record<string, unknown>,
+  TContext = unknown,
 > = (
   params: TArgs,
   options?: OpenAssistantToolExecutionOptions & {
@@ -33,18 +34,18 @@ export type OpenAssistantExecuteFunction<
 ) => Promise<OpenAssistantExecuteFunctionResult<TLlmResult, TAdditionalData>>;
 
 export type OpenAssistantTool<
-  TArgs = unknown,
+  TArgs extends ZodType = ZodType<unknown>,
   TLlmResult = unknown,
   TAdditionalData = unknown,
-  TContext = Record<string, unknown>,
+  TContext = unknown,
 > = {
   name: string;
   description: string;
-  parameters: OpenAssistantToolParameters;
+  parameters: TArgs;
   context: TContext;
   component?: unknown;
   onToolCompleted?: OpenAssistantOnToolCompleted;
-  execute: OpenAssistantExecuteFunction<TArgs, TLlmResult, TAdditionalData, TContext>;
+  execute: OpenAssistantExecuteFunction<z.infer<TArgs>, TLlmResult, TAdditionalData, TContext>;
 };
 
 export type OpenAssistantToolSet = Record<string, OpenAssistantTool>;

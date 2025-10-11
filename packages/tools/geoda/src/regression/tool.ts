@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool, generateId } from '@openassistant/utils';
+import {
+  OpenAssistantTool,
+  OpenAssistantExecuteFunctionResult,
+  generateId,
+} from '@openassistant/utils';
 import { z } from 'zod';
 import {
   LinearRegressionResult,
@@ -17,7 +21,11 @@ export type SpatialRegressionFunctionArgs = z.ZodObject<{
   datasetName: z.ZodString;
   dependentVariable: z.ZodString;
   independentVariables: z.ZodArray<z.ZodString>;
-  modelType: z.ZodEnum<['classic', 'spatial-lag', 'spatial-error']>;
+  modelType: z.ZodEnum<{
+    classic: 'classic';
+    'spatial-lag': 'spatial-lag';
+    'spatial-error': 'spatial-error';
+  }>;
   weightsId: z.ZodOptional<z.ZodString>;
 }>;
 
@@ -42,54 +50,61 @@ export type SpatialRegressionFunctionContext = {
 /**
  * ## spatialRegression Tool
  *
- * This tool is used to perform regression analysis with spatial data.
+ * This tool performs regression analysis with spatial data, accounting for spatial effects that may violate the independence assumption of classical regression.
+ * It supports both classical and spatial regression models with proper diagnostics.
  *
  * ### Spatial Regression Models
  *
  * The tool supports three types of regression models:
- * - Classic (OLS) regression
- * - Spatial lag model (accounting for spatial dependence in the dependent variable)
- * - Spatial error model (accounting for spatial dependence in the error term)
+ * - **classic**: Ordinary Least Squares (OLS) regression with spatial diagnostics
+ * - **spatial-lag**: Spatial lag model accounting for spatial dependence in the dependent variable
+ * - **spatial-error**: Spatial error model accounting for spatial dependence in the error term
  *
- * When user prompts e.g. *can you run a spatial regression analysis on the housing data?*
+ * ### Parameters
+ * - `datasetName`: Name of the dataset containing the variables
+ * - `dependentVariable`: Name of the dependent variable (y)
+ * - `independentVariables`: Array of independent variable names (x1, x2, ...)
+ * - `modelType`: Type of regression model (see above)
+ * - `weightsId`: ID of spatial weights matrix (required for spatial models)
  *
- * 1. The LLM will execute the callback function of spatialRegressionFunctionDefinition, and perform the regression analysis using the data retrieved from `getValues` function.
- * 2. The result will include regression coefficients, significance tests, and model diagnostics.
- * 3. The LLM will respond with the analysis results and suggestions for model improvement.
+ * **Example user prompts:**
+ * - "Can you run a spatial regression analysis on the housing data?"
+ * - "Perform a spatial lag regression of revenue ~ population + income"
+ * - "Run OLS regression with spatial diagnostics for crime rates"
  *
- * ### For example
- * ```
- * User: can you run a spatial regression analysis on the housing data?
- * LLM: I've performed a spatial lag regression analysis on the housing data. The model shows significant spatial effects...
- * ```
- *
- * ### Code example
+ * ### Example
  * ```typescript
- * import { spatialRegression, SpatialRegressionTool } from '@openassistant/geoda';
- * import { convertToVercelAiTool } from '@openassistant/utils';
- * import { generateText } from 'ai';
+ * import { spatialRegression } from "@openassistant/geoda";
+ * import { convertToVercelAiTool } from "@openassistant/utils";
  *
- * const spatialRegressionTool: SpatialRegressionTool = {
+ * const regressionTool = {
  *   ...spatialRegression,
  *   context: {
- *     getValues: (datasetName, variableName) => {
- *     return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ *     getValues: async (datasetName: string, variableName: string) => {
+ *       // Implementation to retrieve values from your data source
+ *       return [100, 200, 150, 300, 250, 180, 220, 190, 280, 210];
+ *     },
  *   },
  * };
  *
- * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ * const result = await generateText({
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Can you run a spatial regression analysis of "revenue ~ population + income" on the data?',
- *   tools: {spatialRegression: convertToVercelAiTool(spatialRegressionTool)},
+ *   tools: { spatialRegression: convertToVercelAiTool(regressionTool) },
  * });
  * ```
+ *
+ * :::note
+ * Please only use knowledge from Luc Anselin's GeoDa book and the GeoDa documentation to answer questions about spatial regression.
+ * :::
  */
-export const spatialRegression = extendedTool<
+export const spatialRegression: OpenAssistantTool<
   SpatialRegressionFunctionArgs,
   SpatialRegressionLlmResult,
   SpatialRegressionAdditionalData,
   SpatialRegressionFunctionContext
->({
+> = {
+  name: 'spatialRegression',
   description: `Apply spatial regression analysis.
 Note:
 - please only use the knowledge from Luc Anselin's GeoDa book and the GeoDa documentation to answer the question
@@ -116,7 +131,7 @@ Note:
       throw new Error('getValues not implemented.');
     },
   },
-});
+};
 
 export type SpatialRegressionTool = typeof spatialRegression;
 
@@ -153,18 +168,25 @@ function isSpatialRegressionContext(
 }
 
 async function executeSpatialRegression(
-  args,
-  options
-): Promise<{
-  llmResult: SpatialRegressionLlmResult;
-  additionalData?: SpatialRegressionAdditionalData;
-}> {
+  args: z.infer<SpatialRegressionFunctionArgs>,
+  options?: {
+    toolCallId: string;
+    abortSignal?: AbortSignal;
+    context?: SpatialRegressionFunctionContext;
+    previousExecutionOutput?: unknown[];
+  }
+): Promise<
+  OpenAssistantExecuteFunctionResult<
+    SpatialRegressionLlmResult,
+    SpatialRegressionAdditionalData
+  >
+> {
   try {
     if (!isSpatialRegressionArgs(args)) {
       throw new Error('Invalid arguments for spatialRegression tool');
     }
 
-    if (options.context && !isSpatialRegressionContext(options.context)) {
+    if (!options?.context || !isSpatialRegressionContext(options.context)) {
       throw new Error('Invalid context for spatialRegression tool');
     }
 
@@ -186,10 +208,7 @@ async function executeSpatialRegression(
     );
 
     // Get weights if needed
-    const { weights, weightsMeta } = getWeights(
-      weightsId,
-      options.previousExecutionOutput
-    );
+    const { weights, weightsMeta } = getWeights(weightsId);
 
     if (
       !weights &&
@@ -212,8 +231,8 @@ async function executeSpatialRegression(
     const regression = await runRegression({
       datasetName,
       model: modelType || 'classic',
-      x: xValues,
-      y: yValues,
+      x: xValues as number[][],
+      y: yValues as number[],
       xNames: independentVariables,
       yName: dependentVariable,
       weights: weightsProps,

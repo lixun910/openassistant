@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool } from '@openassistant/utils';
+import {
+  OpenAssistantTool,
+  OpenAssistantExecuteFunctionResult,
+} from '@openassistant/utils';
 import { z } from 'zod';
 import {
   equalIntervalBreaks,
@@ -17,17 +20,15 @@ import { GetValues } from '../types';
 export type DataClassifyFunctionArgs = z.ZodObject<{
   datasetName: z.ZodString;
   variableName: z.ZodString;
-  method: z.ZodEnum<
-    [
-      'quantile',
-      'natural breaks',
-      'equal interval',
-      'percentile',
-      'box',
-      'standard deviation',
-      'unique values',
-    ]
-  >;
+  method: z.ZodEnum<{
+    quantile: 'quantile';
+    'natural breaks': 'natural breaks';
+    'equal interval': 'equal interval';
+    percentile: 'percentile';
+    box: 'box';
+    'standard deviation': 'standard deviation';
+    'unique values': 'unique values';
+  }>;
   k: z.ZodOptional<z.ZodNumber>;
   hinge: z.ZodOptional<z.ZodNumber>;
 }>;
@@ -61,54 +62,65 @@ export type DataClassifyFunctionContext = {
 
 /**
  * ## dataClassify Tool
- * 
- * This tool is used to classify the data into k bins or classes.
+ *
+ * This tool is used to classify numerical data into k bins or classes using various statistical methods.
+ * It returns break points that can be used to categorize continuous data into discrete intervals.
  *
  * ### Classification Methods
  *
  * The classification method can be one of the following types:
- * - quantile
- * - natural breaks
- * - equal interval
- * - percentile
- * - box
- * - standard deviation
- * - unique values.
+ * - **quantile**: Divides data into equal-sized groups based on quantiles
+ * - **natural breaks**: Uses Jenks' algorithm to minimize within-group variance
+ * - **equal interval**: Creates intervals of equal width across the data range
+ * - **percentile**: Uses percentile-based breaks (25th, 50th, 75th percentiles)
+ * - **box**: Uses box plot statistics (hinge = 1.5 or 3.0)
+ * - **standard deviation**: Creates breaks based on standard deviation intervals
+ * - **unique values**: Returns all unique values in the dataset
+ *
+ * ### Parameters
+ * - `datasetName`: Name of the dataset containing the variable
+ * - `variableName`: Name of the numerical variable to classify
+ * - `method`: Classification method (see above)
+ * - `k`: Number of bins/classes (required for quantile, natural breaks, equal interval)
+ * - `hinge`: Hinge value for box method (default: 1.5)
  *
  * **Example user prompts:**
- * - "Can you classify the data of population into 5 classes?"
+ * - "Can you classify the population data into 5 classes using natural breaks?"
+ * - "Classify the income variable using quantile method with 4 bins"
+ * - "Use box plot method to classify the housing prices"
  *
- * @example
+ * ### Example
  * ```typescript
- * import { dataClassify, DataClassifyTool } from "@openassistant/geoda";
+ * import { dataClassify } from "@openassistant/geoda";
  * import { convertToVercelAiTool } from "@openassistant/utils";
  *
- * const classifyTool: DataClassifyTool = {
+ * const classifyTool = {
  *   ...dataClassify,
- *   toolContext: {
+ *   context: {
  *     getValues: async (datasetName: string, variableName: string) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ *       // Implementation to retrieve values from your data source
+ *       return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
  *     },
  *   },
  * };
  *
+ * // Usage with AI model
  * const result = await generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
- *   prompt: 'Can you classify the data of population into 5 classes?',
- *   tools: {dataClassify: convertToVercelAiTool(classifyTool)},
+ *   model: yourModel,
+ *   prompt: 'Can you classify the population data into 5 classes using natural breaks?',
+ *   tools: { dataClassify: convertToVercelAiTool(classifyTool) },
  * });
- *
  * ```
- *
- * For a more complete example, see the [Geoda Tools Example using Next.js + Vercel AI SDK](https://github.com/openassistant/openassistant/tree/main/examples/vercel_geoda_example).
  */
-export const dataClassify = extendedTool<
+export const dataClassify: OpenAssistantTool<
   DataClassifyFunctionArgs,
   DataClassifyLlmResult,
   DataClassifyAdditionalData,
   DataClassifyFunctionContext
->({
-  description: 'Classify the data into k bins or categories, and return k-1 or k (for unique values) break values.',
+> = {
+  name: 'dataClassify',
+  description:
+    'Classify the numeric values into k bins or categories, and return k-1 or k (for unique values) break values. The values can be retrieved from the dataset using the variableName and datasetName.',
   parameters: z.object({
     datasetName: z.string(),
     variableName: z.string(),
@@ -140,7 +152,7 @@ export const dataClassify = extendedTool<
       throw new Error('getValues() of DataClassifyTool is not implemented');
     },
   },
-});
+};
 
 export type DataClassifyTool = typeof dataClassify;
 
@@ -176,21 +188,25 @@ function isDataClassifyContext(
   );
 }
 
-export type ExecuteDataClassifyResult = {
-  llmResult: DataClassifyLlmResult;
-  additionalData?: DataClassifyAdditionalData;
-};
-
 async function executeDataClassify(
-  args,
-  options
-): Promise<ExecuteDataClassifyResult> {
+  args: z.infer<DataClassifyFunctionArgs>,
+  options?: {
+    toolCallId: string;
+    abortSignal?: AbortSignal;
+    context?: DataClassifyFunctionContext;
+  }
+): Promise<
+  OpenAssistantExecuteFunctionResult<
+    DataClassifyLlmResult,
+    DataClassifyAdditionalData
+  >
+> {
   try {
     if (!isDataClassifyToolArgs(args)) {
       throw new Error('Invalid arguments for dataClassify tool');
     }
 
-    if (!options.context || !isDataClassifyContext(options.context)) {
+    if (!options?.context || !isDataClassifyContext(options.context)) {
       throw new Error('Invalid context for dataClassify tool');
     }
 

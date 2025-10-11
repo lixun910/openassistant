@@ -1,4 +1,5 @@
 import { type OpenAssistantTool, type OpenAssistantExecuteFunctionResult } from "./tool";
+import { z } from 'zod';
 
 /**
  * Converts an OpenAssistantTool to a LangChain-compatible tool configuration.
@@ -25,7 +26,7 @@ import { type OpenAssistantTool, type OpenAssistantExecuteFunctionResult } from 
  * ```
  */
 export function convertToLangchainTool(
-  tool: OpenAssistantTool
+  tool: OpenAssistantTool<z.ZodTypeAny, unknown, unknown, unknown>
 ) {
   // Convert the OpenAssistant tool to LangChain tool configuration
   return {
@@ -36,7 +37,7 @@ export function convertToLangchainTool(
       try {
         const result = await (tool.execute as (args: unknown, options?: unknown) => Promise<OpenAssistantExecuteFunctionResult>)(args, {
           toolCallId: 'langchain',
-          context: { ...tool.context },
+          context: tool.context && typeof tool.context === 'object' ? { ...tool.context } : {},
         });
 
         const { additionalData, llmResult } = result;

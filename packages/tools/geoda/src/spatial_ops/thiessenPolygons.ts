@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { getThiessenPolygons } from '@geoda/core';
-import { extendedTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, OpenAssistantExecuteFunctionResult, generateId } from '@openassistant/utils';
 import { z } from 'zod';
 
 import { SpatialToolContext } from '../types';
@@ -10,50 +10,56 @@ import { isSpatialToolContext } from '../utils';
 
 /**
  * ## thiessenPolygons Tool
+ * 
+ * This tool creates Thiessen polygons (Voronoi diagrams) from a set of points.
+ * Thiessen polygons divide space into regions where each point is closer to its associated polygon than to any other point.
  *
- * This tool generates thiessen polygons or voronoi diagrams from a given dataset or geojson.
+ * ### Thiessen Polygons
  *
- * ### Thiessen Polygons Generation
+ * The tool creates Thiessen polygons with the following features:
+ * - **Voronoi Diagram**: Divides space into regions based on proximity to input points
+ * - **Spatial Partitioning**: Each polygon contains all locations closest to its associated point
+ * - **Network Analysis**: Useful for service area analysis and spatial modeling
+ * - **Polygon Output**: Returns the Thiessen polygons as polygon features for mapping
  *
- * It supports both direct geojson input and dataset names.
+ * ### Parameters
+ * - `datasetName`: Name of the dataset with point geometries to create Thiessen polygons from (optional)
+ * - `geojson`: GeoJSON string of point geometries to create Thiessen polygons from (optional)
  *
- * Example user prompts:
- * - "Generate thiessen polygons for this dataset"
+ * **Example user prompts:**
+ * - "Create Thiessen polygons from these points"
+ * - "Generate Voronoi diagram for the facility locations"
+ * - "Make service area polygons for these hospitals"
  *
- * ## Example Code
- *
+ * ### Example
  * ```typescript
- * import { thiessenPolygons, ThiessenPolygonsTool } from '@openassistant/geoda';
- * import { convertToVercelAiTool } from '@openassistant/utils';
- * import { generateText } from 'ai';
+ * import { thiessenPolygons } from "@openassistant/geoda";
+ * import { convertToVercelAiTool } from "@openassistant/utils";
  *
- * const thiessenPolygonsTool: ThiessenPolygonsTool = {
+ * const thiessenTool = {
  *   ...thiessenPolygons,
  *   context: {
- *     getGeometries: (datasetName) => {
- *       return getGeometries(datasetName);
+ *     getGeometries: async (datasetName: string) => {
+ *       // Implementation to retrieve geometries from your data source
+ *       return geometries;
  *     },
- *   },
- *   onToolCompleted: (toolCallId, additionalData) => {
- *     console.log(toolCallId, additionalData);
- *     // do something like save the thiessen polygons result in additionalData
  *   },
  * };
  *
- * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
- *   prompt: 'Generate thiessen polygons for this dataset',
- *   tools: { thiessenPolygons: convertToVercelAiTool(thiessenPolygonsTool) },
+ * const result = await generateText({
+ *   model: openai('gpt-4.1', { apiKey: key }),
+ *   prompt: 'Create Thiessen polygons from these points',
+ *   tools: { thiessenPolygons: convertToVercelAiTool(thiessenTool) },
  * });
  * ```
- *
  */
-export const thiessenPolygons = extendedTool<
+export const thiessenPolygons: OpenAssistantTool<
   ThiessenPolygonsArgs,
   ThiessenPolygonsLlmResult,
   ThiessenPolygonsAdditionalData,
   SpatialToolContext
->({
+> = {
+  name: 'thiessenPolygons',
   description: 'Generate thiessen polygons or voronoi diagrams',
   parameters: z.object({
     datasetName: z.string().optional(),
@@ -67,7 +73,11 @@ export const thiessenPolygons = extendedTool<
   context: {
     getGeometries: async () => null,
   },
-  execute: async (args, options) => {
+  execute: async (args: z.infer<ThiessenPolygonsArgs>, options?: {
+    toolCallId: string;
+    abortSignal?: AbortSignal;
+    context?: SpatialToolContext;
+  }): Promise<OpenAssistantExecuteFunctionResult<ThiessenPolygonsLlmResult, ThiessenPolygonsAdditionalData>> => {
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(
         'Context is required and must implement SpatialToolContext'
@@ -115,7 +125,7 @@ export const thiessenPolygons = extendedTool<
       },
     };
   },
-});
+};
 
 export type ThiessenPolygonsArgs = z.ZodObject<{
   datasetName: z.ZodOptional<z.ZodString>;

@@ -2,17 +2,21 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { extendedTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, generateId } from '@openassistant/utils';
 import { RateLimiter } from './utils/rateLimiter';
 
 // Create a single instance to be shared across all calls
 // Nominatim requires 1 second between requests
 const nominatimRateLimiter = new RateLimiter(1000);
 
-export type ReverseGeocodingFunctionArgs = z.ZodObject<{
-  latitude: z.ZodNumber;
-  longitude: z.ZodNumber;
-}>;
+const reverseGeocodingParameters = z.object({
+  latitude: z.number().describe('The latitude coordinate (decimal degrees)'),
+  longitude: z
+    .number()
+    .describe('The longitude coordinate (decimal degrees)'),
+});
+
+export type ReverseGeocodingFunctionArgs = z.infer<typeof reverseGeocodingParameters>;
 
 export type ReverseGeocodingLlmResult = {
   success: boolean;
@@ -46,7 +50,7 @@ export type ReverseGeocodingAdditionalData = {
  * import { generateText } from 'ai';
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'What is the address at coordinates 40.7128, -74.0060?',
  *   tools: {
  *     reverseGeocoding: convertToVercelAiTool(reverseGeocoding),
@@ -54,20 +58,16 @@ export type ReverseGeocodingAdditionalData = {
  * });
  * ```
  */
-export const reverseGeocoding = extendedTool<
-  ReverseGeocodingFunctionArgs,
+export const reverseGeocoding: OpenAssistantTool<
+  typeof reverseGeocodingParameters,
   ReverseGeocodingLlmResult,
   ReverseGeocodingAdditionalData,
   ReverseGeocodingToolContext
->({
+> = {
+  name: 'reverseGeocoding',
   description:
     'Reverse geocode coordinates to get the address and location information for a given latitude and longitude',
-  parameters: z.object({
-    latitude: z.number().describe('The latitude coordinate (decimal degrees)'),
-    longitude: z
-      .number()
-      .describe('The longitude coordinate (decimal degrees)'),
-  }),
+  parameters: reverseGeocodingParameters,
   execute: async (
     args
   ): Promise<{
@@ -187,7 +187,7 @@ export const reverseGeocoding = extendedTool<
     }
   },
   context: {},
-});
+};
 
 export type ReverseGeocodingTool = typeof reverseGeocoding;
 

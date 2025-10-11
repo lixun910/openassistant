@@ -35,7 +35,7 @@ const areaTool: AreaTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Calculate the area of these counties in square kilometers',
   tools: {area: convertToVercelAiTool(area)},
 });
