@@ -1,12 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import {
-  cacheData,
-  generateId,
-  getCachedData,
-  extendedTool,
-} from '@openassistant/utils';
+import { cacheData, generateId, getCachedData, OpenAssistantTool } from '@openassistant/utils';
 import { z } from 'zod';
 import zips from 'zip3';
 import { githubRateLimiter } from '../utils/rateLimiter';
@@ -77,12 +72,12 @@ export type ExecuteGetUsZipcodeGeojsonResult = {
  * ```
  *
  */
-export const getUsZipcodeGeojson = extendedTool<
+export const getUsZipcodeGeojson: OpenAssistantTool<
   GetUsZipcodeGeojsonFunctionArgs,
   GetUsZipcodeGeojsonLlmResult,
-  GetUsZipcodeGeojsonAdditionalData,
-  object
->({
+  GetUsZipcodeGeojsonAdditionalData
+> = {
+  name: 'getUsZipcodeGeojson',
   description: 'Get the GeoJSON data of one or more United States zipcodes',
   parameters: z.object({
     zipcodes: z.array(
@@ -149,7 +144,6 @@ export const getUsZipcodeGeojson = extendedTool<
       };
     }
   },
-  context: {},
-});
+};
 
 export type GetUsZipcodeGeojsonTool = typeof getUsZipcodeGeojson;

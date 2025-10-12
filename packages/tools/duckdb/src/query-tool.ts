@@ -74,7 +74,8 @@ function truncateObjectValues(obj: unknown, maxLength: number): unknown {
 export const localQuery: OpenAssistantTool<
   LocalQueryArgs,
   LocalQueryResult['llmResult'],
-  LocalQueryResult['additionalData']
+  LocalQueryResult['additionalData'],
+  LocalQueryContext
 > = {
   name: 'localQuery',
   description: `You are a SQL (duckdb) expert. You can help to query users datasets using select query clause.`,
@@ -111,7 +112,7 @@ async function executeLocalQuery(
   options?: {
     toolCallId: string;
     abortSignal?: AbortSignal;
-    context?: Record<string, unknown>;
+    context?: LocalQueryContext;
   }
 ): Promise<
   OpenAssistantExecuteFunctionResult<

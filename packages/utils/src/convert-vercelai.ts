@@ -48,17 +48,13 @@ export function convertToVercelAiTool(
       options: {
         toolCallId: string;
         abortSignal?: AbortSignal;
-        context?: Record<string, unknown>;
       }
     ) => {
       const { toolCallId } = options;
       try {
         const result = await tool.execute(args, {
           ...options,
-          context: { 
-            ...(tool.context && typeof tool.context === 'object' ? tool.context : {}), 
-            ...options.context 
-          },
+          context: tool.context,
         });
 
         const { additionalData, llmResult } = result;
@@ -67,10 +63,7 @@ export function convertToVercelAiTool(
           tool.onToolCompleted(toolCallId, additionalData);
         }
 
-        return {
-          success: true,
-          result: llmResult as unknown as string,
-        };
+        return llmResult;
       } catch (error) {
         console.error(`Execute tool failed: ${error}`);
         return {
