@@ -4,7 +4,7 @@
 import { z } from 'zod';
 import { generateId, OpenAssistantTool } from '@openassistant/utils';
 import { FeatureCollection } from 'geojson';
-import { isMapboxToolContext, MapboxToolContext } from './register-tools';
+import { isMapboxToolContext, MapboxToolContext } from './utils';
 import { mapboxRateLimiter } from './utils/rateLimiter';
 
 interface MapboxIsochroneResponse {

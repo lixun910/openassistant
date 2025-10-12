@@ -4,7 +4,7 @@
 import { z } from 'zod';
 import { OpenAssistantTool, generateId, getBoundsFromGeoJSON } from '@openassistant/utils';
 import { RateLimiter } from './utils/rateLimiter';
-import { isOsmToolContext, OsmToolContext } from './register-tools';
+import { isOsmToolContext, OsmToolContext } from './utils';
 
 // Create a single instance to be shared across all calls
 const overpassRateLimiter = new RateLimiter(1000);

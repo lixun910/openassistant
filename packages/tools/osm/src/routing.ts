@@ -4,7 +4,7 @@
 import { z } from 'zod';
 import { FeatureCollection } from 'geojson';
 import { generateId, OpenAssistantTool } from '@openassistant/utils';
-import { isMapboxToolContext, MapboxToolContext } from './register-tools';
+import { isMapboxToolContext, MapboxToolContext } from './utils';
 import { mapboxRateLimiter } from './utils/rateLimiter';
 
 type MapboxStep = {

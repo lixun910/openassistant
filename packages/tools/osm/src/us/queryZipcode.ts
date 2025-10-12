@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { cacheData, getCachedData, extendedTool } from '@openassistant/utils';
+import { cacheData, getCachedData, OpenAssistantTool } from '@openassistant/utils';
 import { githubRateLimiter } from '../utils/rateLimiter';
 
 export type QueryZipcodeFunctionArgs = z.ZodObject<{
@@ -65,12 +65,12 @@ export type ExecuteQueryUSZipcodesResult = {
  *
  * For a more complete example, see the [OSM Tools Example using Next.js + Vercel AI SDK](https://github.com/openassistant/openassistant/tree/main/examples/vercel_osm_example).
  */
-export const queryUSZipcodes = extendedTool<
+export const queryUSZipcodes: OpenAssistantTool<
   QueryZipcodeFunctionArgs,
   QueryZipcodeLlmResult,
-  QueryZipcodeAdditionalData,
-  object
->({
+  QueryZipcodeAdditionalData
+> = {
+  name: 'queryUSZipcodes',
   description: 'Query US zipcodes within a given map bounds',
   parameters: z.object({
     mapBounds: z.object({
@@ -152,7 +152,6 @@ export const queryUSZipcodes = extendedTool<
       };
     }
   },
-  context: {},
-});
+};
 
 export type QueryUSZipcodesTool = typeof queryUSZipcodes;

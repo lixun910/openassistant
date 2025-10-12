@@ -19,3 +19,4 @@ packages/.DS_Store
 .turbo
 node_modules/
 .vscode/
+docs/api

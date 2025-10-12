@@ -6,7 +6,8 @@
     "packages/*",
     "packages/tools/*",
     "packages/components/*",
-    "examples/*"
+    "examples/*",
+    "docs"
   ],
   "scripts": {
     "clean": "rm -rf packages/*/dist",
@@ -18,6 +19,9 @@
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
     "lint": "lerna run lint --parallel",
     "website:start": "cd website && yarn start",
+    "docs:dev": "cd docs && yarn dev",
+    "docs:build": "cd docs && yarn build",
+    "docs:preview": "cd docs && yarn preview",
     "version-prerelease": "lerna version prerelease --no-push --sync-workspace-lock --no-git-tag-version --force-publish && ts-node scripts/update-version.mjs && yarn install",
     "version-patch": "lerna version patch --no-push --sync-workspace-lock --no-git-tag-version --force-publish && ts-node scripts/update-version.mjs && yarn install",
     "version-minor": "lerna version minor --no-push --sync-workspace-lock --no-git-tag-version --force-publish && ts-node scripts/update-version.mjs && yarn install",

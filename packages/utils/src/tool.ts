@@ -42,13 +42,22 @@ export type OpenAssistantTool<
   name: string;
   description: string;
   parameters: TArgs;
-  context: TContext;
+  context?: TContext;
   component?: unknown;
   onToolCompleted?: OpenAssistantOnToolCompleted;
-  execute: OpenAssistantExecuteFunction<z.infer<TArgs>, TLlmResult, TAdditionalData, TContext>;
+  execute: OpenAssistantExecuteFunction<
+    z.infer<TArgs>,
+    TLlmResult,
+    TAdditionalData,
+    TContext
+  >;
 };
 
-export type OpenAssistantToolSet = Record<string, OpenAssistantTool>;
+export type OpenAssistantToolSet = Record<
+  string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  OpenAssistantTool<any, any, any, any>
+>;
 
 // Legacy exports for backward compatibility
 export type OnToolCompleted = OpenAssistantOnToolCompleted;
