@@ -199,7 +199,7 @@ export type MergeTablesArgs = z.ZodObject<{
   datasetNameB: z.ZodString;
   columnNamesA: z.ZodArray<z.ZodString>;
   columnNamesB: z.ZodArray<z.ZodString>;
-  mergeType: z.ZodEnum<{ horizontal: 'horizontal'; vertical: 'vertical' }>;
+  mergeType: z.ZodEnum<['horizontal', 'vertical']>;
   keyColumn: z.ZodOptional<z.ZodString>;
   dbTableNameA: z.ZodString;
   dbTableNameB: z.ZodString;

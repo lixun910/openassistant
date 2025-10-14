@@ -21,13 +21,7 @@ import { getWeights } from '../utils';
 import { appendJoinValuesToGeometries } from '../spatial_join/tool';
 
 export type LisaFunctionArgs = z.ZodObject<{
-  method: z.ZodEnum<{
-    localMoran: 'localMoran';
-    localGeary: 'localGeary';
-    localG: 'localG';
-    localGStar: 'localGStar';
-    quantileLisa: 'quantileLisa';
-  }>;
+  method: z.ZodEnum<['localMoran', 'localGeary', 'localG', 'localGStar', 'quantileLisa']>;
   weightsID: z.ZodOptional<z.ZodString>;
   variableName: z.ZodString;
   multiVariableNames: z.ZodOptional<z.ZodArray<z.ZodString>>;

@@ -17,12 +17,7 @@ export const globalWeightsData: Record<string, WeightsProps> = {};
 
 export type SpatialWeightsFunctionArgs = z.ZodObject<{
   datasetName: z.ZodString;
-  type: z.ZodEnum<{
-    knn: 'knn';
-    queen: 'queen';
-    rook: 'rook';
-    threshold: 'threshold';
-  }>;
+  type: z.ZodEnum<['knn', 'queen', 'rook', 'threshold']>;
   k: z.ZodOptional<z.ZodNumber>;
   orderOfContiguity: z.ZodOptional<z.ZodNumber>;
   includeLowerOrder: z.ZodOptional<z.ZodBoolean>;

@@ -20,15 +20,7 @@ import { GetValues } from '../types';
 export type DataClassifyFunctionArgs = z.ZodObject<{
   datasetName: z.ZodString;
   variableName: z.ZodString;
-  method: z.ZodEnum<{
-    quantile: 'quantile';
-    'natural breaks': 'natural breaks';
-    'equal interval': 'equal interval';
-    percentile: 'percentile';
-    box: 'box';
-    'standard deviation': 'standard deviation';
-    'unique values': 'unique values';
-  }>;
+  method: z.ZodEnum<['quantile', 'natural breaks', 'equal interval', 'percentile', 'box', 'standard deviation', 'unique values']>;
   k: z.ZodOptional<z.ZodNumber>;
   hinge: z.ZodOptional<z.ZodNumber>;
 }>;

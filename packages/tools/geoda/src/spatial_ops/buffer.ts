@@ -17,7 +17,7 @@ export type BufferFunctionArgs = z.ZodObject<{
   geojson: z.ZodOptional<z.ZodString>;
   datasetName: z.ZodOptional<z.ZodString>;
   distance: z.ZodNumber;
-  distanceUnit: z.ZodEnum<{ KM: 'KM'; Mile: 'Mile' }>;
+  distanceUnit: z.ZodEnum<['KM', 'Mile']>;
   pointsPerCircle: z.ZodOptional<z.ZodNumber>;
 }>;
 

@@ -190,14 +190,7 @@ export type RateFunctionArgs = z.ZodObject<{
   datasetName: z.ZodString;
   baseVariableName: z.ZodString;
   eventVariableName: z.ZodString;
-  rateMethod: z.ZodEnum<{
-    'Raw Rates': 'Raw Rates';
-    'Excess Risk': 'Excess Risk';
-    'Empirical Bayes': 'Empirical Bayes';
-    'Spatial Rates': 'Spatial Rates';
-    'Spatial Empirical Bayes': 'Spatial Empirical Bayes';
-    'EB Rate Standardization': 'EB Rate Standardization';
-  }>;
+  rateMethod: z.ZodEnum<['Raw Rates', 'Excess Risk', 'Empirical Bayes', 'Spatial Rates', 'Spatial Empirical Bayes', 'EB Rate Standardization']>;
   weightsID: z.ZodOptional<z.ZodString>;
   saveData: z.ZodOptional<z.ZodBoolean>;
   outputRateVariableName: z.ZodOptional<z.ZodString>;

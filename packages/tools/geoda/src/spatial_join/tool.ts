@@ -25,15 +25,7 @@ export type SpatialJoinFunctionArgs = z.ZodObject<{
     z.ZodArray<
       z.ZodObject<{
         variableName: z.ZodString;
-        operator: z.ZodEnum<{
-          sum: 'sum';
-          mean: 'mean';
-          min: 'min';
-          max: 'max';
-          median: 'median';
-          count: 'count';
-          unique: 'unique';
-        }>;
+        operator: z.ZodEnum<['sum', 'mean', 'min', 'max', 'median', 'count', 'unique']>;
       }>
     >
   >;

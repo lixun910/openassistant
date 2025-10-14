@@ -32,7 +32,7 @@ AI-powered tools for spatial analysis and data processing:
 
 React components for visualization and UI:
 
-- **@openassistant/chat** - Chat interface components
+- **@openassistant/assistant** - AI assistant chat interface
 - **@openassistant/echarts** - ECharts visualization components
 - **@openassistant/keplergl** - Kepler.gl map components
 - **@openassistant/leaflet** - Leaflet map components
