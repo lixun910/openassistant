@@ -193,7 +193,7 @@ const config = {
 export default config;
 ```
 
-<video src="https://sqlrooms.org/assets/ai-example-light.Bgw76g3w.mp4" width="300" controls autoplay loop muted />
+<video src="https://sqlrooms.org/assets/ai-example-light.Bgw76g3w.mp4" width="300"></video>
 
 If you want to build your own chat interface, just simply pass your custom component in <Assistant> component.
 
@@ -224,8 +224,6 @@ export function App() {
 For more details, you can follow the source code of [packages/ai](https://github.com/geodaopenjs/openassistant/tree/main/packages/ai), which is a wrapper of [@sqlrooms/ai](https://github.com/sqlrooms/sqlrooms/tree/main/examples/ai-core).
 
 ### 4. Use openassistant core package
-
-NOTE: this will be deprecated in the OpenAssistant v1. You can use e.g. Vercel AI SDK v5 instead.
 
 You can also use the OpenAssistant core package [@openassistant/core](https://openassistant-doc.vercel.app/docs/core/), which provides a uniform interface for different AI providers, to build your own AI assistant, along with a design allows you to easily create your own tools by :
 
