@@ -46,7 +46,7 @@ const dissolveTool: DissolveTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Can you merge these counties into a single region?',
   tools: {dissolve: convertToVercelAiTool(dissolveTool)},
 });

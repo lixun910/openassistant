@@ -1,15 +1,19 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool } from '@openassistant/utils';
+import {
+  OpenAssistantTool,
+  OpenAssistantExecuteFunctionResult,
+} from '@openassistant/utils';
 import { z } from 'zod';
 import { getLength } from '@geoda/core';
 import { isSpatialToolContext } from '../utils';
+import { SpatialToolContext } from '../types';
 
 export type LengthFunctionArgs = z.ZodObject<{
   geojson: z.ZodOptional<z.ZodString>;
   datasetName: z.ZodOptional<z.ZodString>;
-  distanceUnit: z.ZodEnum<['KM', 'Mile']>;
+  distanceUnit: z.ZodDefault<z.ZodEnum<['KM', 'Mile']>>;
 }>;
 
 export type LengthLlmResult = {
@@ -30,40 +34,55 @@ export type LengthAdditionalData = {
  * ## length Tool
  *
  * This tool calculates the length of geometries in a GeoJSON dataset.
+ * It supports both direct GeoJSON input and dataset names, and can calculate lengths in either kilometers or miles.
  *
  * ### Length Calculation
  *
- * It supports both direct GeoJSON input and dataset names, and can calculate
- * lengths in either kilometers or miles.
+ * The tool calculates lengths for various geometry types:
+ * - **LineStrings**: Calculates the total length of line features
+ * - **MultiLineStrings**: Calculates the total length of multiline features
+ * - **Polygons**: Calculates the perimeter length of polygon boundaries
+ * - **FeatureCollections**: Calculates lengths for all line features in the collection
  *
- * Example user prompts:
+ * ### Parameters
+ * - `datasetName`: Name of the dataset with geometries to calculate length for (optional)
+ * - `geojson`: GeoJSON string of geometries to calculate length for (optional)
+ * - `distanceUnit`: Unit for length calculation - 'KM' for kilometers or 'Mile' for miles
+ *
+ * **Example user prompts:**
  * - "Calculate the length of these roads in kilometers"
  * - "What is the total length of the river network in miles?"
  * - "Measure the length of these boundaries"
  *
- * Example code:
+ * ### Example
  * ```typescript
- * import { length, LengthTool } from '@openassistant/geoda';
- * import { convertToVercelAiTool } from '@openassistant/utils';
- * import { generateText } from 'ai';
+ * import { length } from "@openassistant/geoda";
+ * import { convertToVercelAiTool } from "@openassistant/utils";
  *
- * const lengthTool: LengthTool = {
+ * const lengthTool = {
  *   ...length,
  *   context: {
- *     getGeometries: (datasetName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
+ *     getGeometries: async (datasetName: string) => {
+ *       // Implementation to retrieve geometries from your data source
+ *       return geometries;
  *     },
  *   },
- * });
+ * };
  *
- * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ * const result = await generateText({
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Calculate the length of these roads in kilometers',
- *   tools: {length: convertToVercelAiTool(lengthTool)},
+ *   tools: { length: convertToVercelAiTool(lengthTool) },
  * });
  * ```
  */
-export const length = extendedTool({
+export const length: OpenAssistantTool<
+  LengthFunctionArgs,
+  LengthLlmResult,
+  LengthAdditionalData,
+  SpatialToolContext
+> = {
+  name: 'length',
   description: 'Calculate length of geometries',
   parameters: z.object({
     geojson: z
@@ -78,7 +97,16 @@ export const length = extendedTool({
       .describe('Name of the dataset with geometries to calculate length for'),
     distanceUnit: z.enum(['KM', 'Mile']).default('KM'),
   }),
-  execute: async (args, options) => {
+  execute: async (
+    args: z.infer<LengthFunctionArgs>,
+    options?: {
+      toolCallId: string;
+      abortSignal?: AbortSignal;
+      context?: SpatialToolContext;
+    }
+  ): Promise<
+    OpenAssistantExecuteFunctionResult<LengthLlmResult, LengthAdditionalData>
+  > => {
     const { datasetName, geojson, distanceUnit = 'KM' } = args;
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(
@@ -112,6 +140,8 @@ export const length = extendedTool({
     };
   },
   context: {
-    getGeometries: () => {},
+    getGeometries: () => {
+      throw new Error('getGeometries() of LengthTool is not implemented');
+    },
   },
-});
+};

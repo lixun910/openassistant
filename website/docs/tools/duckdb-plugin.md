@@ -73,7 +73,7 @@ const localQueryTool: LocalQueryTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   system: systemPrompt,
   prompt: 'what is the average revenue of the venues in dataset myVenues?',
   tools: {
@@ -101,7 +101,7 @@ const localQueryTool = convertToVercelAiTool(localQuery, {
 export async function POST(req: Request) {
   // ...
   const result = streamText({
-    model: openai('gpt-4o-mini'),
+    model: openai('gpt-4.1'),
     system: systemPrompt,
     messages: messages,
     tools: { localQuery: localQueryTool },

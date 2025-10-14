@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool, generateId } from '@openassistant/utils';
+import {
+  OpenAssistantTool,
+  OpenAssistantExecuteFunctionResult,
+  generateId,
+} from '@openassistant/utils';
 import {
   CheckGeometryType,
   SpatialGeometry,
@@ -21,9 +25,7 @@ export type SpatialJoinFunctionArgs = z.ZodObject<{
     z.ZodArray<
       z.ZodObject<{
         variableName: z.ZodString;
-        operator: z.ZodEnum<
-          ['sum', 'mean', 'min', 'max', 'median', 'count', 'unique']
-        >;
+        operator: z.ZodEnum<['sum', 'mean', 'min', 'max', 'median', 'count', 'unique']>;
       }>
     >
   >;
@@ -62,67 +64,68 @@ export type SpatialJoinFunctionContext = {
 
 /**
  * ## spatialJoin Tool
- * 
- * This tool is used to join geometries from one dataset with geometries from another dataset.
+ *
+ * This tool performs spatial join operations between two geometric datasets, combining attributes based on spatial relationships.
+ * It's useful for overlaying different types of spatial data and aggregating values across spatial boundaries.
  *
  * ### Spatial Join Operations
  *
- * The tool supports various join operations:
- * - sum: sum of values in overlapping geometries
- * - mean: average of values in overlapping geometries
- * - min: minimum value in overlapping geometries
- * - max: maximum value in overlapping geometries
- * - median: median value in overlapping geometries
- * - count: count of overlapping geometries
+ * The tool supports various join operations for aggregating values:
+ * - **sum**: Sum of values in overlapping geometries
+ * - **mean**: Average of values in overlapping geometries
+ * - **min**: Minimum value in overlapping geometries
+ * - **max**: Maximum value in overlapping geometries
+ * - **median**: Median value in overlapping geometries
+ * - **count**: Count of overlapping geometries
+ * - **unique**: Count of unique values in overlapping geometries
  *
- * When user prompts e.g. *can you join the population data with county boundaries?*
+ * ### Parameters
+ * - `rightDatasetName`: Name of the dataset providing the geometries to join (source)
+ * - `leftDatasetName`: Name of the dataset receiving the joined data (target)
+ * - `joinVariables`: Array of variables to join with their aggregation operators (optional)
  *
- * 1. The LLM will execute the callback function of spatialJoinFunctionDefinition, and perform the spatial join using the geometries retrieved from `getGeometries` function.
- * 2. The result will include joined values and a new dataset with the joined geometries.
- * 3. The LLM will respond with the join results and details about the new dataset.
+ * **Example user prompts:**
+ * - "Can you join the population data with county boundaries?"
+ * - "Join crime incidents to police districts using sum aggregation"
+ * - "Overlay school locations with census tracts and count schools per tract"
  *
- * ### For example
- * ```
- * User: can you join the population data with county boundaries?
- * LLM: I've performed a spatial join between the population data and county boundaries. The result shows the total population in each county...
- * ```
- *
- * ### Code example
+ * ### Example
  * ```typescript
- * import { spatialJoin, SpatialJoinTool } from '@openassistant/geoda';
- * import { convertToVercelAiTool } from '@openassistant/utils';
- * import { generateText } from 'ai';
+ * import { spatialJoin } from "@openassistant/geoda";
+ * import { convertToVercelAiTool } from "@openassistant/utils";
  *
- * const spatialJoinTool: SpatialJoinTool = {
+ * const joinTool = {
  *   ...spatialJoin,
  *   context: {
- *     getGeometries: (datasetName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
+ *     getGeometries: async (datasetName: string) => {
+ *       // Implementation to retrieve geometries from your data source
+ *       return geometries;
  *     },
- *     getValues: (datasetName, variableName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+ *     getValues: async (datasetName: string, variableName: string) => {
+ *       // Implementation to retrieve values from your data source
+ *       return [100, 200, 150, 300, 250];
  *     },
- *   },
- *   onToolCompleted: (toolCallId, additionalData) => {
- *     console.log(toolCallId, additionalData);
- *     // do something like save the join result in additionalData
  *   },
  * };
  *
- *
- * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ * const result = await generateText({
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Can you join the population data with county boundaries?',
- *   tools: {spatialJoin: convertToVercelAiTool(spatialJoinTool)},
+ *   tools: { spatialJoin: convertToVercelAiTool(joinTool) },
  * });
  * ```
+ *
+ * :::note
+ * The left dataset and right dataset should be different. joinVariables should come from the right dataset.
+ * :::
  */
-export const spatialJoin = extendedTool<
+export const spatialJoin: OpenAssistantTool<
   SpatialJoinFunctionArgs,
   SpatialJoinLlmResult,
   SpatialJoinAdditionalData,
   SpatialJoinFunctionContext
->({
+> = {
+  name: 'spatialJoin',
   description: `Spatial join geometries two geometric datasets. For example:
 1. to get the number of points in polygons, "right dataset = points" and "left dataset = polygons"
 2. to check which point belongs to which polygon, "right dataset = polygons" and "left dataset = points"
@@ -161,7 +164,7 @@ IMPORTANT:
       throw new Error('saveAsDataset() of SpatialJoinTool is not implemented');
     },
   },
-});
+};
 
 export type SpatialJoinTool = typeof spatialJoin;
 
@@ -197,17 +200,23 @@ function isSpatialJoinContext(
 }
 
 async function executeSpatialJoin(
-  args,
-  options
-): Promise<{
-  llmResult: SpatialJoinLlmResult;
-  additionalData?: SpatialJoinAdditionalData;
-}> {
+  args: z.infer<SpatialJoinFunctionArgs>,
+  options?: {
+    toolCallId: string;
+    abortSignal?: AbortSignal;
+    context?: SpatialJoinFunctionContext;
+  }
+): Promise<
+  OpenAssistantExecuteFunctionResult<
+    SpatialJoinLlmResult,
+    SpatialJoinAdditionalData
+  >
+> {
   if (!isSpatialJoinArgs(args)) {
     throw new Error('Invalid arguments for spatialJoin tool');
   }
 
-  if (options.context && !isSpatialJoinContext(options.context)) {
+  if (!options?.context || !isSpatialJoinContext(options.context)) {
     throw new Error('Invalid context for spatialJoin tool');
   }
 
@@ -217,10 +226,9 @@ async function executeSpatialJoin(
   return runSpatialJoin({
     rightDatasetName,
     leftDatasetName,
-    previousExecutionOutput: options.previousExecutionOutput,
     joinVariables,
     getGeometries,
-    getValues,
+    getValues: getValues!,
   });
 }
 
@@ -233,11 +241,6 @@ export async function runSpatialJoin({
 }: {
   rightDatasetName: string;
   leftDatasetName: string;
-  previousExecutionOutput?: {
-    data?: {
-      geojson?: GeoJSON.FeatureCollection;
-    };
-  };
   joinVariables?: {
     variableName: string;
     operator: string;

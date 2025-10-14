@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, generateId } from '@openassistant/utils';
 import { z } from 'zod';
 
 import { BoxplotDataProps, createBoxplot } from './utils';
@@ -43,7 +43,7 @@ import {
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Can you create a box plot of the revenue per capita for each location in dataset myVenues?',
  *   tools: {
  *     boxplot: convertToVercelAiTool(boxplotTool),
@@ -51,16 +51,13 @@ import {
  * });
  * ```
  */
-export const boxplot = extendedTool<
-  // parameters of the tool
+export const boxplot: OpenAssistantTool<
   BoxplotToolArgs,
-  // return type of the tool
   BoxplotLlmResult,
-  // additional data of the tool
   BoxplotAdditionalData,
-  // type of the context
   EChartsToolContext
->({
+> = {
+  name: 'boxplot',
   description: 'create a boxplot chart',
   parameters: z.object({
     datasetName: z.string().describe('The name of the dataset.'),
@@ -84,7 +81,7 @@ export const boxplot = extendedTool<
       isDraggable: false,
     },
   },
-});
+};
 
 /**
  * The type of the boxplot tool, which contains the following properties:
@@ -140,10 +137,10 @@ export type ExecuteBoxplotResult = {
 
 async function executeBoxplot(
   { datasetName, variableNames, boundIQR = 1.5 },
-  options
+  options?: { toolCallId: string; context?: EChartsToolContext }
 ): Promise<ExecuteBoxplotResult> {
   try {
-    if (!isEChartsToolContext(options.context)) {
+    if (!options?.context || !isEChartsToolContext(options.context)) {
       throw new Error('Invalid context');
     }
     const { getValues, onSelected, config } = options.context;

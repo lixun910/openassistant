@@ -32,34 +32,6 @@ export function isLeafletOutputData(data: unknown): data is LeafletOutputData {
   );
 }
 
-// export function LeafletMapComponentContainer(props: LeafletOutputData) {
-//   const [isExpanded, setIsExpanded] = useState(props.isExpanded);
-
-//   const id = props.id || generateId();
-
-//   const onDragStart = useDraggable({
-//     id,
-//     type: 'leaflet',
-//     data: props,
-//   });
-
-//   const onExpanded = (flag: boolean) => {
-//     setIsExpanded(flag);
-//   };
-
-//   return (
-//     <ExpandableContainer
-//       defaultWidth={isExpanded ? 600 : undefined}
-//       defaultHeight={isExpanded ? 600 : 400}
-//       draggable={props.isDraggable || false}
-//       onDragStart={onDragStart}
-//       onExpanded={onExpanded}
-//     >
-//       <LeafletMapComponent {...props} />
-//     </ExpandableContainer>
-//   );
-// }
-
 // Style variables
 const styles = {
   container: {
@@ -214,7 +186,6 @@ export function LeafletMapComponent(props: LeafletOutputData) {
     return '#3388ff';
   };
 
-  // Helper function to get top 4 properties for tooltip
   const getTooltipContent = (feature: Feature) => {
     if (!feature.properties) return '';
 

@@ -43,7 +43,7 @@ const centroidTool: CentroidTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Can you find the center points of these counties?',
   tools: {centroid: convertToVercelAiTool(centroidTool)},
 });

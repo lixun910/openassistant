@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool, generateId } from '@openassistant/utils';
+import {
+  OpenAssistantTool,
+  OpenAssistantExecuteFunctionResult,
+  generateId,
+} from '@openassistant/utils';
 import { z } from 'zod';
 import { getBuffers } from '@geoda/core';
 import { Feature } from 'geojson';
@@ -19,7 +23,6 @@ export type BufferFunctionArgs = z.ZodObject<{
 
 export type BufferLlmResult = {
   success: boolean;
-  datasetName: string;
   result: string;
 };
 
@@ -34,63 +37,62 @@ export type BufferAdditionalData = {
 /**
  * ## buffer Tool
  *
- * This tool is used to create buffer zones around geometries.
+ * This tool creates buffer zones around geometries.
+ * It's useful for creating zones of influence, safety perimeters, or proximity analysis around spatial features.
  *
  * ### Buffer Creation
  *
- * The tool supports:
- * - Creating buffers from GeoJSON input
- * - Creating buffers from geometries in a dataset
- * - Buffer distances in kilometers (KM) or miles (Mile)
- * - Configurable buffer smoothness (points per circle)
+ * The tool supports creating buffers around various geometry types:
+ * - **Points**: Creates circular buffers around point locations
+ * - **Lines**: Creates buffers along line features (e.g., roads, rivers)
+ * - **Polygons**: Creates buffers around polygon boundaries
  *
- * When user prompts e.g. *can you create a 5km buffer around these roads?*
+ * ### Parameters
+ * - `datasetName`: Name of the dataset with geometries to be buffered (optional)
+ * - `geojson`: GeoJSON string of geometries to be buffered (optional)
+ * - `distance`: Buffer distance in the specified unit
+ * - `distanceUnit`: Unit for buffer distance - 'KM' for kilometers or 'Mile' for miles
+ * - `pointsPerCircle`: Smoothness of the buffer (10 = rough, 20 = smooth)
  *
- * 1. The LLM will execute the callback function of bufferFunctionDefinition, and create buffers using the geometries retrieved from `getGeometries` function.
- * 2. The result will include the buffered geometries and a new dataset name for mapping.
- * 3. The LLM will respond with the buffer creation results and the new dataset name.
+ * **Example user prompts:**
+ * - "Can you create a 5km buffer around these roads?"
+ * - "Create a 1-mile buffer around the school locations"
+ * - "Generate a 500-meter buffer around the city boundaries"
  *
- * ### For example
- * ```
- * User: can you create a 5km buffer around these roads?
- * LLM: I've created 5km buffers around the roads. The buffered geometries are saved in dataset "buffer_123"...
- * ```
- *
- * ### Code example
+ * ### Example
  * ```typescript
- * import { buffer, BufferTool } from '@openassistant/geoda';
- * import { convertToVercelAiTool } from '@openassistant/utils';
- * import { generateText } from 'ai';
+ * import { buffer } from "@openassistant/geoda";
+ * import { convertToVercelAiTool } from "@openassistant/utils";
  *
- * const bufferTool: BufferTool = {
+ * const bufferTool = {
  *   ...buffer,
  *   context: {
- *     getGeometries: (datasetName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
+ *     getGeometries: async (datasetName: string) => {
+ *       // Implementation to retrieve geometries from your data source
+ *       return geometries;
  *     },
- *   },
- *   onToolCompleted: (toolCallId, additionalData) => {
- *     console.log(toolCallId, additionalData);
- *     // do something like save the buffer result in additionalData
  *   },
  * };
  *
- * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ * const result = await generateText({
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Can you create a 5km buffer around these roads?',
- *   tools: {buffer: convertToVercelAiTool(bufferTool)},
+ *   tools: { buffer: convertToVercelAiTool(bufferTool) },
  * });
  * ```
  *
+ * :::tip
  * You can also use this tool with other tools, e.g. geocoding, so you don't need to provide the `getGeometries` function.
  * The geometries from geocoding tool will be used as the input for this tool.
+ * :::
  */
-export const buffer = extendedTool<
+export const buffer: OpenAssistantTool<
   BufferFunctionArgs,
   BufferLlmResult,
   BufferAdditionalData,
   SpatialToolContext
->({
+> = {
+  name: 'buffer',
   description:
     'Buffer geometries. Please convert the distance to the unit of the distanceUnit. For example, if user provides distance is 1 meter and the distanceUnit is KM, the distance should be converted to 0.001.',
   parameters: z.object({
@@ -113,7 +115,16 @@ export const buffer = extendedTool<
         'Smoothness of the buffer: 20 points per circle is smooth, 10 points per circle is rough'
       ),
   }),
-  execute: async (args, options) => {
+  execute: async (
+    args: z.infer<BufferFunctionArgs>,
+    options?: {
+      toolCallId: string;
+      abortSignal?: AbortSignal;
+      context?: SpatialToolContext;
+    }
+  ): Promise<
+    OpenAssistantExecuteFunctionResult<BufferLlmResult, BufferAdditionalData>
+  > => {
     const {
       datasetName,
       geojson,
@@ -182,6 +193,6 @@ export const buffer = extendedTool<
   context: {
     getGeometries: async () => null,
   },
-});
+};
 
 export type BufferTool = typeof buffer;

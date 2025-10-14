@@ -38,7 +38,7 @@ const mstTool: MstTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Generate the minimum spanning tree for this dataset',
   tools: { mst: convertToVercelAiTool(mstTool) },
 });

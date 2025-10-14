@@ -40,7 +40,7 @@ const countyTool: GetUsCountyGeojsonTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'What are the counties in Texas?',
   tools: {
     county: convertToVercelAiTool(countyTool),

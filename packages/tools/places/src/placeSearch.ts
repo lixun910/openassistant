@@ -2,13 +2,11 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { generateId, extendedTool } from '@openassistant/utils';
+import { generateId, OpenAssistantTool } from '@openassistant/utils';
+import { foursquareRateLimiter } from './utils/rateLimiter';
 import {
   isFoursquareToolContext,
   FoursquareToolContext,
-} from './register-tools';
-import { foursquareRateLimiter } from './utils/rateLimiter';
-import {
   FoursquarePlaceBase,
   FoursquarePhotoExtended,
   FoursquareTipExtended,
@@ -50,46 +48,125 @@ interface FoursquarePlacesResponse {
   context: FoursquareContext;
 }
 
-export type PlaceSearchFunctionArgs = z.ZodObject<{
-  query: z.ZodOptional<z.ZodString>;
-  location: z.ZodOptional<
-    z.ZodObject<{
-      longitude: z.ZodNumber;
-      latitude: z.ZodNumber;
-      radius: z.ZodOptional<z.ZodNumber>;
-    }>
-  >;
-  near: z.ZodOptional<z.ZodString>;
-  categories: z.ZodOptional<z.ZodArray<z.ZodString>>;
-  chains: z.ZodOptional<z.ZodArray<z.ZodString>>;
-  exclude_chains: z.ZodOptional<z.ZodArray<z.ZodString>>;
-  exclude_all_chains: z.ZodOptional<z.ZodBoolean>;
-  fields: z.ZodOptional<z.ZodArray<z.ZodString>>;
-  min_price: z.ZodOptional<z.ZodNumber>;
-  max_price: z.ZodOptional<z.ZodNumber>;
-  open_at: z.ZodOptional<z.ZodString>;
-  open_now: z.ZodOptional<z.ZodBoolean>;
-  currentTimestamp: z.ZodOptional<z.ZodString>;
-  ne: z.ZodOptional<
-    z.ZodObject<{
-      latitude: z.ZodNumber;
-      longitude: z.ZodNumber;
-    }>
-  >; // Coordinate type
-  sw: z.ZodOptional<
-    z.ZodObject<{
-      latitude: z.ZodNumber;
-      longitude: z.ZodNumber;
-    }>
-  >; // Coordinate type
-  isochroneDatasetName: z.ZodOptional<z.ZodString>;
-  limit: z.ZodOptional<z.ZodDefault<z.ZodNumber>>;
-  sort: z.ZodOptional<
-    z.ZodDefault<z.ZodEnum<['relevance', 'rating', 'distance']>>
-  >;
-  session_token: z.ZodOptional<z.ZodString>;
-  super_venue_id: z.ZodOptional<z.ZodString>;
-}>;
+const placeSearchParameters = z.object({
+  query: z
+    .string()
+    .optional()
+    .describe('The search query (e.g., "coffee", "restaurant", "hotel")'),
+  location: z
+    .object({
+      longitude: z
+        .number()
+        .describe('The longitude of the search center point'),
+      latitude: z.number().describe('The latitude of the search center point'),
+      radius: z
+        .number()
+        .describe('The search radius in meters (0-100000)')
+        .optional(),
+    })
+    .describe('The location to search around')
+    .optional(),
+  near: z
+    .string()
+    .describe('A geocodable locality to search near (e.g., "New York, NY")')
+    .optional(),
+  categories: z
+    .array(z.string())
+    .describe('Array of category IDs to filter by (5-integer style preferred)')
+    .optional(),
+  chains: z
+    .array(z.string())
+    .describe('Array of chain IDs to filter by')
+    .optional(),
+  exclude_chains: z
+    .array(z.string())
+    .describe('Array of chain IDs to exclude')
+    .optional(),
+  exclude_all_chains: z
+    .boolean()
+    .describe('Exclude all chain locations')
+    .optional(),
+  fields: z
+    .array(z.string())
+    .describe('Specific fields to return in the response')
+    .optional(),
+  min_price: z
+    .number()
+    .min(1)
+    .max(4)
+    .describe('Minimum price range (1-4, 1=most affordable)')
+    .optional(),
+  max_price: z
+    .number()
+    .min(1)
+    .max(4)
+    .describe('Maximum price range (1-4, 4=most expensive)')
+    .optional(),
+  open_at: z
+    .string()
+    .describe(
+      'Open at specific time (format: DOWTHHMM, e.g., "1T2130" for Monday 9:30 PM)'
+    )
+    .optional(),
+  open_now: z
+    .boolean()
+    .describe('Only return places that are currently open')
+    .optional(),
+  currentTimestamp: z
+    .string()
+    .describe(
+      'Current timestamp for the search request. If changed, the search will be re-run.'
+    )
+    .optional(),
+  ne: z
+    .object({
+      latitude: z
+        .number()
+        .describe('North-east latitude for rectangular search'),
+      longitude: z
+        .number()
+        .describe('North-east longitude for rectangular search'),
+    })
+    .describe('North-east corner for rectangular search bounds')
+    .optional(),
+  sw: z
+    .object({
+      latitude: z
+        .number()
+        .describe('South-west latitude for rectangular search'),
+      longitude: z
+        .number()
+        .describe('South-west longitude for rectangular search'),
+    })
+    .describe('South-west corner for rectangular search bounds')
+    .optional(),
+  isochroneDatasetName: z
+    .string()
+    .describe('Dataset name of the isochrone GeoJSON')
+    .optional(),
+  limit: z
+    .number()
+    .min(1)
+    .max(50)
+    .describe('Maximum number of results to return (1-50)')
+    .default(10)
+    .optional(),
+  sort: z
+    .enum(['relevance', 'rating', 'distance'])
+    .describe('Sort order for results.')
+    .default('relevance')
+    .optional(),
+  session_token: z
+    .string()
+    .describe('User-generated token for billing purposes')
+    .optional(),
+  super_venue_id: z
+    .string()
+    .describe('Foursquare Venue ID to use as search bounds')
+    .optional(),
+});
+
+export type PlaceSearchFunctionArgs = z.infer<typeof placeSearchParameters>;
 
 export type PlaceSearchLlmResult = {
   success: boolean;
@@ -229,7 +306,7 @@ function transformPlacesToGeoJSON(
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Find coffee shops near Times Square',
  *   tools: {
  *     placeSearch: convertToVercelAiTool(placeSearchTool),
@@ -239,134 +316,15 @@ function transformPlacesToGeoJSON(
  *
  * For a more complete example, see the [Places Tools Example using Next.js + Vercel AI SDK](https://github.com/openassistant/openassistant/tree/main/examples/vercel_places_example).
  */
-export const placeSearch = extendedTool<
-  PlaceSearchFunctionArgs,
+export const placeSearch: OpenAssistantTool<
+  typeof placeSearchParameters,
   PlaceSearchLlmResult,
   PlaceSearchAdditionalData,
   FoursquareToolContext
->({
+> = {
+  name: 'placeSearch',
   description: 'Search for places using the Foursquare Places API.',
-  parameters: z.object({
-    query: z
-      .string()
-      .optional()
-      .describe('The search query (e.g., "coffee", "restaurant", "hotel")'),
-    location: z
-      .object({
-        longitude: z
-          .number()
-          .describe('The longitude of the search center point'),
-        latitude: z
-          .number()
-          .describe('The latitude of the search center point'),
-        radius: z
-          .number()
-          .describe('The search radius in meters (0-100000)')
-          .optional(),
-      })
-      .describe('The location to search around')
-      .optional(),
-    near: z
-      .string()
-      .describe('A geocodable locality to search near (e.g., "New York, NY")')
-      .optional(),
-    categories: z
-      .array(z.string())
-      .describe(
-        'Array of category IDs to filter by (5-integer style preferred)'
-      )
-      .optional(),
-    chains: z
-      .array(z.string())
-      .describe('Array of chain IDs to filter by')
-      .optional(),
-    exclude_chains: z
-      .array(z.string())
-      .describe('Array of chain IDs to exclude')
-      .optional(),
-    exclude_all_chains: z
-      .boolean()
-      .describe('Exclude all chain locations')
-      .optional(),
-    fields: z
-      .array(z.string())
-      .describe('Specific fields to return in the response')
-      .optional(),
-    min_price: z
-      .number()
-      .min(1)
-      .max(4)
-      .describe('Minimum price range (1-4, 1=most affordable)')
-      .optional(),
-    max_price: z
-      .number()
-      .min(1)
-      .max(4)
-      .describe('Maximum price range (1-4, 4=most expensive)')
-      .optional(),
-    open_at: z
-      .string()
-      .describe(
-        'Open at specific time (format: DOWTHHMM, e.g., "1T2130" for Monday 9:30 PM)'
-      )
-      .optional(),
-    open_now: z
-      .boolean()
-      .describe('Only return places that are currently open')
-      .optional(),
-    currentTimestamp: z
-      .string()
-      .describe(
-        'Current timestamp for the search request. If changed, the search will be re-run.'
-      )
-      .optional(),
-    ne: z
-      .object({
-        latitude: z
-          .number()
-          .describe('North-east latitude for rectangular search'),
-        longitude: z
-          .number()
-          .describe('North-east longitude for rectangular search'),
-      })
-      .describe('North-east corner for rectangular search bounds')
-      .optional(),
-    sw: z
-      .object({
-        latitude: z
-          .number()
-          .describe('South-west latitude for rectangular search'),
-        longitude: z
-          .number()
-          .describe('South-west longitude for rectangular search'),
-      })
-      .describe('South-west corner for rectangular search bounds')
-      .optional(),
-    isochroneDatasetName: z
-      .string()
-      .describe('Dataset name of the isochrone GeoJSON')
-      .optional(),
-    limit: z
-      .number()
-      .min(1)
-      .max(50)
-      .describe('Maximum number of results to return (1-50)')
-      .default(10)
-      .optional(),
-    sort: z
-      .enum(['relevance', 'rating', 'distance'])
-      .describe('Sort order for results.')
-      .default('relevance')
-      .optional(),
-    session_token: z
-      .string()
-      .describe('User-generated token for billing purposes')
-      .optional(),
-    super_venue_id: z
-      .string()
-      .describe('Foursquare Venue ID to use as search bounds')
-      .optional(),
-  }),
+  parameters: placeSearchParameters,
   execute: async (args, options): Promise<ExecutePlaceSearchResult> => {
     console.log(
       '🔍 placeSearch.execute called with args:',
@@ -458,7 +416,7 @@ export const placeSearch = extendedTool<
         url.searchParams.set('radius', radius.toString());
         console.log('  📍 Added location parameters:');
         console.log('    - ll:', `${location.latitude},${location.longitude}`);
-      } 
+      }
 
       // Add location parameters based on search type
       if (hasRectangularBounds) {
@@ -740,7 +698,7 @@ export const placeSearch = extendedTool<
       throw new Error('getFsqToken not implemented.');
     },
   },
-});
+};
 
 export type PlaceSearchTool = typeof placeSearch;
 

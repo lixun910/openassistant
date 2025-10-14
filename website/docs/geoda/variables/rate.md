@@ -33,7 +33,7 @@ const rateTool: RateTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Calculate the excess risk rates from the base variable "population" and the event variable "crimes"',
   tools: { rate: convertToVercelAiTool(rateTool) },
 });

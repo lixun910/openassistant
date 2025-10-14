@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool } from '@openassistant/utils';
+import {
+  OpenAssistantTool,
+  OpenAssistantExecuteFunctionResult,
+} from '@openassistant/utils';
 import { z } from 'zod';
 import { getArea } from '@geoda/core';
 import { SpatialToolContext } from '../types';
@@ -31,50 +34,59 @@ export type AreaAdditionalData = {
  * ## area Tool
  *
  * This tool calculates the area of geometries in a GeoJSON dataset.
+ * It supports both direct GeoJSON input and dataset names, and can calculate areas in either square kilometers or square miles.
  *
  * ### Area Calculation
  *
- * It supports both direct GeoJSON input and dataset names, and can calculate
- * areas in either square kilometers or square miles.
+ * The tool calculates the area of various geometry types:
+ * - **Polygons**: Calculates the area of polygon geometries
+ * - **MultiPolygons**: Calculates the total area of multipolygon geometries
+ * - **FeatureCollections**: Calculates areas for all polygon features in the collection
  *
- * Example user prompts:
+ * ### Parameters
+ * - `datasetName`: Name of the dataset with geometries to calculate area for (optional)
+ * - `geojson`: GeoJSON string of geometries to calculate area for (optional)
+ * - `distanceUnit`: Unit for area calculation - 'KM' for square kilometers or 'Mile' for square miles
+ *
+ * **Example user prompts:**
  * - "Calculate the area of these counties in square kilometers"
  * - "What is the total area of these land parcels in square miles?"
  * - "Measure the area of these polygons"
  *
- * Example code:
+ * ### Example
  * ```typescript
- * import { area } from '@openassistant/geoda';
- * import { convertToVercelAiTool } from '@openassistant/utils';
- * import { generateText } from 'ai';
- * 
- * const toolContext = {
- *   getGeometries: (datasetName) => {
- *     return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
+ * import { area } from "@openassistant/geoda";
+ * import { convertToVercelAiTool } from "@openassistant/utils";
+ *
+ * const areaTool = {
+ *   ...area,
+ *   context: {
+ *     getGeometries: async (datasetName: string) => {
+ *       // Implementation to retrieve geometries from your data source
+ *       return geometries;
+ *     },
  *   },
  * };
- * const areaTool: AreaTool = {
- *   ...area,
- *   context: toolContext,
- * };
  *
- * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ * const result = await generateText({
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Calculate the area of these counties in square kilometers',
- *   tools: {area: convertToVercelAiTool(area)},
+ *   tools: { area: convertToVercelAiTool(areaTool) },
  * });
  * ```
  *
+ * :::tip
  * You can also use this tool with other tools, e.g. geocoding, so you don't need to provide the `getGeometries` function.
  * The geometries from geocoding tool will be used as the input for this tool.
- * ```
+ * :::
  */
-export const area = extendedTool<
+export const area: OpenAssistantTool<
   AreaFunctionArgs,
   AreaLlmResult,
   AreaAdditionalData,
   SpatialToolContext
->({
+> = {
+  name: 'area',
   description: 'Calculate area of geometries',
   parameters: z.object({
     geojson: z
@@ -89,7 +101,16 @@ export const area = extendedTool<
       .describe('Name of the dataset with geometries to calculate area for'),
     distanceUnit: z.enum(['KM', 'Mile']).default('KM'),
   }),
-  execute: async (args, options) => {
+  execute: async (
+    args: z.infer<AreaFunctionArgs>,
+    options?: {
+      toolCallId: string;
+      abortSignal?: AbortSignal;
+      context?: SpatialToolContext;
+    }
+  ): Promise<
+    OpenAssistantExecuteFunctionResult<AreaLlmResult, AreaAdditionalData>
+  > => {
     const { datasetName, geojson, distanceUnit = 'KM' } = args;
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(
@@ -120,13 +141,13 @@ export const area = extendedTool<
         success: true,
         result: 'Areas calculated successfully',
         areas,
-        distanceUnit,
+        distanceUnit: distanceUnit as 'KM' | 'Mile',
       },
     };
   },
   context: {
     getGeometries: async () => null,
   },
-});
+};
 
 export type AreaTool = typeof area;

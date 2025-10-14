@@ -1,0 +1,23 @@
+{
+  "name": "openassistant-documentation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "VitePress documentation for OpenAssistant",
+  "scripts": {
+    "dev": "yarn typedoc && yarn convert-admonitions && yarn fix-links && yarn fix-version && vitepress dev",
+    "build": "yarn typedoc && yarn convert-admonitions && yarn fix-links && yarn fix-version && vitepress build",
+    "preview": "vitepress preview",
+    "typedoc": "typedoc",
+    "convert-admonitions": "find api -name '*.md' -type f -exec sed -i '' -e 's/^:::note$/:::info/g' -e 's/^:::caution$/:::warning/g' {} \\;",
+    "fix-links": "find api -name '*.md' -type f -exec sed -i '' -E 's|\\(/docs/([^/]+)/|(/api/@openassistant/\\2/|g' {} \\;",
+    "fix-version": "find api -name '*.md' -type f -exec sed -i '' 's/Documentation v0\\.0\\.0/Documentation v1.0.0/g' {} \\;"
+  },
+  "devDependencies": {
+    "typedoc": "^0.28.0",
+    "typedoc-plugin-markdown": "^4.0.0",
+    "typescript": "^5.0.4",
+    "vitepress": "^1.5.0",
+    "vue": "^3.5.13"
+  }
+}

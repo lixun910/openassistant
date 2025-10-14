@@ -26,7 +26,7 @@ const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
 const scatterplotTool = getVercelAiTool('scatterplot', toolContext, onToolCompleted);
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'What is the relationship between population and income?',
   tools: {scatterplot: scatterplotTool},
 });

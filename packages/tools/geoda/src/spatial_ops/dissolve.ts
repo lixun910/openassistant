@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool, generateId } from '@openassistant/utils';
+import {
+  OpenAssistantTool,
+  OpenAssistantExecuteFunctionResult,
+  generateId,
+} from '@openassistant/utils';
 import { z } from 'zod';
 import { spatialDissolve } from '@geoda/core';
-import { Feature, Geometry } from 'geojson';
+import { Feature } from 'geojson';
 
 import { isSpatialToolContext } from '../utils';
 import { SpatialToolContext } from '../types';
@@ -18,9 +22,7 @@ export type DissolveFunctionArgs = z.ZodObject<{
     z.ZodArray<
       z.ZodObject<{
         variableName: z.ZodString;
-        operator: z.ZodEnum<
-          ['sum', 'mean', 'min', 'max', 'median', 'count', 'unique']
-        >;
+        operator: z.ZodEnum<['sum', 'mean', 'min', 'max', 'median', 'count', 'unique']>;
       }>
     >
   >;
@@ -28,71 +30,71 @@ export type DissolveFunctionArgs = z.ZodObject<{
 
 export type DissolveLlmResult = {
   success: boolean;
-  datasetName: string;
   result: string;
 };
 
 export type DissolveAdditionalData = {
   datasetName?: string;
-  geojson?: string;
-  dissolved: Feature<Geometry, GeoJSON.GeoJsonProperties>;
+  [outputDatasetName: string]: unknown;
 };
 
 /**
  * ## dissolve Tool
  *
- * This tool is used to merge multiple geometries into a single geometry.
+ * This tool merges multiple geometries into a single geometry by dissolving boundaries.
+ * It's useful for aggregating smaller administrative units into larger regions or creating simplified boundaries.
  *
- * ### Dissolve Function
+ * ### Dissolve Operations
  *
- * The tool supports:
- * - Dissolving geometries from GeoJSON input
- * - Dissolving geometries from a dataset
- * - Returns a single merged geometry that can be used for mapping
+ * The tool supports various dissolve operations:
+ * - **Complete Dissolve**: Merges all geometries into a single geometry
+ * - **Dissolve by Attribute**: Groups geometries by a common attribute value
+ * - **Aggregated Dissolve**: Combines geometries and aggregates associated values
  *
- * When user prompts e.g. *can you merge these counties into a single region?*
+ * ### Parameters
+ * - `datasetName`: Name of the dataset with geometries to be dissolved (optional)
+ * - `geojson`: GeoJSON string of geometries to be dissolved (optional)
+ * - `dissolveBy`: Variable to dissolve by (optional, dissolves entire dataset if not provided)
+ * - `aggregateVariables`: Variables to aggregate during dissolve with their operators (optional)
  *
- * 1. The LLM will execute the callback function of dissolveFunctionDefinition, and merge the geometries using the data retrieved from `getGeometries` function.
- * 2. The result will include the merged geometry and a new dataset name for mapping.
- * 3. The LLM will respond with the dissolve results and the new dataset name.
+ * **Example user prompts:**
+ * - "Can you merge these counties into a single region?"
+ * - "Dissolve the census tracts by state and sum the population"
+ * - "Combine all the polygons into one geometry"
  *
- * ### For example
- * ```
- * User: can you merge these counties into a single region?
- * ```
- *
- * ### Code example
+ * ### Example
  * ```typescript
- * import { dissolve, DissolveTool } from '@openassistant/geoda';
- * import { convertToVercelAiTool } from '@openassistant/utils';
- * import { generateText } from 'ai';
+ * import { dissolve } from "@openassistant/geoda";
+ * import { convertToVercelAiTool } from "@openassistant/utils";
  *
- * const dissolveTool: DissolveTool = {
+ * const dissolveTool = {
  *   ...dissolve,
  *   context: {
- *     getGeometries: (datasetName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
+ *     getGeometries: async (datasetName: string) => {
+ *       // Implementation to retrieve geometries from your data source
+ *       return geometries;
  *     },
- *   },
- *   onToolCompleted: (toolCallId, additionalData) => {
- *     console.log(toolCallId, additionalData);
- *     // do something like save the dissolve result in additionalData
+ *     getValues: async (datasetName: string, variableName: string) => {
+ *       // Implementation to retrieve values from your data source
+ *       return [100, 200, 150, 300, 250];
+ *     },
  *   },
  * };
  *
- * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ * const result = await generateText({
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Can you merge these counties into a single region?',
- *   tools: {dissolve: convertToVercelAiTool(dissolveTool)},
+ *   tools: { dissolve: convertToVercelAiTool(dissolveTool) },
  * });
  * ```
  */
-export const dissolve = extendedTool<
+export const dissolve: OpenAssistantTool<
   DissolveFunctionArgs,
   DissolveLlmResult,
   DissolveAdditionalData,
   SpatialToolContext
->({
+> = {
+  name: 'dissolve',
   description: `Dissolve geometries by merging neighboring geometries into a single geometry.`,
   parameters: z.object({
     geojson: z
@@ -126,7 +128,19 @@ If not provided, the entire dataset will be dissolved.
       )
       .optional(),
   }),
-  execute: async (args, options) => {
+  execute: async (
+    args: z.infer<DissolveFunctionArgs>,
+    options?: {
+      toolCallId: string;
+      abortSignal?: AbortSignal;
+      context?: SpatialToolContext;
+    }
+  ): Promise<
+    OpenAssistantExecuteFunctionResult<
+      DissolveLlmResult,
+      DissolveAdditionalData
+    >
+  > => {
     const { datasetName, geojson, dissolveBy, aggregateVariables } = args;
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(
@@ -240,6 +254,6 @@ If not provided, the entire dataset will be dissolved.
   context: {
     getGeometries: async () => null,
   },
-});
+};
 
 export type DissolveTool = typeof dissolve;

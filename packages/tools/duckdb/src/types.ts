@@ -34,6 +34,11 @@ export type LocalQueryContext = {
    * Optional DuckDB instance for querying
    */
   getDuckDB?: () => Promise<AsyncDuckDB | null>;
+
+  /**
+   * Optional function to get the maximum length of the query result that will be returned to the LLM
+   */
+  getMaxQueryResultLength?: () => Promise<number>;
 };
 
 /**
@@ -45,7 +50,7 @@ export type LocalQueryResult = {
     datasetName?: string;
     error?: string;
     instruction?: string;
-    firstRow?: Record<string, unknown>;
+    truncatedQueryResult?: string;
   };
   additionalData?: LocalQueryAdditionalData;
 };
@@ -60,4 +65,5 @@ export type LocalQueryAdditionalData = {
   datasetName: string;
   dbTableName: string;
   variableNames: string[];
+  firstFiveRows: Record<string, unknown>[];
 };

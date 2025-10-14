@@ -7,7 +7,6 @@ import {
   LanguageModel,
   LanguageModelUsage,
   streamText,
-  Tool,
   ToolChoice,
   ToolSet,
   StepResult,
@@ -15,7 +14,11 @@ import {
 } from 'ai';
 import { ToolInvocation, ToolInvocationUIPart } from '@ai-sdk/ui-utils';
 import { shouldTriggerNextRequest, VercelAi } from './vercelai';
-import { tiktokenCounter } from '../utils/token-counter';
+// import { trimMessages } from '../utils/trim-messages';
+import {
+  // getModelContextWindow,
+  setCustomModelContextWindows,
+} from '../utils/model-context-windows';
 
 /**
  * Configuration properties for VercelAiClient
@@ -48,6 +51,8 @@ export type VercelAiClientConfigureProps = {
   toolCallStreaming?: boolean;
   /** Custom headers to include in API requests */
   headers?: Record<string, string>;
+  /** Custom model context windows to extend or override the default mapping */
+  modelContextWindows?: Record<string, number>;
 };
 
 /**
@@ -131,6 +136,10 @@ export abstract class VercelAiClient extends VercelAi {
     if (config.maxSteps !== undefined)
       VercelAiClient.maxSteps = config.maxSteps;
     if (config.headers) VercelAiClient.headers = config.headers;
+    if (config.modelContextWindows) {
+      VercelAiClient.modelContextWindows = config.modelContextWindows;
+      setCustomModelContextWindows(config.modelContextWindows);
+    }
   }
 
   /**
@@ -142,52 +151,6 @@ export abstract class VercelAiClient extends VercelAi {
     // need to reset the llm so getInstance doesn't return the same instance
     this.llm = null;
     VercelAiClient.instance = null;
-  }
-
-  /**
-   * Trims messages to stay within token limits
-   * @protected
-   * @returns {Promise<Message[]>} Trimmed messages array
-   */
-  protected async trimMessages() {
-    let totalTokens = await tiktokenCounter(this.messages);
-
-    // add token for the system message
-    totalTokens += await tiktokenCounter([
-      { role: 'system', content: VercelAi.instructions, id: 'system' },
-    ]);
-
-    // add token for the tools
-    if (VercelAi.tools) {
-      totalTokens += await tiktokenCounter(
-        Object.values(VercelAi.tools).map((tool: Tool) => ({
-          role: 'assistant',
-          content: JSON.stringify(tool.parameters),
-          id: 'tool',
-        }))
-      );
-    }
-
-    if (totalTokens <= VercelAi.maxTokens) {
-      return this.messages;
-    }
-    // make a copy of the messages array
-    const updatedMessages = this.messages.slice(0);
-
-    if (totalTokens > VercelAi.maxTokens) {
-      // remove one message at a time
-      while (updatedMessages.length > 0) {
-        const removedMessage = updatedMessages.shift();
-        const remainingTokens = await tiktokenCounter([removedMessage!]);
-        totalTokens -= remainingTokens;
-
-        if (totalTokens <= VercelAi.maxTokens) {
-          break;
-        }
-      }
-    }
-
-    return updatedMessages;
   }
 
   protected async handleToolCallStart(
@@ -298,7 +261,20 @@ export abstract class VercelAiClient extends VercelAi {
       );
     }
 
+    // Determine the context window size for the current model
+    // const modelId = VercelAiClient.model;
+    // const maxTokens = getModelContextWindow(modelId, VercelAi.maxTokens);
+
+    // Trim messages to stay within token limits
+    // const trimmedMessages = await trimMessages({
+    //   messages: this.getMessages(),
+    //   instructions: VercelAiClient.instructions,
+    //   tools: VercelAiClient.tools || {},
+    //   maxTokens,
+    // });
+
     // make a copy of the messages array, so we can modify it in callbacks e.g. onStepFinish
+    // const localMessages = [...trimmedMessages] as CoreMessage[];
     const localMessages = [...this.getMessages()];
 
     let messageContent: string = '';
@@ -324,7 +300,9 @@ export abstract class VercelAiClient extends VercelAi {
       ...(VercelAiClient.topP !== undefined && { topP: VercelAiClient.topP }),
       maxSteps,
       abortSignal: this.abortController?.signal,
-      ...(Object.keys(VercelAiClient.headers).length > 0 && { headers: VercelAiClient.headers }),
+      ...(Object.keys(VercelAiClient.headers).length > 0 && {
+        headers: VercelAiClient.headers,
+      }),
       onStepFinish: async (event: StepResult<ToolSet>) => {
         const { usage } = event;
         // update the tokens used
@@ -465,7 +443,9 @@ export abstract class VercelAiClient extends VercelAi {
       temperature: temperature || VercelAiClient.temperature,
       ...(VercelAiClient.topP !== undefined && { topP: VercelAiClient.topP }),
       abortSignal: this.abortController?.signal,
-      ...(Object.keys(VercelAiClient.headers).length > 0 && { headers: VercelAiClient.headers }),
+      ...(Object.keys(VercelAiClient.headers).length > 0 && {
+        headers: VercelAiClient.headers,
+      }),
     });
 
     return response.text;

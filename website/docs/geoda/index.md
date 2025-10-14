@@ -79,7 +79,7 @@ const classifyTool: DataClassifyTool = {
 };
 
 const result = await generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Can you classify the data of population into 5 classes?',
   tools: { dataClassify: convertToVercelAiTool(classifyTool) },
 });

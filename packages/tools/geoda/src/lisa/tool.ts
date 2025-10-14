@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool, generateId } from '@openassistant/utils';
+import {
+  OpenAssistantTool,
+  OpenAssistantExecuteFunctionResult,
+  generateId,
+} from '@openassistant/utils';
 import { z } from 'zod';
 import {
   localMoran,
@@ -17,9 +21,7 @@ import { getWeights } from '../utils';
 import { appendJoinValuesToGeometries } from '../spatial_join/tool';
 
 export type LisaFunctionArgs = z.ZodObject<{
-  method: z.ZodEnum<
-    ['localMoran', 'localGeary', 'localG', 'localGStar', 'quantileLisa']
-  >;
+  method: z.ZodEnum<['localMoran', 'localGeary', 'localG', 'localGStar', 'quantileLisa']>;
   weightsID: z.ZodOptional<z.ZodString>;
   variableName: z.ZodString;
   multiVariableNames: z.ZodOptional<z.ZodArray<z.ZodString>>;
@@ -59,13 +61,28 @@ export type LisaFunctionContext = {
 
 /**
  * ## lisa Tool
- * 
- * This tool is used to apply local indicators of spatial association (LISA) statistics
- * to identify local clusters and spatial outliers.
+ *
+ * This tool applies Local Indicators of Spatial Association (LISA) statistics to identify local clusters and spatial outliers.
+ * It helps detect areas where similar values cluster together or where outliers exist in the spatial distribution.
  *
  * ### LISA Methods
  *
- * The LISA method can be one of the following types: localMoran, localGeary, localG, localGStar, quantileLisa.
+ * The LISA method can be one of the following types:
+ * - **localMoran**: Local Moran's I statistic for detecting clusters and outliers
+ * - **localGeary**: Local Geary's C statistic for detecting spatial heterogeneity
+ * - **localG**: Local Getis-Ord G statistic for detecting hot and cold spots
+ * - **localGStar**: Local Getis-Ord G* statistic (includes the observation itself)
+ * - **quantileLisa**: Quantile-based LISA analysis
+ *
+ * ### Parameters
+ * - `datasetName`: Name of the dataset containing the variable
+ * - `variableName`: Name of the numerical variable to analyze
+ * - `method`: LISA method to use (see above)
+ * - `weightsID`: ID of spatial weights matrix (optional, will use cached weights if available)
+ * - `permutation`: Number of permutations for significance testing (default: 999)
+ * - `significanceThreshold`: Significance threshold for filtering results (default: 0.05)
+ * - `k`: Number of quantiles for quantile LISA (required for quantileLisa method)
+ * - `quantile`: Quantile value for quantile LISA (required for quantileLisa method)
  *
  * **Example user prompts:**
  * - "Are young population clustering over the zipcode areas?"
@@ -73,48 +90,39 @@ export type LisaFunctionContext = {
  * - "What are the local clusters in the population data?"
  * - "How many significant clusters are there in the population data?"
  *
- * :::note
- * The LISA tool should always be used with the spatialWeights tool. The LLM models know how to use the spatialWeights tool for the LISA analysis.
- * :::
- *
- * @example
+ * ### Example
  * ```typescript
- * import { spatialWeights, SpatialWeightsTool, lisa, LisaTool } from "@openassistant/geoda";
+ * import { lisa } from "@openassistant/geoda";
+ * import { convertToVercelAiTool } from "@openassistant/utils";
  *
- * const spatialWeightsTool: SpatialWeightsTool = {
- *   ...spatialWeights,
+ * const lisaTool = {
+ *   ...lisa,
  *   context: {
- *     getGeometries: (datasetName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
+ *     getValues: async (datasetName: string, variableName: string) => {
+ *       // Implementation to retrieve values from your data source
+ *       return [100, 200, 150, 300, 250, 180, 220, 190, 280, 210];
  *     },
  *   },
  * };
  *
- * const lisaTool: LisaTool = {
- *   ...lisa,
- *   context: {
- *     getValues: (datasetName, variableName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
- *     },
- *   },
- * });
- *
  * const result = await generateText({
- *   model: openai('gpt-4o'),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Can you perform a local Moran analysis on the population data?',
- *   tools: {
- *     lisa: convertToVercelAiTool(lisaTool),
- *     spatialWeights: convertToVercelAiTool(spatialWeightsTool),
- *   },
+ *   tools: { lisa: convertToVercelAiTool(lisaTool) },
  * });
  * ```
+ *
+ * :::note
+ * The LISA tool should always be used with the spatialWeights tool. The LLM models know how to use the spatialWeights tool for the LISA analysis.
+ * :::
  */
-export const lisa = extendedTool<
+export const lisa: OpenAssistantTool<
   LisaFunctionArgs,
   LisaLlmResult,
   LisaAdditionalData,
   LisaFunctionContext
->({
+> = {
+  name: 'lisa',
   description:
     'Apply local indicators of spatial association (LISA) statistics to identify local clusters and spatial outliers.',
   parameters: z.object({
@@ -167,7 +175,7 @@ export const lisa = extendedTool<
       throw new Error('getValues() of LisaTool is not implemented');
     },
   },
-});
+};
 
 export type LisaTool = typeof lisa;
 
@@ -208,18 +216,22 @@ function isLisaContext(context: unknown): context is LisaFunctionContext {
 }
 
 async function executeLisa(
-  args,
-  options
-): Promise<{
-  llmResult: LisaLlmResult;
-  additionalData?: LisaAdditionalData;
-}> {
+  args: z.infer<LisaFunctionArgs>,
+  options?: {
+    toolCallId: string;
+    abortSignal?: AbortSignal;
+    context?: LisaFunctionContext;
+    previousExecutionOutput?: unknown[];
+  }
+): Promise<
+  OpenAssistantExecuteFunctionResult<LisaLlmResult, LisaAdditionalData>
+> {
   try {
     if (!isLisaArgs(args)) {
       throw new Error('Invalid arguments for lisa tool');
     }
 
-    if (options.context && !isLisaContext(options.context)) {
+    if (!options?.context || !isLisaContext(options.context)) {
       throw new Error('Invalid context for lisa tool');
     }
 
@@ -237,7 +249,7 @@ async function executeLisa(
     const { getValues, getGeometries } = options.context;
 
     // Get weights if needed
-    const { weights } = getWeights(weightsID, options.previousExecutionOutput);
+    const { weights } = getWeights(weightsID);
 
     if (!weights) {
       throw new Error('Weights are required for LISA analysis');
@@ -267,7 +279,7 @@ async function executeLisa(
 
     // run LISA analysis
     const lm = await lisaFunction({
-      data: values,
+      data: values as number[],
       neighbors: weights,
       permutation,
       significanceCutoff: significanceThreshold,

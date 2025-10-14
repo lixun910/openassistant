@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { extendedTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, generateId } from '@openassistant/utils';
 import { createHistogramBins } from './utils';
 import {
   EChartsToolContext,
@@ -38,7 +38,7 @@ import {
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Can you create a histogram of the revenue per capita for each location in dataset myVenues?',
  *   tools: {
  *     histogram: convertToVercelAiTool(histogramTool),
@@ -46,12 +46,13 @@ import {
  * });
  * ```
  */
-export const histogram = extendedTool<
+export const histogram: OpenAssistantTool<
   HistogramToolArgs,
   HistogramLlmResult,
   HistogramAdditionalData,
   EChartsToolContext
->({
+> = {
+  name: 'histogram',
   description: 'create a histogram',
   parameters: z.object({
     datasetName: z.string().describe('The name of the dataset.'),
@@ -77,7 +78,7 @@ export const histogram = extendedTool<
       theme: 'light',
     },
   },
-});
+};
 
 /**
  * The type of the histogram tool.
@@ -128,10 +129,10 @@ export type ExecuteHistogramResult = {
 
 async function executeHistogram(
   { datasetName, variableName, numberOfBins = 5 },
-  options
+  options?: { toolCallId: string; context?: EChartsToolContext }
 ): Promise<ExecuteHistogramResult> {
   try {
-    if (!isEChartsToolContext(options.context)) {
+    if (!options?.context || !isEChartsToolContext(options.context)) {
       throw new Error(
         'Invalid context for histogram tool. Please provide a valid context.'
       );

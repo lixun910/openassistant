@@ -6,13 +6,21 @@ import {
   cacheData,
   generateId,
   getCachedData,
-  extendedTool,
+  OpenAssistantTool,
 } from '@openassistant/utils';
 import { githubRateLimiter } from '../utils/rateLimiter';
 
-export type GetUsCountyGeojsonFunctionArgs = z.ZodObject<{
-  fipsCodes: z.ZodArray<z.ZodString>;
-}>;
+const getUsCountyGeojsonParameters = z.object({
+  fipsCodes: z.array(
+    z
+      .string()
+      .describe(
+        'The 5-digit FIPS code of a United States county (e.g., 01001 for Autauga County, Alabama)'
+      )
+  ),
+});
+
+export type GetUsCountyGeojsonFunctionArgs = z.infer<typeof getUsCountyGeojsonParameters>;
 
 export type GetUsCountyGeojsonLlmResult = {
   success: boolean;
@@ -68,7 +76,7 @@ export type ExecuteGetUsCountyGeojsonResult = {
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'What are the counties in Texas?',
  *   tools: {
  *     county: convertToVercelAiTool(countyTool),
@@ -76,23 +84,16 @@ export type ExecuteGetUsCountyGeojsonResult = {
  * });
  * ```
  */
-export const getUsCountyGeojson = extendedTool<
-  GetUsCountyGeojsonFunctionArgs,
+export const getUsCountyGeojson: OpenAssistantTool<
+  typeof getUsCountyGeojsonParameters,
   GetUsCountyGeojsonLlmResult,
   GetUsCountyGeojsonAdditionalData,
   object
->({
+> = {
+  name: 'getUsCountyGeojson',
   description:
     'Get GeoJSON data for all counties in a US state by its state code',
-  parameters: z.object({
-    fipsCodes: z.array(
-      z
-        .string()
-        .describe(
-          'The 5-digit FIPS code of a United States county (e.g., 01001 for Autauga County, Alabama)'
-        )
-    ),
-  }),
+  parameters: getUsCountyGeojsonParameters,
   execute: async (args): Promise<ExecuteGetUsCountyGeojsonResult> => {
     try {
       const { fipsCodes } = args;
@@ -152,6 +153,6 @@ export const getUsCountyGeojson = extendedTool<
     }
   },
   context: {},
-});
+};
 
 export type GetUsCountyGeojsonTool = typeof getUsCountyGeojson;

@@ -42,7 +42,7 @@ const spatialRegressionTool: SpatialRegressionTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Can you run a spatial regression analysis of "revenue ~ population + income" on the data?',
   tools: {spatialRegression: convertToVercelAiTool(spatialRegressionTool)},
 });

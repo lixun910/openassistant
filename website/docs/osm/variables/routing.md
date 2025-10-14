@@ -40,7 +40,7 @@ const routingTool: RoutingTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Find the driving route from Times Square to Central Park',
   tools: {
     geocoding: convertToVercelAiTool(geocoding),

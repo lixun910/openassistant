@@ -24,29 +24,12 @@ export type PreviousExecutionOutput = {
 }[];
 
 export function getWeights(
-  weightsId: string | undefined,
-  previousExecutionOutput?: PreviousExecutionOutput
+  weightsId: string | undefined
 ): { weights: number[][] | null; weightsMeta: WeightsMeta | null } {
   let weights: number[][] | null = null;
   let weightsMeta: WeightsMeta | null = null;
 
-  if (!weightsId && previousExecutionOutput) {
-    // Try to get weights from previous execution
-    previousExecutionOutput.forEach((output) => {
-      if (
-        output.data &&
-        'weights' in output.data &&
-        'weightsMeta' in output.data &&
-        output.data.weights &&
-        output.data.weightsMeta
-      ) {
-        weights = output.data.weights;
-        weightsMeta = output.data.weightsMeta;
-      }
-    });
-  }
-
-  if (!weights && weightsId) {
+  if (weightsId) {
     // Try to get weights from cache
     const existingWeights = getCachedWeightsById(weightsId);
     if (existingWeights) {

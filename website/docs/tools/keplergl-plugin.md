@@ -74,7 +74,7 @@ const keplerglTool: KeplerglTool = {
   },
 };
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   system: systemPrompt,
   prompt: 'Create a point map using the dataset "my_venues"',
   tools: { createMap: convertToVercelAiTool(keplerglTool) },
@@ -88,7 +88,7 @@ The `keplergl` tool is not executable on server side since it requires rendering
 ```typescript
 // on server side:
 streamText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   system: systemPrompt,
   prompt: 'Can you create a point map of the venues in dataset myVenues?',
   tools: {
@@ -187,7 +187,7 @@ const keplerglTool: KeplerglTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt:
     'Create a map from https://geodacenter.github.io/data-and-lab//data/Chi_Carjackings.geojson',
   tools: {
@@ -221,7 +221,7 @@ const leafletTool: LeafletTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   system: systemPrompt,
   prompt: 'Create a leaflet map of the venues in dataset myVenues',
   tools: {

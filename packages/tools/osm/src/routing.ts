@@ -3,8 +3,8 @@
 
 import { z } from 'zod';
 import { FeatureCollection } from 'geojson';
-import { generateId, extendedTool } from '@openassistant/utils';
-import { isMapboxToolContext, MapboxToolContext } from './register-tools';
+import { generateId, OpenAssistantTool } from '@openassistant/utils';
+import { isMapboxToolContext, MapboxToolContext } from './utils';
 import { mapboxRateLimiter } from './utils/rateLimiter';
 
 type MapboxStep = {
@@ -44,17 +44,22 @@ type MapboxResponse = {
   message?: string;
 };
 
-export type RoutingFunctionArgs = z.ZodObject<{
-  origin: z.ZodObject<{
-    longitude: z.ZodNumber;
-    latitude: z.ZodNumber;
-  }>;
-  destination: z.ZodObject<{
-    longitude: z.ZodNumber;
-    latitude: z.ZodNumber;
-  }>;
-  mode: z.ZodOptional<z.ZodEnum<['driving', 'walking', 'cycling']>>;
-}>;
+const routingParameters = z.object({
+  origin: z.object({
+    longitude: z.number().describe('The longitude of the origin point'),
+    latitude: z.number().describe('The latitude of the origin point'),
+  }),
+  destination: z.object({
+    longitude: z.number().describe('The longitude of the destination point'),
+    latitude: z.number().describe('The latitude of the destination point'),
+  }),
+  mode: z
+    .enum(['driving', 'walking', 'cycling'])
+    .describe('The mode of the routing')
+    .optional(),
+});
+
+export type RoutingFunctionArgs = z.infer<typeof routingParameters>;
 
 export type RoutingLlmResult = {
   success: boolean;
@@ -129,7 +134,7 @@ export type ExecuteRoutingResult = {
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Find the driving route from Times Square to Central Park',
  *   tools: {
  *     geocoding: convertToVercelAiTool(geocoding),
@@ -138,28 +143,16 @@ export type ExecuteRoutingResult = {
  * });
  * ```
  */
-export const routing = extendedTool<
-  RoutingFunctionArgs,
+export const routing: OpenAssistantTool<
+  typeof routingParameters,
   RoutingLlmResult,
   RoutingAdditionalData,
   MapboxToolContext
->({
+> = {
+  name: 'routing',
   description:
     'Get routing directions between two coordinates using Mapbox Directions API',
-  parameters: z.object({
-    origin: z.object({
-      longitude: z.number().describe('The longitude of the origin point'),
-      latitude: z.number().describe('The latitude of the origin point'),
-    }),
-    destination: z.object({
-      longitude: z.number().describe('The longitude of the destination point'),
-      latitude: z.number().describe('The latitude of the destination point'),
-    }),
-    mode: z
-      .enum(['driving', 'walking', 'cycling'])
-      .describe('The mode of the routing')
-      .optional(),
-  }),
+  parameters: routingParameters,
   execute: async (args, options): Promise<ExecuteRoutingResult> => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -278,7 +271,7 @@ export const routing = extendedTool<
       throw new Error('getMapboxToken() not implemented.');
     },
   },
-});
+};
 
 export type RoutingTool = typeof routing;
 

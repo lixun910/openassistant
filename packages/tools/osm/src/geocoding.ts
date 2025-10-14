@@ -2,15 +2,17 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { extendedTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, generateId } from '@openassistant/utils';
 import { RateLimiter } from './utils/rateLimiter';
 
 // Create a single instance to be shared across all calls
 const nominatimRateLimiter = new RateLimiter(1000);
 
-export type GeocodingFunctionArgs = z.ZodObject<{
-  address: z.ZodString;
-}>;
+const geocodingParameters = z.object({
+  address: z.string().describe('The address to geocode'),
+});
+
+export type GeocodingFunctionArgs = z.infer<typeof geocodingParameters>;
 
 export type GeocodingLlmResult = {
   success: boolean;
@@ -43,7 +45,7 @@ export type GeocodingAdditionalData = {
  * import { generateText } from 'ai';
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'What are the coordinates of the Eiffel Tower?',
  *   tools: {
  *     geocoding: convertToVercelAiTool(geocoding),
@@ -51,17 +53,16 @@ export type GeocodingAdditionalData = {
  * });
  * ```
  */
-export const geocoding = extendedTool<
-  GeocodingFunctionArgs,
+export const geocoding: OpenAssistantTool<
+  typeof geocodingParameters,
   GeocodingLlmResult,
   GeocodingAdditionalData,
   GeocodingToolContext
->({
+> = {
+  name: 'geocoding',
   description:
     'Geocode an address to get the latitude and longitude of the address',
-  parameters: z.object({
-    address: z.string().describe('The address to geocode'),
-  }),
+  parameters: geocodingParameters,
   execute: async (
     args
   ): Promise<{
@@ -161,7 +162,7 @@ export const geocoding = extendedTool<
     }
   },
   context: {},
-});
+};
 
 export type GeocodingTool = typeof geocoding;
 

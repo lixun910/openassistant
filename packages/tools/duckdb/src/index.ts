@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-export * from './tool';
-export * from './merge';
+export * from './query-tool';
+export * from './merge-tool';
 
 export * from './types';
 export * from './query';
-export * from './register-tools';
