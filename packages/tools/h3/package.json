@@ -1,6 +1,6 @@
 {
   "name": "@openassistant/h3",
-  "version": "0.5.19",
+  "version": "1.0.0-alpha.0",
   "author": "Xun Li<lixun910@gmail.com>",
   "description": "The H3Hub tools for OpenAssistant",
   "main": "dist/index.cjs.js",

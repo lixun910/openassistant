@@ -1,6 +1,6 @@
 {
   "name": "@openassistant/assistant",
-  "version": "0.5.18",
+  "version": "1.0.0-alpha.0",
   "author": "Xun Li<lixun910@gmail.com>",
   "description": "The AI Assistant Chat UI for OpenAssistant",
   "main": "./dist/index.cjs.js",
