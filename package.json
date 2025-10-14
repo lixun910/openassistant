@@ -13,7 +13,7 @@
     "clean": "rm -rf packages/*/dist",
     "build-slow": "lerna run build --scope=@openassistant/utils && lerna run build --npm-client=yarn --concurrency=1 --ignore=@openassistant/utils",
     "build-geoda": "lerna run build --scope=@openassistant/geoda",
-    "build": "lerna run build --parallel --ignore @openassistant/chat",
+    "build": "lerna run build --parallel",
     "watch": "lerna run watch --parallel",
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
     "lint": "lerna run lint --parallel",
