@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool } from '@openassistant/utils';
+import {
+  OpenAssistantTool,
+  OpenAssistantExecuteFunctionResult,
+} from '@openassistant/utils';
 import { z } from 'zod';
 import { getPerimeter } from '@geoda/core';
 import { SpatialToolContext } from '../types';
@@ -31,46 +34,54 @@ export type PerimeterAdditionalData = {
  * ## perimeter Tool
  *
  * This tool calculates the perimeter of geometries in a GeoJSON dataset.
+ * It supports both direct GeoJSON input and dataset names, and can calculate perimeters in either kilometers or miles.
  *
  * ### Perimeter Calculation
  *
- * It supports both direct GeoJSON input and dataset names, and can calculate
- * perimeters in either kilometers or miles.
+ * The tool calculates perimeters for various geometry types:
+ * - **Polygons**: Calculates the perimeter length of polygon boundaries
+ * - **MultiPolygons**: Calculates the total perimeter of multipolygon geometries
+ * - **FeatureCollections**: Calculates perimeters for all polygon features in the collection
  *
- * Example user prompts:
+ * ### Parameters
+ * - `datasetName`: Name of the dataset with geometries to calculate perimeter for (optional)
+ * - `geojson`: GeoJSON string of geometries to calculate perimeter for (optional)
+ * - `distanceUnit`: Unit for perimeter calculation - 'KM' for kilometers or 'Mile' for miles
+ *
+ * **Example user prompts:**
  * - "Calculate the perimeter of these polygons in kilometers"
  * - "What is the total perimeter of these boundaries in miles?"
  * - "Measure the perimeter of these land parcels"
  *
  * ### Example
- * 
  * ```typescript
- * import { perimeter, PerimeterTool } from '@openassistant/geoda';
- * import { convertToVercelAiTool } from '@openassistant/utils';
- * import { generateText } from 'ai';
+ * import { perimeter } from "@openassistant/geoda";
+ * import { convertToVercelAiTool } from "@openassistant/utils";
  *
- * const perimeterTool: PerimeterTool = {
+ * const perimeterTool = {
  *   ...perimeter,
  *   context: {
- *     getGeometries: (datasetName) => {
- *       return SAMPLE_DATASETS[datasetName].map((item) => item.geometry);
+ *     getGeometries: async (datasetName: string) => {
+ *       // Implementation to retrieve geometries from your data source
+ *       return geometries;
  *     },
  *   },
  * };
  *
- * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ * const result = await generateText({
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Calculate the perimeter of these polygons in kilometers',
  *   tools: { perimeter: convertToVercelAiTool(perimeterTool) },
  * });
  * ```
  */
-export const perimeter = extendedTool<
+export const perimeter: OpenAssistantTool<
   PerimeterFunctionArgs,
   PerimeterLlmResult,
   PerimeterAdditionalData,
   SpatialToolContext
->({
+> = {
+  name: 'perimeter',
   description: 'Calculate perimeter of geometries',
   parameters: z.object({
     geojson: z
@@ -87,7 +98,19 @@ export const perimeter = extendedTool<
       ),
     distanceUnit: z.enum(['KM', 'Mile']).default('KM'),
   }),
-  execute: async (args, options) => {
+  execute: async (
+    args: z.infer<PerimeterFunctionArgs>,
+    options?: {
+      toolCallId: string;
+      abortSignal?: AbortSignal;
+      context?: SpatialToolContext;
+    }
+  ): Promise<
+    OpenAssistantExecuteFunctionResult<
+      PerimeterLlmResult,
+      PerimeterAdditionalData
+    >
+  > => {
     const { datasetName, geojson, distanceUnit = 'KM' } = args;
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(
@@ -121,6 +144,6 @@ export const perimeter = extendedTool<
   context: {
     getGeometries: async () => null,
   },
-});
+};
 
 export type PerimeterTool = typeof perimeter;

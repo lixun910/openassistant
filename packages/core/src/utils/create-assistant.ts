@@ -4,9 +4,9 @@
 import { GetAssistantModelByProvider } from '../lib/model-utils';
 import { UseAssistantProps } from '../hooks/use-assistant';
 import { Tool, convertToCoreMessages } from 'ai';
-import { ExtendedTool } from '@openassistant/utils';
+import { OpenAssistantTool } from '@openassistant/utils';
 
-function isExtendedTool(tool: Tool | ExtendedTool): tool is ExtendedTool {
+function isOpenAssistantTool(tool: Tool | OpenAssistantTool): tool is OpenAssistantTool {
   return 'context' in tool || 'onToolCompleted' in tool || 'component' in tool;
 }
 
@@ -73,7 +73,7 @@ export async function createAssistant(props: UseAssistantProps) {
   if (tools) {
     Object.keys(tools).forEach((functionName) => {
       const toolObject = tools![functionName];
-      if (isExtendedTool(toolObject)) {
+      if (isOpenAssistantTool(toolObject)) {
         const { execute, context, component, onToolCompleted, ...rest } =
           toolObject;
 

@@ -2,7 +2,7 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { extendedTool, generateId } from '@openassistant/utils';
+import { OpenAssistantTool, generateId } from '@openassistant/utils';
 import {
   ParallelCoordinateDataProps,
   processParallelCoordinateData,
@@ -46,7 +46,7 @@ import {
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Can you create a PCP of the population and income?',
  *   tools: {
  *     pcp: convertToVercelAiTool(pcpTool),
@@ -54,12 +54,13 @@ import {
  * });
  * ```
  */
-export const pcp = extendedTool<
+export const pcp: OpenAssistantTool<
   PCPFunctionArgs,
   PCPLlmResult,
   PCPAdditionalData,
   EChartsToolContext
->({
+> = {
+  name: 'pcp',
   description: 'create a parallel coordinates plot',
   parameters: z.object({
     datasetName: z.string().describe('The name of the dataset.'),
@@ -81,7 +82,7 @@ export const pcp = extendedTool<
       theme: 'light',
     },
   },
-});
+};
 
 export type PCPTool = typeof pcp;
 
@@ -129,12 +130,12 @@ export function isPCPToolArgs(data: unknown): data is PCPToolArgs {
   return typeof data === 'object' && data !== null && 'variableNames' in data;
 }
 
-async function executePCP(args, options): Promise<ExecutePCPResult> {
+async function executePCP(args, options?: { toolCallId: string; context?: EChartsToolContext }): Promise<ExecutePCPResult> {
   try {
     if (!isPCPToolArgs(args)) {
       throw new Error('Invalid PCP function arguments.');
     }
-    if (!isEChartsToolContext(options.context)) {
+    if (!options?.context || !isEChartsToolContext(options.context)) {
       throw new Error(
         'Invalid context for PCP tool. Please provide a valid context.'
       );

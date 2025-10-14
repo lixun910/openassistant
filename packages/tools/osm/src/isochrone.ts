@@ -2,9 +2,9 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { generateId, extendedTool } from '@openassistant/utils';
+import { generateId, OpenAssistantTool } from '@openassistant/utils';
 import { FeatureCollection } from 'geojson';
-import { isMapboxToolContext, MapboxToolContext } from './register-tools';
+import { isMapboxToolContext, MapboxToolContext } from './utils';
 import { mapboxRateLimiter } from './utils/rateLimiter';
 
 interface MapboxIsochroneResponse {
@@ -28,18 +28,33 @@ interface MapboxIsochroneResponse {
   }>;
 }
 
-export type IsochroneFunctionArgs = z.ZodObject<{
-  origin: z.ZodObject<{
-    longitude: z.ZodNumber;
-    latitude: z.ZodNumber;
-  }>;
-  timeLimit: z.ZodOptional<z.ZodDefault<z.ZodNumber>>;
-  distanceLimit: z.ZodOptional<z.ZodNumber>;
-  profile: z.ZodOptional<
-    z.ZodDefault<z.ZodEnum<['driving', 'walking', 'cycling']>>
-  >;
-  polygons: z.ZodOptional<z.ZodDefault<z.ZodBoolean>>;
-}>;
+const isochroneParameters = z.object({
+  origin: z.object({
+    longitude: z.number().describe('The longitude of the origin point'),
+    latitude: z.number().describe('The latitude of the origin point'),
+  }),
+  timeLimit: z
+    .number()
+    .describe('The time limit in minutes for the isochrone')
+    .default(10)
+    .optional(),
+  distanceLimit: z
+    .number()
+    .describe('The distance limit in meters for the isochrone')
+    .optional(),
+  profile: z
+    .enum(['driving', 'walking', 'cycling'])
+    .describe('The routing profile to use')
+    .default('driving')
+    .optional(),
+  polygons: z
+    .boolean()
+    .describe('Whether to return the contours as polygons or linestrings')
+    .default(true)
+    .optional(),
+});
+
+export type IsochroneFunctionArgs = z.infer<typeof isochroneParameters>;
 
 export type IsochroneLlmResult = {
   success: boolean;
@@ -106,7 +121,7 @@ export type ExecuteIsochroneResult = {
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'What areas can I reach within 2km of the Eiffel Tower on foot?',
  *   tools: {
  *     isochrone: convertToVercelAiTool(isochroneTool),
@@ -116,39 +131,16 @@ export type ExecuteIsochroneResult = {
  *
  * For a more complete example, see the [OSM Tools Example using Next.js + Vercel AI SDK](https://github.com/openassistant/openassistant/tree/main/examples/vercel_osm_example).
  */
-export const isochrone = extendedTool<
-  IsochroneFunctionArgs,
+export const isochrone: OpenAssistantTool<
+  typeof isochroneParameters,
   IsochroneLlmResult,
   IsochroneAdditionalData,
   MapboxToolContext
->({
+> = {
+  name: 'isochrone',
   description:
     'Get isochrone polygons showing reachable areas within a given time limit from a starting point using Mapbox Isochrone API',
-  parameters: z.object({
-    origin: z.object({
-      longitude: z.number().describe('The longitude of the origin point'),
-      latitude: z.number().describe('The latitude of the origin point'),
-    }),
-    timeLimit: z
-      .number()
-      .describe('The time limit in minutes for the isochrone')
-      .default(10)
-      .optional(),
-    distanceLimit: z
-      .number()
-      .describe('The distance limit in meters for the isochrone')
-      .optional(),
-    profile: z
-      .enum(['driving', 'walking', 'cycling'])
-      .describe('The routing profile to use')
-      .default('driving')
-      .optional(),
-    polygons: z
-      .boolean()
-      .describe('Whether to return the contours as polygons or linestrings')
-      .default(true)
-      .optional(),
-  }),
+  parameters: isochroneParameters,
   execute: async (args, options): Promise<ExecuteIsochroneResult> => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -256,7 +248,7 @@ export const isochrone = extendedTool<
       throw new Error('getMapboxToken not implemented.');
     },
   },
-});
+};
 
 export type IsochroneTool = typeof isochrone;
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool } from '@openassistant/utils';
+import { OpenAssistantTool } from '@openassistant/utils';
 import { z } from 'zod';
 
 import { EChartsToolContext } from '../types';
@@ -16,15 +16,14 @@ export type VegaLitePlotToolArgs = z.ZodObject<{
 
 export type VegaLitePlotLlmResult = {
   success: boolean;
-  vegaLiteSpec: string;
-  plotType: string;
+  vegaLiteSpec?: string;
+  result: string;
 };
 
 export type VegaLitePlotAdditionalData = {
   vegaLiteSpec: string;
   datasetName: string;
   variableNames: string[];
-  plotType: string;
 };
 
 /**
@@ -64,7 +63,7 @@ export type VegaLitePlotAdditionalData = {
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Can you create a bar chart of the population for each location in dataset myVenues?',
  *   tools: {
  *     vegaLitePlot: convertToVercelAiTool(vegaLitePlotTool),
@@ -72,12 +71,13 @@ export type VegaLitePlotAdditionalData = {
  * });
  * ```
  */
-export const vegaLitePlot = extendedTool<
+export const vegaLitePlot: OpenAssistantTool<
   VegaLitePlotToolArgs,
   VegaLitePlotLlmResult,
   VegaLitePlotAdditionalData,
   EChartsToolContext
->({
+> = {
+  name: 'vegaLitePlot',
   description:
     'Create a plot using vega-lite. Please follow the vegaLite spec format.',
   parameters: z.object({
@@ -159,4 +159,4 @@ Use the following settings to avoid unnecessary axis range expansion for both x 
       );
     },
   },
-});
+};

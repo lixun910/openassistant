@@ -13,6 +13,7 @@ import { Message } from '@ai-sdk/ui-utils';
 import { tiktokenCounterPerMessage } from '../utils/token-counter';
 import { trimMessages } from '../utils/trim-messages';
 import { executeToolCall } from '../utils/toolcall';
+import { getModelContextWindow } from '../utils/model-context-windows';
 
 /**
  * Chat handler class to manage chat requests and responses
@@ -33,22 +34,28 @@ export class ChatHandler {
    * @param {LanguageModel} config.model - Language model instance to use for chat
    * @param {ToolSet} [config.tools] - Optional tools configuration
    * @param {string} [config.instructions] - Optional system instructions
+   * @param {string} [config.modelId] - Optional model identifier to determine context window automatically
+   * @param {number} [config.maxTokens] - Optional maximum tokens (overrides automatic detection)
    */
   constructor({
     model,
     tools,
     instructions,
-    maxTokens = 128 * 1024,
+    modelId,
+    maxTokens,
   }: {
     model: LanguageModel;
     tools?: ToolSet;
     instructions?: string;
+    modelId?: string;
     maxTokens?: number;
   }) {
     this.model = model;
     this.tools = tools;
     this.instructions = instructions;
-    this.maxTokens = maxTokens;
+    // Use getModelContextWindow to determine maxTokens based on modelId
+    // If maxTokens is explicitly provided, it takes priority
+    this.maxTokens = maxTokens || getModelContextWindow(modelId || '', undefined);
   }
 
   /**

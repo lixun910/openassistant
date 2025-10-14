@@ -30,7 +30,7 @@ const localQueryTool: LocalQueryTool = {
 };
 
 generateText({
-  model: 'gpt-4o-mini',
+  model: 'gpt-4.1',
   prompt: 'What are the venues in San Francisco?',
   tools: {localQuery: convertToVercelAiTool(localQueryTool)},
 });
@@ -50,7 +50,7 @@ const localQueryTool = convertToVercelAiTool(localQuery, {isExecutable: false});
 export async function POST(req: Request) {
   // ...
   const result = streamText({
-    model: openai('gpt-4o-mini'),
+    model: openai('gpt-4.1'),
     messages: messages,
     tools: {localQuery: localQueryTool},
   });

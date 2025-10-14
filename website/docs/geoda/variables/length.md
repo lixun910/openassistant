@@ -34,7 +34,7 @@ const lengthTool: LengthTool = {
 });
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Calculate the length of these roads in kilometers',
   tools: {length: convertToVercelAiTool(lengthTool)},
 });

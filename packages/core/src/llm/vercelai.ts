@@ -28,6 +28,7 @@ import {
   generateId,
 } from '@ai-sdk/ui-utils';
 import { executeToolCall } from '../utils/toolcall';
+import { setCustomModelContextWindows } from '../utils/model-context-windows';
 
 export function extractMaxToolInvocationStep(
   toolInvocations: ToolInvocation[] | undefined
@@ -100,6 +101,8 @@ type VercelAiConfigureProps = {
   toolCallStreaming?: boolean;
   headers?: Record<string, string>;
   baseURL?: string;
+  /** Custom model context windows to extend or override the default mapping */
+  modelContextWindows?: Record<string, number>;
 };
 
 /**
@@ -120,6 +123,7 @@ export class VercelAi extends AbstractAssistant {
   protected static hasInitializedServer = false;
   protected static headers: Record<string, string> = {};
   protected static baseURL = '';
+  protected static modelContextWindows: Record<string, number> = {};
 
   // used by each processTextMessage call
   protected toolSteps = 0;
@@ -176,6 +180,10 @@ export class VercelAi extends AbstractAssistant {
       VercelAi.toolCallStreaming = config.toolCallStreaming;
     if (config.headers) VercelAi.headers = config.headers;
     if (config.baseURL) VercelAi.baseURL = config.baseURL;
+    if (config.modelContextWindows) {
+      VercelAi.modelContextWindows = config.modelContextWindows;
+      setCustomModelContextWindows(config.modelContextWindows);
+    }
   }
 
   public static override registerTool({

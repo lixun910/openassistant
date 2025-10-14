@@ -48,7 +48,7 @@ const moranTool: GlobalMoranTool = {
 });
 
 const result = await generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Can you calculate the Global Moran\'s I for the population data?',
   tools: {
     globalMoran: convertToVercelAiTool(moranTool),

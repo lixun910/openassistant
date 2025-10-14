@@ -1,52 +1,54 @@
 # OpenAssistant
 
-OpenAssistant is a javascript library helping your build your AI application with powerful data analysis tools and an interactive React chat component.
+OpenAssistant v1.0.0 focuses on providing a rich set of AI tools for spatial data analysis and GIS tasks. Unlike previous versions, v1.0.0 is framework-agnostic and can be integrated with any AI framework of your choice.
 
-| Category                                                                                         | Tool/Feature                  | Description                                                                                                                 |
-| ------------------------------------------------------------------------------------------------ | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| **Plot Tools** [@openassistant/plots](https://openassistant-doc.vercel.app/docs/tools/echarts-plugin)        | Vega-Lite                     | All plot types using Vega-Lite                                                                                              |
-|                                                                                                  | eCharts                       | interactive plots: box plot, bubble chart, histogram, parallel coordinates, scatter plot with regression lines              |
-| **GeoTools** [@openassistant/osm](https://openassistant-doc.vercel.app/docs/tools/osm-plugin)                | Geocoding                     | Geocode addresses using OSM API                                                                                             |
-|                                                                                                  | Routing                       | Calculate driving routes using Mapbox API                                                                                   |
-|                                                                                                  | Isochrone                     | Calculate isochrones using Mapbox API                                                                                       |
-|                                                                                                  | Geographic boundaries         | retrieve U.S. state/county/zipcode boundaries                                                                               |
-| **Map Tools** [@openassistant/map](https://openassistant-doc.vercel.app/docs/tools/keplergl-plugin)               | Kepler.gl                     | Interactive map visualization using Kepler.gl                                                                               |
-|                                                                                                  | Leaflet map                   | Web mapping using Leaflet                                                                                                   |
-| **SQL Tools** [@openassistant/duckdb](https://openassistant-doc.vercel.app/docs/tools/duckdb-plugin)      | Local data querying           | Query local data using in-browser DuckDB SQL                                                                                |
-|                                                                                                  | Table operations              | Merge, filter, sort, group by, aggregate, etc.                                                                              |
-| **Data Analysis Tools** [@openassistant/geoda](https://openassistant-doc.vercel.app/docs/tools/geoda-plugin) | Data classification           | Quantile, equal interval, natural breaks, standard deviation, percentile, box, etc.                                         |
-|                                                                                                  | Data standardization          | Z-score, deviation from mean, MAD, range adjust, range standardization, etc.                                                |
-|                                                                                                  | Spatial operations            | Buffer, area, centroid, dissolve, length, perimeter, Minimum Spanning Tree, Thiessen polygons (Voronoi diagram), Cartogram. |
-|                                                                                                  | Spatial join                  | Spatial join spatial datasets                                                                                               |
-|                                                                                                  | Spatial dissolve/aggregate    | Spatial dissolve/aggregate spatial features                                                                                 |
-|                                                                                                  | Spatial weights               | Queen/rook contiguity, KNN weights, distance-based weights, kernel weights                                                  |
-|                                                                                                  | Global spatial analysis       | Global Moran's I, Global Geary's C, Global Join Count                                                                       |
-|                                                                                                  | Local spatial analysis (LISA) | Local Moran's I, local Getis-Ord Gi\*, local Geary, quantile LISA                                                           |
-|                                                                                                  | Spatial regression            | OLS, spatial lag, spatial error model                                                                                       |
+**Key Features:**
 
-### Why use LLM tools?
-
-LLMs are fundamentally statistical language models that predict the next tokens based on the context. While emergent behaviors such as learning, reasoning, and tool use enhance the model's capabilities, LLMs do not natively perform precise or complex computations and algorithms. For example, when asked to compute the square root of a random decimal number, ChatGPT typically provides an incorrect answer unless its Python tool is explicitly called to perform the calculation. This limitation becomes even more apparent with complex tasks in engineering and scientific domains. Providing computational tools for LLMs offers a solution for overcoming this problem and helps you successfully integrate LLMs with your applications while keeping the privacy of your data.
-
-Check out the following examples using OpenAssistant in action:
-
-- [kepler.gl AI Assistant (kepler.gl)](https://github.com/keplergl/kepler.gl/discussions/2843#discussioncomment-13326013)
-- [GeoDa.AI AI Assistant (geoda.ai)](https://geoda.ai)
-- [SqlRooms (sqlrooms.org)](https://sqlrooms-ai.netlify.app/)
+- 🗺️ **Spatial Analysis Tools**: Comprehensive suite of GeoDA tools for spatial statistics, LISA, Moran's I, spatial regression, and more.
+- 🗄️ **DuckDB Integration**: Powerful in-browser SQL queries with DuckDB WASM for handling large datasets efficiently.
+- 🌍 **OpenStreetMap Tools**: Access OSM data with geocoding, reverse geocoding, routing, and isochrone analysis.
+- 📊 **Visualization Components**: Ready-to-use components for ECharts, Vega-Lite, Kepler.gl, and Leaflet visualizations.
+- 📍 **Places & H3**: Location intelligence with place search, geotagging, and H3 hexagonal spatial indexing.
+- 🤖 **AI Framework Agnostic**: Works with Vercel AI SDK, LangChain, Anthropic, and other popular AI frameworks.
 
 ## Quick Start
 
-### 1. Use OpenAssistant tools in your Vercel AI application
+### 1. Use OpenAssistant tools in your AI application
 
-#### Install the tools
+#### Example: create a map
 
-For example, using histogram tool from @openassistant/plots:
+Add map tool to your AI application:
 
-```bash
-npm install @openassistant/plots
+```ts
+import { generateText } from 'ai';
+import { map, MapTool } from '@openassistant/maps';
+import { convertToVercelAiTool } from '@openassistant/utils';
+
+// Create a kepler map tool with your context
+const keplerMapTool = {
+  ...keplergl,
+  context: {
+    getDataset: async (datasetName: string) => {
+      if (datasetName in SAMPLE_DATASETS) {
+        return SAMPLE_DATASETS[datasetName as keyof typeof SAMPLE_DATASETS];
+      }
+      throw new Error(`Dataset ${datasetName} not found`);
+    },
+  },
+  component: KeplerGlComponent,
+};
+
+// Convert to Vercel AI SDK tool
+const aiTool = tool(convertToVercelAiTool(keplerMapTool));
+
+// Use in your AI application
 ```
 
-Add histogram tool to your Vercel AI application:
+<img src="https://geodaai.github.io/openassistant/keplergl-tool-demo-1.gif" width="400" alt="Kepler.gl Tool Demo" />
+
+#### Example: create a histogram
+
+Add histogram tool to your AI application, e.g. Vercel AI SDK:
 
 ```ts
 import { generateText } from 'ai';
@@ -78,71 +80,33 @@ const result = await generateText({
 });
 ```
 
-When user prompts e.g. "`create a histogram of HR60 in dataset Natregimes`", the LLM will call the **histogram** tool which will call the **getValues()** function to get the data, create a histogram, return the result to the LLM and invoke callback function **onToolCompleted()** with the tool call id and additional data. For example, the output of the result could be:
-
-```bash
-toolCallId call_HFlIW3My59rzp3fA3M4bWTjb
-additionalData {
-  id: '8i9xjm05iff',
-  datasetName: 'Natregimes',
-  variableName: 'HR60',
-  histogramData: [
-    { bin: 0, binStart: 1, binEnd: 2.8 },
-    { bin: 1, binStart: 2.8, binEnd: 4.6 },
-    { bin: 2, binStart: 4.6, binEnd: 6.4 },
-    { bin: 3, binStart: 6.4, binEnd: 8.2 },
-    { bin: 4, binStart: 8.2, binEnd: 10 }
-  ],
-  barDataIndexes: [ [ 0, 1 ], [ 2, 3 ], [ 4, 5 ], [ 6, 7 ], [ 8, 9 ] ],
-}
-```
-
-See the full example code 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples).
-
 <img src="https://openassistant-doc.vercel.app/img/histogram-1-400.png" width="400" alt="Histogram Plugin" />
 
-### 2. Create your own tool with context and callback function support
+### 2. Create your own tool
 
-You can use `extendedTool` function in [@openassistant/utils](https://openassistant-doc.vercel.app/docs/utils/) to create your own tool. It is a wrapper around the `tool` function from the `ai` package, and allows you to add context and callback function support to your tool. See [Why use extendedTool](https://openassistant-doc.vercel.app/docs/tools/create-tool#why-extendedtool) section for more details.
-
-For example, create a weather tool to return the weather from a weather station you installed at different cities.
-
-```bash
-npm install @openassistant/utils
-```
+Create a weather tool to return the weather from a weather station you installed at different cities.
 
 ```ts
-import { extendedTool, convertToVercelAiTool } from '@openassistant/utils';
+import { OpenAssistantTool, convertToVercelAiTool } from '@openassistant/utils';
 import { generateText } from 'ai';
 import { z } from 'zod';
 
-const weatherTool = extendedTool({
+const weatherTool: OpenAssistantTool<{ cityName: string }, { weather: string }, { station: string }> = {
+  name: 'getWeather',
   description: 'Get the weather in a city from a weather station',
   parameters: z.object({ cityName: z.string() }),
-  context: {
-    getStation: async (cityName: string) => {
-      // provide your own implementation to get the data from your application as a context
-      const stations = {
-        'New York': {
-          stationId: '123',
-          weather: 'sunny',
-          timestamp: '2025-06-20 10:00:00',
-        },
-        'Los Angeles': {
-          stationId: '456',
-          weather: 'cloudy',
-          timestamp: '2025-06-20 10:00:00',
-        },
-        Chicago: {
-          stationId: '789',
-          weather: 'rainy',
-          timestamp: '2025-06-20 10:00:00',
-        },
-      };
-      return stations[cityName];
-    },
-  },
   execute: async (args, options) => {
+    // provide your own implementation to get the data from your application as a context
+    const stations = {
+      'New York': {
+        stationId: '123',
+        weather: 'sunny',
+        timestamp: '2025-06-20 10:00:00',
+      },
+    };
+    return stations[args.cityName];
+  },
+  context: {
     // check if the context is provided
     if (!options || !options.context || !options.context['getStation']) {
       throw new Error('Context is required');
@@ -163,184 +127,109 @@ const weatherTool = extendedTool({
   },
 });
 
-// use the tool in your application
-const result = await generateText({
-  model: openai('gpt-4o', { apiKey: key }),
-  system: 'You are a helpful assistant',
-  prompt: 'What is the weather in New York?',
-  tools: { weather: convertToVercelAiTool(weatherTool) },
-});
-```
+### 3. Add Chat Interface to your App
 
-The possible output of the result could be:
-
-```bash
-The weather in New York is sunny from your weather station 123.
-```
-
-The `additionalData` is the data returned from the tool execution. You can use it to render a component or save it to your database.
-
-See the full example code 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples/zod_function_tools).
-
-### 3. Add a React Chat Component to your App
-
-OpenAssistant also provides a chat component [@openassistant/ui](https://openassistant-doc.vercel.app/docs/ui/) that helps you build your AI application with an interactive chat interface quickly. It can be used in browser-only web applications.
-
-#### Installation
-
-```bash
-npm install @openassistant/ui
-```
+OpenAssistant provides a chat interface component based on [@sqlrooms/ai](https://github.com/sqlrooms/sqlrooms).
 
 #### Usage
 
 ```tsx
-import { AiAssistant } from '@openassistant/ui';
-// for React app without tailwindcss, you can import the css file
-// import '@openassistant/ui/dist/index.css';
+import { Assistant, type AssistantOptions } from '@openassistant/assistant';
+import { z } from 'zod';
 
-function App() {
+const config: AssistantOptions = {
+  ai: {
+    getInstructions: () => 'You are a helpful assistant.',
+    tools: {
+      echo: {
+        description: 'Echo the input',
+        parameters: z.object({
+          input: z.string().describe('The input to echo'),
+        }),
+        execute: async ({ input }: { input: string }) => {
+          return {
+            llmResult: {
+              success: true,
+              output: input,
+            },
+          };
+        },
+        context: {},
+      },
+    },
+  },
+};
+
+export function App() {
   return (
-    <AiAssistant
-      modelProvider="openai"
-      model="gpt-4"
-      apiKey="your-api-key"
-      version="v1"
-      welcomeMessage="Hello! How can I help you today?"
-      instructions="You are a helpful assistant."
-      functions={{}}
-      theme="dark"
-      useMarkdown={true}
-      showTools={true}
-      onMessageUpdated=({messages}) => {
-        console.log(messages);
-      }}
-    />
+    <div className="flex h-screen w-screen items-center justify-center p-4">
+      <div className="w-full max-w-[900px] h-full">
+        <Assistant options={config} />
+      </div>
+    </div>
   );
 }
 ```
 
-<img src="https://openassistant-doc.vercel.app/img/getstart-dark.png" width="300" />
-
-See the source code of the example 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples).
-
-If you are using TailwindCSS, you need to add the following configurations to your `tailwind.config.js` file:
+Add the following configurations to your `tailwind.config.js` file:
 
 ```tsx
-import { nextui } from '@heroui/react';
-...
+import { sqlroomsTailwindPreset } from '@sqlrooms/ui';
 
-module.exports = {
-  content: [
-    ...,
-    './node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}',
-    './node_modules/@openassistant/ui/dist/**/*.{js,ts,jsx,tsx}',
-  ],
+const preset = sqlroomsTailwindPreset();
+const config = {
+  ...preset,
+  content: ['src/**/*.{ts,tsx}', '../../node_modules/@sqlrooms/*/dist/**/*.js'],
   theme: {
-    extend: {},
-  },
-  darkMode: 'class',
-  plugins: [nextui()],
-};
-```
-
-See the source code of the example 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples).
-
-#### Use Tools with chat component
-
-For a quick example:
-
-**localQuery** in @openassistant/duckdb
-
-This tool helps to query any data that has been loaded in your application using user's prompt.
-
-- the data in your application will be loaded into a local duckdb instance temporarily
-- LLM will generate SQL query based on user's prompt against the data
-- the SQL query result will be executed in the local duckdb instance
-- the query result will be displayed in a React table component
-
-In your application, the data could be loaded from a csv/json/parquet/xml file. For this example, we will use the `SAMPLE_DATASETS` in `dataset.ts` to simulate the data.
-
-<img width="400" src="https://github.com/user-attachments/assets/4115b474-13af-48ba-b69e-b39cc325f1b1"/>
-
-```ts
-export const SAMPLE_DATASETS = {
-  myVenues: [
-    {
-      index: 0,
-      location: 'New York',
-      latitude: 40.7128,
-      longitude: -74.006,
-      revenue: 12500000,
-      population: 8400000,
-    },
-    ...
-  ],
-};
-```
-
-- Import the `localQuery` tool from `@openassistent/duckdb` and use it in your application.
-- Provide the `getValues` function in the `context` to get the values from your data.
-- Use the tool in your AI assistant chat component
-
-```ts
-import { localQuery, LocalQueryTool } from '@openassistent/duckdb';
-
-// load your data
-// pass the metadata of the data to the assistant instructions
-const instructions = `You are a helpful assistant. You can use the following datasets to answer the user's question:
-  datasetName: myVenues,
-  variables: index, location, latitude, longitude, revenue, population
-  `;
-
-// use `LocalQueryTool` for type safety
-const localQueryTool: LocalQueryTool = {
-  ...localQuery,
-  context: {
-    ...localQuery.context,
-    getValues: (datasetName: string, variableName: string) => {
-      return SAMPLE_DATASETS[datasetName][variableName];
+    ...preset.theme,
+    extend: {
+      ...preset.theme?.extend,
     },
   },
 };
 
-// use the tool in the chat component
-<AiAssistant
-  modelProvider="openai"
-  model="gpt-4o"
-  apiKey="your-api-key"
-  version="0.0.1"
-  welcomeMessage="Hello! How can I help you today?"
-  instructions={instructions}
-  functions={{ localQuery: localQueryTool }}
-/>
+export default config;
 ```
 
-See the source code of the example 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples/duckdb_esbuild).
+<video src="https://sqlrooms.org/assets/ai-example-light.Bgw76g3w.mp4" width="300" controls autoplay loop muted />
 
-For message persistence, see the example 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples/message_persistence).
+If you want to build your own chat interface, just simply pass your custom component in <Assistant> component.
 
-### 4. Use a uniform interface for different AI providers
+```tsx
+import { Assistant, type AssistantOptions } from '@openassistant/assistant';
+import { z } from 'zod';
 
-If you want to build your own chat interface, you can use the OpenAssistant core package [@openassistant/core](https://openassistant-doc.vercel.app/docs/core/), which provides
+const config: AssistantOptions = {
+  ai: {
+    getInstructions: () => 'You are a helpful assistant.',
+    tools: {},
+  },
+};
 
-- a uniform interface for different AI providers
-- a set of powerful LLM tools (data analysis, visualization, mapping, etc.)
-- an interactive React chat component (optional)
+export function App() {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center p-4">
+      <div className="w-full max-w-[900px] h-full">
+        <Assistant options={config}>
+          <CustomComponent />
+        </Assistant>
+      </div>
+    </div>
+  );
+}
+```
 
-for building your own AI assistant, along with a design allows you to easily create your own tools by :
+For more details, you can follow the source code of [packages/ai](https://github.com/geodaopenjs/openassistant/tree/main/packages/ai), which is a wrapper of [@sqlrooms/ai](https://github.com/sqlrooms/sqlrooms).
+
+### 4. Use openassistant core package
+
+NOTE: this will be deprecated in the OpenAssistant v1. You can use e.g. Vercel AI SDK v5 instead.
+
+You can also use the OpenAssistant core package [@openassistant/core](https://openassistant-doc.vercel.app/docs/core/), which provides a uniform interface for different AI providers, to build your own AI assistant, along with a design allows you to easily create your own tools by :
 
 - providing your own context (e.g. data, callbacks etc.) for the tool execution
 - providing your own UI component for rendering the tool result
 - passing the result from the tool execution to the tool UI component or next tool execution.
-
-#### Installation
-
-Install the core packages:
-
-```bash
-npm install @openassistant/core
-```
 
 #### Usage
 
@@ -357,7 +246,7 @@ const assistant = await createAssistant({
   apiKey: 'your-api-key',
   version: '0.0.1',
   instructions: 'You are a helpful assistant',
-  // functions: {{}},
+  tools: {},
   // abortController: null
 });
 
@@ -370,21 +259,7 @@ await assistant.processTextMessage({
 });
 ```
 
-See the source code of the example 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples/cli_example).
-
-:::tip
-
-If you want to use Google Gemini as the model provider, you can do the following:
-
-Install vercel google gemini client:
-
-```bash
-npm install @ai-sdk/google
-```
-
-Then, you can use update the assistant configuration to use Google Gemini.
-
-OpenAssistant also supports the following model providers:
+OpenAssistant supports the following model providers:
 
 | Model Provider | Models                                                                                             | Dependency         |
 | -------------- | -------------------------------------------------------------------------------------------------- | ------------------ |
@@ -396,25 +271,6 @@ OpenAssistant also supports the following model providers:
 | Ollama         | [models](https://ollama.com/models)                                                                | ollama-ai-provider |
 
 :::
-
-See a more complex example of using OpenAssistant core package to create a multi-step tool 🔗 [here](https://github.com/geodaopenjs/openassistant/tree/main/examples/multisteps_tools).
-
-## 🎯 Examples
-
-Check out our example projects:
-
-- [Basic Example](https://github.com/geodaopenjs/openassistant/tree/main/examples/cli_example/index.js)
-- [Custom Function Example](https://github.com/geodaopenjs/openassistant/blob/main/examples/zod_function_tools/src/app.tsx)
-- [Multiple Step Tools](https://github.com/geodaopenjs/openassistant/blob/main/examples/multisteps_tools/src/app.tsx)
-- [Message Persistence Example](https://github.com/geodaopenjs/openassistant/blob/main/examples/message_persistent/src/app.tsx)
-- [React with TailwindCSS Example](https://github.com/geodaopenjs/openassistant/blob/main/examples/react_tailwind/src/app.tsx)
-- [Tool Example: Plots](https://github.com/geodaopenjs/openassistant/blob/main/examples/echarts_tools/src/app.tsx)
-- [Tool Example: DuckDB](https://github.com/geodaopenjs/openassistant/blob/main/examples/duckdb_esbuild/src/App.tsx)
-- [Tool Example: Data analysis](https://github.com/geodaopenjs/openassistant/blob/main/examples/geoda_tools/src/assistant.tsx)
-- [Next.js Example](https://github.com/geodaopenjs/openassistant/blob/main/examples/vercel_usechat_example)
-- [Tool Example: Kepler.gl map](https://github.com/geodaopenjs/openassistant/blob/main/examples/keplergl_tools/src/app.tsx)
-- [Tool Example: Leaftlet map](https://github.com/geodaopenjs/openassistant/blob/main/examples/vercel_leaflet_example)
-- [Tool Example: Vega-Lite](https://github.com/geodaopenjs/openassistant/blob/main/examples/vercel_vega_example)
 
 ## 📄 License
 

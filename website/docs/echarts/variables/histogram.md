@@ -26,7 +26,7 @@ const onToolCompleted = (toolCallId: string, additionalData?: unknown) => {
 const histogramTool = getVercelAiTool('histogram', toolContext, onToolCompleted);
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Can you create a histogram of the revenue per capita for each location in dataset myVenues?',
   tools: {histogram: histogramTool},
 });

@@ -1,22 +1,24 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { extendedTool, generateId } from '@openassistant/utils';
-import { MapToolContext } from '../register-tools';
+import { OpenAssistantTool, generateId } from '@openassistant/utils';
+import { MapToolContext } from '../types';
 import { z } from 'zod';
 
-export type DownloadMapDataArgs = z.ZodObject<{
-  url: z.ZodString;
-}>;
+const downloadMapDataParameters = z.object({
+  url: z.string(),
+});
 
-export type DownloadMapLlmResult = z.ZodObject<{
-  success: z.ZodBoolean;
-  datasetName?: z.ZodString;
-  fields?: z.ZodArray<z.ZodString>;
-  result?: z.ZodString;
-  instructions?: z.ZodString;
-  error?: z.ZodString;
-}>;
+export type DownloadMapDataArgs = z.infer<typeof downloadMapDataParameters>;
+
+export type DownloadMapLlmResult = {
+  success: boolean;
+  datasetName?: string;
+  fields?: string[];
+  result?: string;
+  instructions?: string;
+  error?: string;
+};
 
 export type DownloadMapAdditionalData = {
   datasetName: string;
@@ -34,7 +36,7 @@ export type DownloadMapAdditionalData = {
  *
  * ### Example
  * ```typescript
- * import { downloadMapData, isDownloadMapAdditionalData, keplergl, KeplerglTool } from '@openassistant/map';
+ * import { downloadMapData, keplergl } from '@openassistant/map';
  * import { convertToVercelAiTool, ToolCache } from '@openassistant/utils';
  * import { generateText } from 'ai';
  *
@@ -47,7 +49,7 @@ export type DownloadMapAdditionalData = {
  *   },
  * };
  *
- * const keplerglTool: KeplerglTool = {
+ * const keplerglTool = {
  *   ...keplergl,
  *   context: {
  *     getDataset: async (datasetName: string) => {
@@ -64,7 +66,7 @@ export type DownloadMapAdditionalData = {
  * };
  *
  * * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Create a from https://geodacenter.github.io/data-and-lab//data/Chi_Carjackings.geojson',
  *   tools: {
  *     createMap: convertToVercelAiTool(keplerglTool),
@@ -72,16 +74,15 @@ export type DownloadMapAdditionalData = {
  *   },
  * });
  */
-export const downloadMapData = extendedTool<
-  DownloadMapDataArgs,
+export const downloadMapData: OpenAssistantTool<
+  typeof downloadMapDataParameters,
   DownloadMapLlmResult,
   DownloadMapAdditionalData,
   MapToolContext
->({
+> = {
+  name: 'downloadMapData',
   description: 'Download map data from a url',
-  parameters: z.object({
-    url: z.string(),
-  }),
+  parameters: downloadMapDataParameters,
   execute: async (args) => {
     const { url } = args;
     try {
@@ -148,7 +149,7 @@ export const downloadMapData = extendedTool<
     }
   },
   context: {},
-});
+};
 
 export function isDownloadMapAdditionalData(
   data: unknown

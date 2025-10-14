@@ -2,8 +2,8 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { generateId, extendedTool } from '@openassistant/utils';
-import { isSearchAPIToolContext, SearchAPIToolContext } from './register-tools';
+import { generateId, OpenAssistantTool } from '@openassistant/utils';
+import { isSearchAPIToolContext, SearchAPIToolContext } from './types';
 
 // Types for SearchAPI response
 interface SearchAPISearchMetadata {
@@ -79,15 +79,41 @@ interface SearchAPIResponse {
   pagination?: SearchAPIPagination;
 }
 
-export type WebSearchFunctionArgs = z.ZodObject<{
-  query: z.ZodString;
-  engine: z.ZodOptional<z.ZodString>;
-  device: z.ZodOptional<z.ZodString>;
-  google_domain: z.ZodOptional<z.ZodString>;
-  hl: z.ZodOptional<z.ZodString>;
-  gl: z.ZodOptional<z.ZodString>;
-  num: z.ZodOptional<z.ZodNumber>;
-}>;
+const webSearchParameters = z.object({
+  query: z
+    .string()
+    .describe(
+      'The search query to perform (e.g., "artificial intelligence", "latest news")'
+    ),
+  engine: z
+    .string()
+    .describe('The search engine to use (default: google)')
+    .optional(),
+  device: z
+    .string()
+    .describe('The device type for search results (default: desktop)')
+    .optional(),
+  google_domain: z
+    .string()
+    .describe('The Google domain to use (default: google.com)')
+    .optional(),
+  hl: z
+    .string()
+    .describe('The language for search results (default: en)')
+    .optional(),
+  gl: z
+    .string()
+    .describe('The country for search results (default: us)')
+    .optional(),
+  num: z
+    .number()
+    .min(1)
+    .max(20)
+    .describe('Number of search results to return (1-20, default: 10)')
+    .optional(),
+});
+
+export type WebSearchFunctionArgs = z.infer<typeof webSearchParameters>;
 
 export type WebSearchLlmResult = {
   success: boolean;
@@ -141,7 +167,7 @@ export type ExecuteWebSearchResult = {
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Search for information about artificial intelligence',
  *   tools: {
  *     webSearch: convertToVercelAiTool(webSearchTool),
@@ -149,46 +175,15 @@ export type ExecuteWebSearchResult = {
  * });
  * ```
  */
-export const webSearch = extendedTool<
-  WebSearchFunctionArgs,
+export const webSearch: OpenAssistantTool<
+  typeof webSearchParameters,
   WebSearchLlmResult,
   WebSearchAdditionalData,
   SearchAPIToolContext
->({
+> = {
+  name: 'webSearch',
   description: 'Search the web using Google search engine via SearchAPI.',
-  parameters: z.object({
-    query: z
-      .string()
-      .describe(
-        'The search query to perform (e.g., "artificial intelligence", "latest news")'
-      ),
-    engine: z
-      .string()
-      .describe('The search engine to use (default: google)')
-      .optional(),
-    device: z
-      .string()
-      .describe('The device type for search results (default: desktop)')
-      .optional(),
-    google_domain: z
-      .string()
-      .describe('The Google domain to use (default: google.com)')
-      .optional(),
-    hl: z
-      .string()
-      .describe('The language for search results (default: en)')
-      .optional(),
-    gl: z
-      .string()
-      .describe('The country for search results (default: us)')
-      .optional(),
-    num: z
-      .number()
-      .min(1)
-      .max(20)
-      .describe('Number of search results to return (1-20, default: 10)')
-      .optional(),
-  }),
+  parameters: webSearchParameters,
   execute: async (args, options): Promise<ExecuteWebSearchResult> => {
     console.log(
       '🔍 webSearch.execute called with args:',
@@ -352,7 +347,7 @@ export const webSearch = extendedTool<
       throw new Error('getSearchAPIKey not implemented.');
     },
   },
-});
+};
 
 export type WebSearchTool = typeof webSearch;
 

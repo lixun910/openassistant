@@ -38,7 +38,7 @@ const roadsTool: RoadsTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Show me all highways in New York City',
   tools: {
     roads: convertToVercelAiTool(roadsTool),

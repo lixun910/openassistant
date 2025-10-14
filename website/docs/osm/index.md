@@ -29,7 +29,7 @@ import { convertToVercelAiTool } from '@openassistant/utils';
 import { generateText } from 'ai';
 
 const result = await generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'What are the coordinates of the Eiffel Tower?',
   tools: {
     geocoding: convertToVercelAiTool(geocoding),

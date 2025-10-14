@@ -1,5 +1,7 @@
 # @openassistant/core
 
+NOTE: Deprecated in OpenAssistant v1.
+
 The core package is built based on [Vercel AI SDK](https://sdk.vercel.ai/docs) and provides:
 
 - a uniform interface for different AI providers

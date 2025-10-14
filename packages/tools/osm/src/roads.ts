@@ -2,9 +2,9 @@
 // Copyright contributors to the openassistant project
 
 import { z } from 'zod';
-import { extendedTool, generateId, getBoundsFromGeoJSON } from '@openassistant/utils';
+import { OpenAssistantTool, generateId, getBoundsFromGeoJSON } from '@openassistant/utils';
 import { RateLimiter } from './utils/rateLimiter';
-import { isOsmToolContext, OsmToolContext } from './register-tools';
+import { isOsmToolContext, OsmToolContext } from './utils';
 
 // Create a single instance to be shared across all calls
 const overpassRateLimiter = new RateLimiter(1000);
@@ -34,21 +34,32 @@ interface OsmResponse {
   elements: OsmElement[];
 }
 
-export type RoadsFunctionArgs = z.ZodObject<{
-  mapBounds: z.ZodOptional<
-    z.ZodObject<{
-      northwest: z.ZodObject<{
-        longitude: z.ZodNumber;
-        latitude: z.ZodNumber;
-      }>;
-      southeast: z.ZodObject<{
-        longitude: z.ZodNumber;
-        latitude: z.ZodNumber;
-      }>;
-    }>
-  >;
-  datasetName: z.ZodOptional<z.ZodString>;
-}>;
+const roadsParameters = z.object({
+  mapBounds: z
+    .object({
+      northwest: z
+        .object({
+          longitude: z.number(),
+          latitude: z.number(),
+        })
+        .describe('Northwest coordinates [longitude, latitude]'),
+      southeast: z
+        .object({
+          longitude: z.number(),
+          latitude: z.number(),
+        })
+        .describe('Southeast coordinates [longitude, latitude]'),
+    })
+    .optional(),
+  datasetName: z
+    .string()
+    .describe(
+      'The name of an existing dataset whose boundary will be used to fetch roads. If provided, this takes precedence over mapBounds.'
+    )
+    .optional(),
+});
+
+export type RoadsFunctionArgs = z.infer<typeof roadsParameters>;
 
 export type RoadsLlmResult = {
   success: boolean;
@@ -97,7 +108,7 @@ export type RoadsAdditionalData = {
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Show me all highways in New York City',
  *   tools: {
  *     roads: convertToVercelAiTool(roadsTool),
@@ -105,38 +116,16 @@ export type RoadsAdditionalData = {
  * });
  * ```
  */
-export const roads = extendedTool<
-  RoadsFunctionArgs,
+export const roads: OpenAssistantTool<
+  typeof roadsParameters,
   RoadsLlmResult,
   RoadsAdditionalData,
   OsmToolContext
->({
+> = {
+  name: 'roads',
   description:
     'Query road networks from OpenStreetMap based on boundary and road type',
-  parameters: z.object({
-    mapBounds: z
-      .object({
-        northwest: z
-          .object({
-            longitude: z.number(),
-            latitude: z.number(),
-          })
-          .describe('Northwest coordinates [longitude, latitude]'),
-        southeast: z
-          .object({
-            longitude: z.number(),
-            latitude: z.number(),
-          })
-          .describe('Southeast coordinates [longitude, latitude]'),
-      })
-      .optional(),
-    datasetName: z
-      .string()
-      .optional()
-      .describe(
-        'The name of an existing dataset whose boundary will be used to fetch roads. If provided, this takes precedence over mapBounds.'
-      ),
-  }),
+  parameters: roadsParameters,
   execute: async (
     args,
     options
@@ -279,7 +268,7 @@ export const roads = extendedTool<
       throw new Error('getGeometries not implemented.');
     },
   },
-});
+};
 
 export type RoadsTool = typeof roads;
 

@@ -6,7 +6,7 @@ import {
   cacheData,
   generateId,
   getCachedData,
-  extendedTool,
+  OpenAssistantTool,
 } from '@openassistant/utils';
 import { githubRateLimiter } from '../utils/rateLimiter';
 
@@ -67,7 +67,7 @@ export type ExecuteGetUsStateGeojsonResult = {
  * };
  *
  * generateText({
- *   model: openai('gpt-4o-mini', { apiKey: key }),
+ *   model: openai('gpt-4.1', { apiKey: key }),
  *   prompt: 'Get the GeoJSON for California',
  *   tools: {
  *     state: convertToVercelAiTool(stateTool),
@@ -75,12 +75,12 @@ export type ExecuteGetUsStateGeojsonResult = {
  * });
  * ```
  */
-export const getUsStateGeojson = extendedTool<
+export const getUsStateGeojson: OpenAssistantTool<
   GetUsStateGeojsonFunctionArgs,
   GetUsStateGeojsonLlmResult,
-  GetUsStateGeojsonAdditionalData,
-  object
->({
+  GetUsStateGeojsonAdditionalData
+> = {
+  name: 'getUsStateGeojson',
   description: 'Get the GeoJSON data of one or more United States states',
   parameters: z.object({
     stateNames: z.array(
@@ -148,7 +148,6 @@ export const getUsStateGeojson = extendedTool<
       };
     }
   },
-  context: {},
-});
+};
 
 export type GetUsStateGeojsonTool = typeof getUsStateGeojson;

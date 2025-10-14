@@ -1,66 +1,63 @@
-// SPDX-License-Identifier: MIT
-// Copyright contributors to the openassistant project
-
+import type { ZodType } from 'zod';
 import { z } from 'zod';
 
-export type ToolExecutionOptions = {
-  toolCallId: string;
-  abortSignal?: AbortSignal;
-};
+export type OpenAssistantToolParameters = ZodType<unknown>;
 
-export type OnToolCompleted = (
+export type OpenAssistantOnToolCompleted = (
   toolCallId: string,
   additionalData?: unknown
 ) => void;
 
-export type Parameters = z.ZodTypeAny;
-
-export type inferParameters<PARAMETERS extends Parameters> =
-  PARAMETERS extends z.ZodTypeAny
-    ? z.infer<PARAMETERS>
-    : Record<string, unknown>;
-
-export type ExecuteFunctionResult<
-  RETURN_TYPE = never,
-  ADDITIONAL_DATA = never,
+export type OpenAssistantExecuteFunctionResult<
+  TLlmResult = unknown,
+  TAdditionalData = unknown,
 > = {
-  llmResult: RETURN_TYPE extends never ? RETURN_TYPE : object;
-  additionalData?: ADDITIONAL_DATA extends never ? ADDITIONAL_DATA : object;
+  llmResult: TLlmResult;
+  additionalData?: TAdditionalData;
 };
 
-export type ExecuteFunction<
-  PARAMETERS extends Parameters,
-  RETURN_TYPE = never,
-  ADDITIONAL_DATA = never,
-  CONTEXT = never,
+export type OpenAssistantToolExecutionOptions = {
+  toolCallId: string;
+  abortSignal?: AbortSignal;
+};
+
+export type OpenAssistantExecuteFunction<
+  TArgs = unknown,
+  TLlmResult = unknown,
+  TAdditionalData = unknown,
+  TContext = unknown,
 > = (
-  args: inferParameters<PARAMETERS>,
-  options?: ToolExecutionOptions & {
-    context?: CONTEXT;
+  params: TArgs,
+  options?: OpenAssistantToolExecutionOptions & {
+    context?: TContext;
   }
-) => PromiseLike<ExecuteFunctionResult<RETURN_TYPE, ADDITIONAL_DATA>>;
+) => Promise<OpenAssistantExecuteFunctionResult<TLlmResult, TAdditionalData>>;
 
-export type ExtendedTool<
-  PARAMETERS extends Parameters = never,
-  RETURN_TYPE = never,
-  ADDITIONAL_DATA = never,
-  CONTEXT = unknown,
+export type OpenAssistantTool<
+  TArgs extends ZodType = ZodType<unknown>,
+  TLlmResult = unknown,
+  TAdditionalData = unknown,
+  TContext = unknown,
 > = {
+  name: string;
   description: string;
-  parameters: PARAMETERS;
-  execute: ExecuteFunction<PARAMETERS, RETURN_TYPE, ADDITIONAL_DATA, CONTEXT>;
-  context?: CONTEXT;
-  component?: React.ElementType;
-  onToolCompleted?: OnToolCompleted;
+  parameters: TArgs;
+  context?: TContext;
+  component?: unknown;
+  onToolCompleted?: OpenAssistantOnToolCompleted;
+  execute: OpenAssistantExecuteFunction<
+    z.infer<TArgs>,
+    TLlmResult,
+    TAdditionalData,
+    TContext
+  >;
 };
 
-export function extendedTool<
-  PARAMETERS extends Parameters = never,
-  RETURN_TYPE = never,
-  ADDITIONAL_DATA = never,
-  CONTEXT = never,
->(
-  tool: ExtendedTool<PARAMETERS, RETURN_TYPE, ADDITIONAL_DATA, CONTEXT>
-): ExtendedTool<PARAMETERS, RETURN_TYPE, ADDITIONAL_DATA, CONTEXT> {
-  return tool;
-}
+export type OpenAssistantToolSet = Record<
+  string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  OpenAssistantTool<any, any, any, any>
+>;
+
+// Legacy exports for backward compatibility
+export type OnToolCompleted = OpenAssistantOnToolCompleted;

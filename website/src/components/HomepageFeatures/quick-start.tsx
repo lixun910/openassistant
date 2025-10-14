@@ -51,7 +51,7 @@ export function QuickStart() {
                   <tr>
                     <td className="border p-2 font-semibold">OpenAI</td>
                     <td className="border p-2">
-                      gpt-4o, gpt-4o-mini, gpt-3.5-turbo, gpt-3.5-turbo-0125,
+                      gpt-4o, gpt-4.1, gpt-3.5-turbo, gpt-3.5-turbo-0125,
                       o1-mini, o1-preview
                     </td>
                   </tr>

@@ -3,6 +3,33 @@
 
 import { z } from 'zod';
 
+export type FoursquareToolContext = {
+  getFsqToken: () => string;
+  getGeometries?: (datasetName: string) => Promise<GeoJSON.Feature[] | null>;
+};
+
+export type SearchAPIToolContext = {
+  getSearchAPIKey: () => string;
+};
+
+export function isFoursquareToolContext(
+  context: unknown
+): context is FoursquareToolContext {
+  return (
+    typeof context === 'object' && context !== null && 'getFsqToken' in context
+  );
+}
+
+export function isSearchAPIToolContext(
+  context: unknown
+): context is SearchAPIToolContext {
+  return (
+    typeof context === 'object' &&
+    context !== null &&
+    'getSearchAPIKey' in context
+  );
+}
+
 /**
  * Common interfaces shared between placeSearch and geoTagging tools
  */
@@ -271,7 +298,6 @@ export interface PlaceSearchMetadata {
   sort?: string;
 }
 
-
 // Common coordinate types
 export interface Coordinate {
   latitude: number;
@@ -293,4 +319,4 @@ export const locationWithRadiusSchema = coordinateSchema.extend({
 });
 
 export const neSwSchema = coordinateSchema;
-export const polygonPointSchema = coordinateSchema; 
+export const polygonPointSchema = coordinateSchema;

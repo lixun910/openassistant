@@ -50,7 +50,7 @@ const gridTool: GridTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Create a 5x5 grid over this area',
   tools: {grid: convertToVercelAiTool(gridTool)},
 });

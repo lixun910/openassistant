@@ -36,7 +36,7 @@ const boxplotTool: BoxplotTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'Can you create a box plot of the revenue per capita for each location in dataset myVenues?',
   tools: {
     boxplot: convertToVercelAiTool(boxplotTool),

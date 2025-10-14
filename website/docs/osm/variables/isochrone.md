@@ -40,7 +40,7 @@ const isochroneTool: IsochroneTool = {
 };
 
 generateText({
-  model: openai('gpt-4o-mini', { apiKey: key }),
+  model: openai('gpt-4.1', { apiKey: key }),
   prompt: 'What areas can I reach within 2km of the Eiffel Tower on foot?',
   tools: {
     isochrone: convertToVercelAiTool(isochroneTool),
