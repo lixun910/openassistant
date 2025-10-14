@@ -4,7 +4,7 @@ import { defineConfig } from 'vitepress';
 export default defineConfig({
   title: 'OpenAssistant',
   description: 'AI Tools for Spatial Data Analysis and GIS',
-  base: '/',
+  base: '/openassistant/',
   
   head: [
     ['link', { rel: 'icon', href: '/favicon.ico' }]
