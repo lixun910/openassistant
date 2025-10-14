@@ -10,329 +10,502 @@ npm install @openassistant/geoda
 
 ## Available Tools
 
+### Data Classification
+
+- **`dataClassify`** - Classify numerical data into bins using various statistical methods
+
 ### Spatial Statistics
 
-- **GlobalMoranTool** - Global Moran's I for spatial autocorrelation
-- **LISATool** - Local Indicators of Spatial Association
-- **GetisOrdTool** - Getis-Ord G and G* statistics
+- **`globalMoran`** - Global Moran's I for spatial autocorrelation
+- **`lisa`** - Local Indicators of Spatial Association (LISA)
 
 ### Spatial Regression
 
-- **RegressionTool** - OLS and spatial regression models
-
-### Data Classification
-
-- **ClassifyTool** - Various classification methods (quantiles, natural breaks, etc.)
+- **`regression`** - OLS and spatial regression models
 
 ### Spatial Weights
 
-- **WeightsTool** - Create spatial weights matrices
-- **Queen/Rook** - Contiguity-based weights
-- **Distance** - Distance-based weights
-- **K-Nearest Neighbors** - KNN weights
+- **`spatialWeights`** - Create spatial weights matrices (queen, rook, knn, distance-based)
 
 ### Spatial Operations
 
-- **BufferTool** - Create buffer zones
-- **DissolveTool** - Dissolve polygons
-- **CentroidTool** - Calculate centroids
-- **AreaTool** - Calculate areas
-- **PerimeterTool** - Calculate perimeters
-- **CartogramTool** - Create cartograms
-- **ThiessenTool** - Generate Thiessen polygons
-- **GridTool** - Create regular grids
+- **`area`** - Calculate areas of polygons
+- **`buffer`** - Create buffer zones around features
+- **`centroid`** - Calculate centroids of geometries
+- **`dissolve`** - Dissolve adjacent polygons
+- **`grid`** - Create regular grids
+- **`length`** - Calculate lengths of line features
+- **`perimeter`** - Calculate perimeters of polygons
+- **`thiessenPolygons`** - Generate Thiessen/Voronoi polygons
+- **`mst`** - Minimum spanning tree
+- **`cartogram`** - Create cartograms
 
 ### Spatial Join
 
-- **SpatialJoinTool** - Join features based on spatial relationships
-- **SpatialFilterTool** - Filter features spatially
+- **`spatialJoin`** - Join features based on spatial relationships
+- **`spatialFilter`** - Filter features spatially
+
+### Variable Operations
+
+- **`variable`** - Create new variables from existing ones
+- **`rate`** - Calculate rates and ratios
 
 ## Basic Usage
 
+### Using Data Classification
+
+```typescript
+import { dataClassify } from '@openassistant/geoda';
+import { Assistant, type AssistantOptions } from '@openassistant/assistant';
+
+const DATASETS = {
+  counties: [
+    { name: 'County A', population: 100000, income: 50000 },
+    { name: 'County B', population: 200000, income: 75000 },
+    // ...more counties
+  ],
+};
+
+const dataClassifyTool = {
+  ...dataClassify,
+  context: {
+    getValues: async (datasetName: string, variableName: string) => {
+      return DATASETS[datasetName].map((item) => item[variableName]);
+    },
+  },
+};
+
+const config: AssistantOptions = {
+  ai: {
+    getInstructions: () => `
+      You can classify data using various statistical methods.
+      Available dataset: counties with fields: name, population, income
+    `,
+    tools: {
+      dataClassify: dataClassifyTool,
+    },
+  },
+};
+
+export function App() {
+  return <Assistant options={config} />;
+}
+```
+
+### Spatial Weights with Spatial Statistics
+
+```typescript
+import { spatialWeights, globalMoran, lisa } from '@openassistant/geoda';
+import { Assistant } from '@openassistant/assistant';
+import { ToolCache } from '@openassistant/utils';
+
+const toolResultCache = ToolCache.getInstance();
+
+const GEOJSON_DATASETS = {
+  neighborhoods: {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        geometry: { type: 'Polygon', coordinates: [[...]] },
+        properties: { name: 'Downtown', crime_rate: 45.2 },
+      },
+      // ...more features
+    ],
+  },
+};
+
+const spatialWeightsTool = {
+  ...spatialWeights,
+  context: {
+    getGeometries: async (datasetName: string) => {
+      return [GEOJSON_DATASETS[datasetName]];
+    },
+  },
+  onToolCompleted: (toolCallId, additionalData) => {
+    toolResultCache.addDataset(toolCallId, additionalData);
+  },
+};
+
+const globalMoranTool = {
+  ...globalMoran,
+  context: {
+    getGeometries: async (datasetName: string) => {
+      return [GEOJSON_DATASETS[datasetName]];
+    },
+    getValues: async (datasetName: string, variableName: string) => {
+      return GEOJSON_DATASETS[datasetName].features.map(
+        (f) => f.properties[variableName]
+      );
+    },
+    getWeights: async (weightsId: string) => {
+      if (toolResultCache.hasDataset(weightsId)) {
+        return toolResultCache.getDataset(weightsId);
+      }
+      throw new Error(`Weights ${weightsId} not found`);
+    },
+  },
+};
+
+const lisaTool = {
+  ...lisa,
+  context: {
+    getGeometries: async (datasetName: string) => {
+      return [GEOJSON_DATASETS[datasetName]];
+    },
+    getValues: async (datasetName: string, variableName: string) => {
+      return GEOJSON_DATASETS[datasetName].features.map(
+        (f) => f.properties[variableName]
+      );
+    },
+    getWeights: async (weightsId: string) => {
+      if (toolResultCache.hasDataset(weightsId)) {
+        return toolResultCache.getDataset(weightsId);
+      }
+      throw new Error(`Weights ${weightsId} not found`);
+    },
+  },
+};
+
+const config = {
+  ai: {
+    getInstructions: () => `
+      You can perform spatial analysis on the neighborhoods dataset.
+      Steps: 1) Create spatial weights, 2) Run spatial statistics
+      Available dataset: neighborhoods with field: crime_rate
+    `,
+    tools: {
+      spatialWeights: spatialWeightsTool,
+      globalMoran: globalMoranTool,
+      lisa: lisaTool,
+    },
+  },
+};
+
+export function App() {
+  return <Assistant options={config} />;
+}
+```
+
+### Using Spatial Operations
+
+```typescript
+import { buffer, centroid, area } from '@openassistant/geoda';
+import { Assistant } from '@openassistant/assistant';
+
+const GEOJSON_DATASETS = {
+  schools: {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [-122.4, 37.7] },
+        properties: { name: 'School A' },
+      },
+      // ...more schools
+    ],
+  },
+};
+
+const bufferTool = {
+  ...buffer,
+  context: {
+    getGeometries: async (datasetName: string) => {
+      return [GEOJSON_DATASETS[datasetName]];
+    },
+  },
+};
+
+const centroidTool = {
+  ...centroid,
+  context: {
+    getGeometries: async (datasetName: string) => {
+      return [GEOJSON_DATASETS[datasetName]];
+    },
+  },
+};
+
+const areaTool = {
+  ...area,
+  context: {
+    getGeometries: async (datasetName: string) => {
+      return [GEOJSON_DATASETS[datasetName]];
+    },
+  },
+};
+
+const config = {
+  ai: {
+    getInstructions: () => `
+      You can perform spatial operations on datasets.
+      Available dataset: schools (point features)
+    `,
+    tools: {
+      buffer: bufferTool,
+      centroid: centroidTool,
+      area: areaTool,
+    },
+  },
+};
+
+export function App() {
+  return <Assistant options={config} />;
+}
+```
+
+## Tool Parameters
+
+### Data Classify
+
+```typescript
+{
+  datasetName: string;
+  variableName: string;
+  method: 'quantile' | 'natural breaks' | 'equal interval' | 'percentile' | 'box' | 'standard deviation' | 'unique values';
+  k?: number; // Number of classes (for quantile, natural breaks, equal interval)
+  hinge?: number; // Hinge value for box method (default: 1.5)
+}
+```
+
+### Spatial Weights Parameters
+
+```typescript
+{
+  datasetName: string;
+  type: 'queen' | 'rook' | 'knn' | 'threshold';
+  k?: number; // Number of neighbors for knn
+  orderOfContiguity?: number; // Order of contiguity (default: 1)
+  includeLowerOrder?: boolean; // Include lower order neighbors
+  distanceThreshold?: number; // Distance threshold for distance-based weights
+  useCentroids?: boolean; // Use centroids for neighbor calculations
+  isMile?: boolean; // Use miles instead of km for distance
+}
+```
+
 ### Global Moran's I
 
-Test for spatial autocorrelation across the entire study area:
-
 ```typescript
-import { GlobalMoranTool } from '@openassistant/geoda';
-import { tool } from 'ai';
-
-const moranTool = new GlobalMoranTool({
-  context: {
-    getData: async (datasetName: string) => {
-      return await fetchGeoJSON(datasetName);
-    },
-  },
-});
-
-const aiTool = moranTool.toVercelAiTool(tool);
-
-// Execute
-const result = await moranTool.execute({
-  dataset: 'counties',
-  variable: 'income',
-  weightsType: 'queen',
-  permutations: 999
-});
-
-console.log('Moran I:', result.moran_i);
-console.log('P-value:', result.p_value);
+{
+  datasetName: string;
+  variableName: string;
+  weightsId: string; // ID of previously created spatial weights
+  permutations?: number; // Number of permutations (default: 999)
+}
 ```
 
-### LISA Analysis
-
-Identify local clusters and spatial outliers:
+### LISA
 
 ```typescript
-import { LISATool } from '@openassistant/geoda';
-
-const lisaTool = new LISATool({
-  context: {
-    getData: async (datasetName) => {
-      return await fetchGeoJSON(datasetName);
-    },
-  },
-});
-
-const result = await lisaTool.execute({
-  dataset: 'neighborhoods',
-  variable: 'crime_rate',
-  weightsType: 'queen',
-  significance: 0.05
-});
-
-// Results include cluster types: HH, LL, HL, LH, Not Significant
-console.log('Clusters:', result.clusters);
-console.log('P-values:', result.p_values);
+{
+  datasetName: string;
+  variableName: string;
+  weightsId: string; // ID of previously created spatial weights
+  permutations?: number; // Number of permutations (default: 999)
+  significance?: number; // Significance level (default: 0.05)
+}
 ```
 
-### Spatial Regression
-
-Run spatial regression models:
+### Buffer
 
 ```typescript
-import { RegressionTool } from '@openassistant/geoda';
-
-const regressionTool = new RegressionTool({
-  context: {
-    getData: async (datasetName) => {
-      return await fetchGeoJSON(datasetName);
-    },
-  },
-});
-
-const result = await regressionTool.execute({
-  dataset: 'cities',
-  dependent: 'housing_price',
-  independent: ['income', 'population', 'distance_to_cbd'],
-  modelType: 'spatial_lag',
-  weightsType: 'knn',
-  k: 8
-});
-
-console.log('Coefficients:', result.coefficients);
-console.log('R-squared:', result.r_squared);
-console.log('AIC:', result.aic);
+{
+  datasetName: string;
+  distance: number; // Buffer distance
+  unit?: 'meters' | 'kilometers' | 'miles'; // Distance unit
+}
 ```
 
-## Spatial Operations
+## Context Options
 
-### Buffer Analysis
-
-Create buffer zones around features:
+### Data Classification Context
 
 ```typescript
-import { BufferTool } from '@openassistant/geoda';
-
-const bufferTool = new BufferTool({
-  context: {
-    getData: async (datasetName) => {
-      return await fetchGeoJSON(datasetName);
-    },
-  },
-});
-
-const result = await bufferTool.execute({
-  dataset: 'schools',
-  distance: 500, // meters
-  unit: 'meters'
-});
-
-// Returns buffered GeoJSON
-console.log('Buffered features:', result.features);
-```
-
-### Spatial Join
-
-Join features based on spatial relationships:
-
-```typescript
-import { SpatialJoinTool } from '@openassistant/geoda';
-
-const joinTool = new SpatialJoinTool({
-  context: {
-    getData: async (datasetName) => {
-      return await fetchGeoJSON(datasetName);
-    },
-  },
-});
-
-const result = await joinTool.execute({
-  targetDataset: 'neighborhoods',
-  joinDataset: 'crimes',
-  joinType: 'intersects',
-  aggregation: 'count'
-});
-
-// Neighborhoods with crime counts
-console.log('Joined features:', result.features);
-```
-
-## Data Classification
-
-Classify data into bins using various methods:
-
-```typescript
-import { ClassifyTool } from '@openassistant/geoda';
-
-const classifyTool = new ClassifyTool({
-  context: {
-    getData: async (datasetName) => {
-      return await fetchGeoJSON(datasetName);
-    },
-  },
-});
-
-const result = await classifyTool.execute({
-  dataset: 'counties',
-  variable: 'population',
-  method: 'natural_breaks', // or 'quantile', 'equal_interval', 'std_dev'
-  numClasses: 5
-});
-
-console.log('Breaks:', result.breaks);
-console.log('Classifications:', result.classifications);
-```
-
-## Spatial Weights
-
-### Creating Weights Matrices
-
-```typescript
-import { WeightsTool } from '@openassistant/geoda';
-
-const weightsTool = new WeightsTool({
-  context: {
-    getData: async (datasetName) => {
-      return await fetchGeoJSON(datasetName);
-    },
-  },
-});
-
-// Queen contiguity
-const queenWeights = await weightsTool.execute({
-  dataset: 'counties',
-  type: 'queen',
-  order: 1
-});
-
-// K-nearest neighbors
-const knnWeights = await weightsTool.execute({
-  dataset: 'points',
-  type: 'knn',
-  k: 8
-});
-
-// Distance-based
-const distWeights = await weightsTool.execute({
-  dataset: 'cities',
-  type: 'distance',
-  threshold: 100000, // meters
-  distanceMetric: 'euclidean'
-});
-```
-
-## Working with GeoJSON
-
-All GeoDA tools expect GeoJSON format:
-
-```typescript
-// Your GeoJSON data
-const geojson = {
-  type: 'FeatureCollection',
-  features: [
-    {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [[[lng, lat], ...]]
-      },
-      properties: {
-        id: 1,
-        population: 100000,
-        income: 50000,
-        // ... other attributes
-      }
-    },
-    // ... more features
-  ]
+type DataClassifyContext = {
+  getValues: (datasetName: string, variableName: string) => Promise<unknown[]>;
 };
 ```
 
-## Performance Considerations
-
-1. **WebAssembly**: Computation runs in WASM for optimal performance
-2. **Large Datasets**: Consider simplifying geometries for very large datasets
-3. **Weights Caching**: Spatial weights can be cached and reused
-4. **Progressive Results**: Some tools support streaming results
+### Spatial Analysis Context
 
 ```typescript
-import { ToolCache } from '@openassistant/utils';
-
-const cache = new ToolCache();
-
-// Cache weights matrix
-const weights = await cache.getOrCompute('weights-counties-queen', async () => {
-  return await weightsTool.execute({
-    dataset: 'counties',
-    type: 'queen'
-  });
-});
+type SpatialAnalysisContext = {
+  getGeometries: (datasetName: string) => Promise<GeoJSON.FeatureCollection[]>;
+  getValues: (datasetName: string, variableName: string) => Promise<unknown[]>;
+  getWeights?: (weightsId: string) => Promise<WeightsData>;
+};
 ```
+
+### Spatial Operations Context
+
+```typescript
+type SpatialOperationsContext = {
+  getGeometries: (datasetName: string) => Promise<GeoJSON.FeatureCollection[]>;
+};
+```
+
+## Classification Methods
+
+### Quantile
+
+Divides data into equal-sized groups based on quantiles.
+
+### Natural Breaks (Jenks)
+
+Uses Jenks optimization to minimize within-group variance and maximize between-group variance.
+
+### Equal Interval
+
+Creates intervals of equal width across the data range.
+
+### Percentile
+
+Uses percentile-based breaks (25th, 50th, 75th percentiles).
+
+### Box Plot
+
+Uses box plot statistics with hinge values (1.5 or 3.0).
+
+### Standard Deviation
+
+Creates breaks based on standard deviation intervals from the mean.
+
+### Unique Values
+
+Returns all unique values in the dataset.
+
+## Spatial Weights Types
+
+### Queen Contiguity
+
+Considers neighbors that share an edge or vertex.
+
+### Rook Contiguity
+
+Considers neighbors that share an edge only.
+
+### K-Nearest Neighbors (KNN)
+
+Considers the k nearest neighbors based on distance.
+
+### Distance-Based (Threshold)
+
+Considers all neighbors within a specified distance threshold.
+
+## Example User Prompts
+
+The AI can respond to prompts like:
+
+- "Classify the income data into 5 classes using natural breaks"
+- "Create queen contiguity weights for the neighborhoods dataset"
+- "Test for spatial autocorrelation in crime rates"
+- "Find crime hotspots using LISA analysis"
+- "Create a 500-meter buffer around schools"
+- "Calculate the area of each neighborhood"
 
 ## Complete Example: Hotspot Analysis
 
 ```typescript
-import { LISATool, ClassifyTool } from '@openassistant/geoda';
-import { generateText } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { tool } from 'ai';
+import { dataClassify, spatialWeights, lisa } from '@openassistant/geoda';
+import { keplergl } from '@openassistant/map';
+import { KeplerGlComponent } from '@openassistant/keplergl';
+import { ToolCache } from '@openassistant/utils';
+import { Assistant, type AssistantOptions } from '@openassistant/assistant';
 
-// Set up LISA tool
-const lisaTool = new LISATool({
+const toolResultCache = ToolCache.getInstance();
+
+const DATASETS = {
+  neighborhoods: {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        geometry: { type: 'Polygon', coordinates: [[...]] },
+        properties: { name: 'Area 1', crime_rate: 45.2 },
+      },
+      // ...more neighborhoods
+    ],
+  },
+};
+
+const dataClassifyTool = {
+  ...dataClassify,
   context: {
-    getData: async (datasetName) => {
-      const response = await fetch(`/api/data/${datasetName}`);
-      return response.json();
+    getValues: async (datasetName, variableName) => {
+      return DATASETS[datasetName].features.map((f) => f.properties[variableName]);
     },
   },
-});
+};
 
-// Use with AI to analyze crime hotspots
-const result = await generateText({
-  model: openai('gpt-4'),
-  tools: {
-    lisa_analysis: lisaTool.toVercelAiTool(tool),
+const spatialWeightsTool = {
+  ...spatialWeights,
+  context: {
+    getGeometries: async (datasetName) => [DATASETS[datasetName]],
   },
-  prompt: `
-    Analyze the crime_data dataset to identify crime hotspots.
-    Use LISA analysis on the 'crime_rate' variable.
-    Tell me where the high-high clusters are located.
-  `,
-});
+  onToolCompleted: (toolCallId, additionalData) => {
+    toolResultCache.addDataset(toolCallId, additionalData);
+  },
+};
 
-console.log(result.text);
+const lisaTool = {
+  ...lisa,
+  context: {
+    getGeometries: async (datasetName) => [DATASETS[datasetName]],
+    getValues: async (datasetName, variableName) => {
+      return DATASETS[datasetName].features.map((f) => f.properties[variableName]);
+    },
+    getWeights: async (weightsId) => {
+      return toolResultCache.getDataset(weightsId);
+    },
+  },
+  onToolCompleted: (toolCallId, additionalData) => {
+    toolResultCache.addDataset(toolCallId, additionalData);
+  },
+};
+
+const keplerglTool = {
+  ...keplergl,
+  context: {
+    getDataset: async (datasetName) => {
+      if (toolResultCache.hasDataset(datasetName)) {
+        return toolResultCache.getDataset(datasetName);
+      }
+      return DATASETS[datasetName];
+    },
+  },
+  component: KeplerGlComponent,
+};
+
+const config: AssistantOptions = {
+  ai: {
+    getInstructions: () => `
+      You can analyze spatial patterns in the neighborhoods dataset.
+      Available dataset: neighborhoods with field: crime_rate
+      
+      For hotspot analysis:
+      1. Create spatial weights using queen contiguity
+      2. Run LISA analysis on crime_rate
+      3. Visualize the results on a map
+    `,
+    tools: {
+      dataClassify: dataClassifyTool,
+      spatialWeights: spatialWeightsTool,
+      lisa: lisaTool,
+      keplergl: keplerglTool,
+    },
+  },
+};
+
+export function App() {
+  return <Assistant options={config} />;
+}
 ```
+
+## Performance Considerations
+
+1. **WebAssembly**: All spatial computations run in WASM for optimal performance
+2. **Large Datasets**: Consider simplifying geometries for very large datasets
+3. **Weights Caching**: Spatial weights can be cached and reused via ToolCache
+4. **Browser Environment**: Most tools are designed to run in the browser
 
 ## API Reference
 
@@ -343,4 +516,3 @@ For detailed API documentation, see the [GeoDA API Reference](/api/@openassistan
 - [Map Tools](/guide/tools/map) - Visualize spatial analysis results
 - [Plots Tools](/guide/tools/plots) - Create charts from analysis results
 - [DuckDB Tools](/guide/tools/duckdb) - Query spatial data with SQL
-

@@ -56,7 +56,7 @@ npm install @openassistant/keplergl
 
 ## Example Usage
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr)); gap: 2rem; align-items: start;">
 
 <div>
 
@@ -81,9 +81,35 @@ const keplerMapTool = {
 };
 
 // Convert to Vercel AI SDK tool
-const aiTool = tool(convertToVercelAiTool(keplerMapTool));
-
+// const aiTool = tool(convertToVercelAiTool(keplerMapTool));
 // Use in your AI application
+
+export function App() {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center p-4">
+      <div className="w-full max-w-[900px] h-full">
+        <Assistant
+          options={{
+            ai: {
+              getInstructions:
+                () => `You are a helpful assistant that can answer questions and help with tasks.
+Your name is George.
+You can use the following datasets to answer the user's question:
+- Dataset: venues
+ - Fields: name, city, ratin
+- Dataset: cities
+ - Fields: name, population, latitude, longitude
+`,
+              tools: {
+                keplergl: keplerMapTool,
+              },
+            },
+          }}
+        />
+      </div>
+    </div>
+  );
+}
 ```
 
 </div>
@@ -102,7 +128,7 @@ OpenAssistant v1.0.0 focuses on providing a rich set of AI tools for spatial dat
 
 ### Key Features
 
-- **Browser-First**: All tools run directly in the browser, ensuring data privacy and reducing server costs
+- **Browser-First**: Most tools run directly in the browser, ensuring data privacy and reducing server costs
 - **Modular Design**: Use only the tools you need, keeping your bundle size minimal
 - **TypeScript Native**: Full type safety and excellent IDE support
 - **Production Ready**: Battle-tested in real-world applications
@@ -111,9 +137,8 @@ OpenAssistant v1.0.0 focuses on providing a rich set of AI tools for spatial dat
 
 Version 1.0.0 represents a major architectural shift:
 
-- **Removed** `@openassistant/core` - Now framework-agnostic
 - **Removed** `@openassistant/ui` - Replaced by `@sqlrooms/ai`
-- **Enhanced** All tools now inherit from `OpenAssistantTool` base class
+- **Enhanced** All tools now are typed with `OpenAssistantTool` interface
 - **Added** Support for multiple AI frameworks (Vercel AI SDK, LangChain, etc.)
 - **Improved** Tool output management and data exchange utilities
 

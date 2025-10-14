@@ -10,83 +10,98 @@ npm install @openassistant/duckdb
 
 ## Available Tools
 
-### LocalQueryTool
+### `localQuery`
 
 Execute SQL queries on data provided through the context.
 
 **Use Cases:**
+
 - Analyze tabular data with SQL
 - Aggregate and transform datasets
 - Join multiple data sources
 - Statistical computations
 
-### MergeTablesTool
+### `mergeTool`
 
 Merge multiple datasets based on common keys.
 
 **Use Cases:**
+
 - Combine related datasets
 - Left/right/inner joins
 - Data enrichment
 
 ## Basic Usage
 
-### Setting Up
+### Setting Up with Assistant
 
 ```typescript
-import { LocalQueryTool } from '@openassistant/duckdb';
-import { tool } from 'ai';
+import { localQuery } from '@openassistant/duckdb';
+import { Assistant, type AssistantOptions } from '@openassistant/assistant';
 
-const queryTool = new LocalQueryTool({
+// Sample datasets
+const SAMPLE_DATASETS = {
+  cities: [
+    { name: 'San Francisco', population: 800000, state: 'CA' },
+    { name: 'New York', population: 8400000, state: 'NY' },
+    { name: 'Los Angeles', population: 3900000, state: 'CA' },
+  ],
+};
+
+const localQueryTool = {
+  ...localQuery,
   context: {
     getValues: async (datasetName: string, variableName: string) => {
-      // Return array of values for the specified variable
-      return await fetchDataFromYourSource(datasetName, variableName);
+      // Get the values of the variable from your dataset
+      return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
     },
+  },
+};
+
+const config: AssistantOptions = {
+  ai: {
+    getInstructions: () => `
+      You are a helpful assistant. 
+      You have access to a cities dataset with fields: name, population, state.
+    `,
+    tools: {
+      localQuery: localQueryTool,
+    },
+  },
+};
+
+export function App() {
+  return <Assistant options={config} />;
+}
+```
+
+### Usage with Vercel AI SDK
+
+```typescript
+import { localQuery } from '@openassistant/duckdb';
+import { convertToVercelAiTool } from '@openassistant/utils';
+import { generateText } from 'ai';
+import { openai } from '@ai-sdk/openai';
+
+const localQueryTool = {
+  ...localQuery,
+  context: {
+    getValues: async (datasetName: string, variableName: string) => {
+      // Implement your data retrieval logic here
+      return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
+    },
+  },
+};
+
+const result = await generateText({
+  model: openai('gpt-4'),
+  prompt: 'What are the cities in California with population over 1 million?',
+  tools: {
+    localQuery: convertToVercelAiTool(localQueryTool),
   },
 });
 
-// Convert to Vercel AI SDK tool
-const aiTool = queryTool.toVercelAiTool(tool);
-```
-
-### Example Queries
-
-```typescript
-// Simple aggregation
-const result = await queryTool.execute({
-  query: `
-    SELECT 
-      AVG(population) as avg_population,
-      SUM(area) as total_area
-    FROM dataset
-  `
-});
-
-// Grouping and filtering
-const result = await queryTool.execute({
-  query: `
-    SELECT 
-      state,
-      COUNT(*) as city_count,
-      AVG(population) as avg_population
-    FROM cities
-    WHERE population > 100000
-    GROUP BY state
-    ORDER BY avg_population DESC
-  `
-});
-
-// Window functions
-const result = await queryTool.execute({
-  query: `
-    SELECT 
-      city,
-      population,
-      RANK() OVER (ORDER BY population DESC) as rank
-    FROM cities
-  `
-});
+console.log(result.text);
 ```
 
 ## Advanced Features
@@ -96,139 +111,95 @@ const result = await queryTool.execute({
 DuckDB supports spatial operations when combined with GeoJSON data:
 
 ```typescript
-const result = await queryTool.execute({
-  query: `
-    SELECT 
-      ST_Area(geometry) as area,
-      ST_Centroid(geometry) as center
-    FROM spatial_data
-  `
-});
-```
-
-### Using CTEs (Common Table Expressions)
-
-```typescript
-const result = await queryTool.execute({
-  query: `
-    WITH top_cities AS (
-      SELECT * FROM cities
-      WHERE population > 500000
-    )
-    SELECT 
-      state,
-      COUNT(*) as large_city_count
-    FROM top_cities
-    GROUP BY state
-  `
-});
-```
-
-### Merging Tables
-
-```typescript
-import { MergeTablesTool } from '@openassistant/duckdb';
-
-const mergeTool = new MergeTablesTool({
+const localQueryTool = {
+  ...localQuery,
   context: {
-    getTableData: async (tableName: string) => {
-      return await fetchTable(tableName);
+    getValues: async (datasetName: string, variableName: string) => {
+      // Return spatial data (e.g., GeoJSON features)
+      return SPATIAL_DATASETS[datasetName].map((item) => item[variableName]);
     },
   },
-});
+};
 
-const result = await mergeTool.execute({
-  leftTable: 'cities',
-  rightTable: 'demographics',
-  leftKey: 'city_id',
-  rightKey: 'city_id',
-  joinType: 'inner'
-});
+// The AI can then query spatial data
+// Example prompt: "Find all neighborhoods with area greater than 5 square km"
 ```
 
-## Context Requirements
+### Context Options
 
-The `getValues` function should return an array of values for the specified dataset and variable:
+The `localQuery` tool context supports the following methods:
 
 ```typescript
-context: {
-  getValues: async (datasetName: string, variableName: string) => {
-    // Example: Fetch from API
-    const response = await fetch(
-      `/api/data/${datasetName}/${variableName}`
-    );
-    const data = await response.json();
-    return data.values; // Array of values
-  }
+type LocalQueryContext = {
+  // Required: Get values of a variable from a dataset
+  getValues: (datasetName: string, variableName: string) => Promise<unknown[]>;
+  
+  // Optional: Provide custom DuckDB instance
+  getDuckDB?: () => Promise<DuckDBInstance>;
+  
+  // Optional: Limit result length (default: 1000)
+  getMaxQueryResultLength?: () => Promise<number>;
+};
+```
+
+### Example with All Context Options
+
+```typescript
+import { localQuery } from '@openassistant/duckdb';
+import { Assistant } from '@openassistant/assistant';
+
+const DATASETS = {
+  sales: [
+    { product: 'Widget A', revenue: 1000, quarter: 'Q1' },
+    { product: 'Widget B', revenue: 1500, quarter: 'Q1' },
+    { product: 'Widget A', revenue: 1200, quarter: 'Q2' },
+    { product: 'Widget B', revenue: 1800, quarter: 'Q2' },
+  ],
+};
+
+const localQueryTool = {
+  ...localQuery,
+  context: {
+    getValues: async (datasetName, variableName) => {
+      return DATASETS[datasetName].map((item) => item[variableName]);
+    },
+    getMaxQueryResultLength: async () => 5000, // Custom limit
+  },
+};
+
+const config = {
+  ai: {
+    getInstructions: () => `
+      You have access to a sales dataset with fields: product, revenue, quarter.
+      Help the user analyze sales data.
+    `,
+    tools: {
+      localQuery: localQueryTool,
+    },
+  },
+};
+
+export function App() {
+  return <Assistant options={config} />;
 }
 ```
+
+## Example User Prompts
+
+The AI can respond to natural language queries like:
+
+- "What is the average population of cities in California?"
+- "Show me the top 5 cities by population"
+- "Which state has the most cities?"
+- "Calculate the total population grouped by state"
+
+The tool will automatically generate and execute the appropriate SQL queries.
 
 ## Performance Tips
 
-1. **Limit Result Sets**: Use `LIMIT` for large datasets
-2. **Create Indexes**: For repeated queries on the same data
-3. **Use Appropriate Data Types**: Helps query optimization
-4. **Cache Results**: Store frequently accessed query results
-
-```typescript
-import { ToolCache } from '@openassistant/utils';
-
-const cache = new ToolCache();
-const cacheKey = `query-${datasetName}-${queryHash}`;
-
-const result = await cache.getOrCompute(cacheKey, async () => {
-  return await queryTool.execute({ query });
-});
-```
-
-## Error Handling
-
-```typescript
-const result = await queryTool.execute({ query });
-
-if (result.error) {
-  console.error('Query failed:', result.error);
-  // Handle SQL syntax errors, missing tables, etc.
-} else {
-  console.log('Query succeeded:', result.data);
-}
-```
-
-## Complete Example
-
-```typescript
-import { LocalQueryTool } from '@openassistant/duckdb';
-import { generateText } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { tool } from 'ai';
-
-// Set up the tool
-const queryTool = new LocalQueryTool({
-  context: {
-    getValues: async (datasetName, variableName) => {
-      // Your data fetching logic
-      const data = await myDatabase.get(datasetName, variableName);
-      return data;
-    },
-  },
-});
-
-// Use with AI
-const result = await generateText({
-  model: openai('gpt-4'),
-  tools: {
-    query_database: queryTool.toVercelAiTool(tool),
-  },
-  prompt: `
-    Analyze the cities dataset and tell me:
-    1. Which state has the most cities?
-    2. What is the average population?
-    3. Which cities have population over 1 million?
-  `,
-});
-
-console.log(result.text);
-```
+1. **Limit Result Sets**: The tool automatically truncates results for display
+2. **Use Appropriate Data Types**: Helps query optimization
+3. **Cache Results**: Store frequently accessed query results
 
 ## API Reference
 
@@ -239,4 +210,3 @@ For detailed API documentation, see the [DuckDB API Reference](/api/@openassista
 - [GeoDA Tools](/guide/tools/geoda) - Spatial analysis tools
 - [Plots Tools](/guide/tools/plots) - Visualize query results
 - [Map Tools](/guide/tools/map) - Display spatial query results on maps
-

@@ -14,9 +14,6 @@ const vercelTool = tool.toVercelAiTool(tool);
 
 // Works with LangChain
 const langchainTool = tool.toLangChainTool();
-
-// Works with other frameworks
-const customTool = tool.toCustomFormat();
 ```
 
 ### 2. Browser-First
@@ -49,7 +46,7 @@ Each package is independent and can be installed separately:
 │   ├── plots/         # Visualization tools
 │   └── h3/            # H3 spatial indexing
 └── components/
-    ├── chat/          # Chat interface
+    ├── assistant/     # Assistant component
     ├── echarts/       # ECharts components
     ├── keplergl/      # Kepler.gl components
     ├── leaflet/       # Leaflet components
@@ -423,7 +420,6 @@ Key changes from v0.x to v1.0.0:
 
 ### Removed Packages
 
-- `@openassistant/core` - Now framework-agnostic, no core package needed
 - `@openassistant/ui` - Replaced by `@sqlrooms/ai` for better UI components
 
 ### New Patterns
@@ -441,11 +437,6 @@ import { useLangChain } from '@langchain/react'; // LangChain
 ### Tool Usage
 
 ```typescript
-// v0.x - Class-based
-const tool = new LocalQueryTool({
-  context: { getValues: async () => [] }
-});
-
 // v1.0.0 - Object-based with type safety
 import { localQuery } from '@openassistant/duckdb';
 import { convertToVercelAiTool } from '@openassistant/utils';
@@ -462,20 +453,6 @@ const localQueryTool = {
 
 // Convert to AI framework format
 const aiTool = tool(convertToVercelAiTool(localQueryTool));
-```
-
-### Framework Integration
-
-```typescript
-// v0.x
-assistant.registerTool(myTool);
-
-// v1.0.0 - Direct conversion
-import { convertToVercelAiTool } from '@openassistant/utils';
-import { tool } from 'ai';
-
-const aiTool = tool(convertToVercelAiTool(myTool));
-// Use directly with your AI SDK
 ```
 
 ## Next Steps

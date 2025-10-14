@@ -1,6 +1,6 @@
 # OpenAssistant
 
-OpenAssistant v1.0.0 focuses on providing a rich set of AI tools for spatial data analysis and GIS tasks. Unlike previous versions, v1.0.0 is framework-agnostic and can be integrated with any AI framework of your choice.
+OpenAssistant focuses on providing a rich set of AI tools for spatial data analysis and GIS tasks. Unlike previous versions, v1.0.0 is framework-agnostic and can be integrated with any AI framework of your choice.
 
 **Key Features:**
 
@@ -44,7 +44,7 @@ const aiTool = tool(convertToVercelAiTool(keplerMapTool));
 // Use in your AI application
 ```
 
-<img src="https://geodaai.github.io/openassistant/keplergl-tool-demo-1.gif" width="400" alt="Kepler.gl Tool Demo" />
+<img src="https://geodaai.github.io/openassistant/kepler-tool-demo-1.gif" width="400" alt="Kepler.gl Tool Demo" />
 
 #### Example: create a histogram
 
@@ -82,6 +82,8 @@ const result = await generateText({
 
 <img src="https://openassistant-doc.vercel.app/img/histogram-1-400.png" width="400" alt="Histogram Plugin" />
 
+You can combine all the tools together to create a more complex application.
+
 ### 2. Create your own tool
 
 Create a weather tool to return the weather from a weather station you installed at different cities.
@@ -95,7 +97,7 @@ const weatherTool: OpenAssistantTool<{ cityName: string }, { weather: string }, 
   name: 'getWeather',
   description: 'Get the weather in a city from a weather station',
   parameters: z.object({ cityName: z.string() }),
-  execute: async (args, options) => {
+  context: {
     // provide your own implementation to get the data from your application as a context
     const stations = {
       'New York': {
@@ -106,8 +108,7 @@ const weatherTool: OpenAssistantTool<{ cityName: string }, { weather: string }, 
     };
     return stations[args.cityName];
   },
-  context: {
-    // check if the context is provided
+  execute: async (args, options) => {
     if (!options || !options.context || !options.context['getStation']) {
       throw new Error('Context is required');
     }
@@ -126,6 +127,7 @@ const weatherTool: OpenAssistantTool<{ cityName: string }, { weather: string }, 
     };
   },
 });
+```
 
 ### 3. Add Chat Interface to your App
 
@@ -219,7 +221,7 @@ export function App() {
 }
 ```
 
-For more details, you can follow the source code of [packages/ai](https://github.com/geodaopenjs/openassistant/tree/main/packages/ai), which is a wrapper of [@sqlrooms/ai](https://github.com/sqlrooms/sqlrooms).
+For more details, you can follow the source code of [packages/ai](https://github.com/geodaopenjs/openassistant/tree/main/packages/ai), which is a wrapper of [@sqlrooms/ai](https://github.com/sqlrooms/sqlrooms/tree/main/examples/ai-core).
 
 ### 4. Use openassistant core package
 
