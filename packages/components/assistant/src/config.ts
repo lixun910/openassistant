@@ -48,7 +48,7 @@ export const LLM_MODELS = [
 ];
 
 export const AI_SETTINGS = {
-  providers: LLM_MODELS.reduce((acc: Record<string, any>, provider) => {
+  providers: LLM_MODELS.reduce((acc: Record<string, unknown>, provider) => {
     acc[provider.name] = {
       baseUrl:
         PROVIDER_DEFAULT_BASE_URLS[
