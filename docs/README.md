@@ -69,7 +69,7 @@ API documentation is automatically generated from TypeScript source code using T
 - @openassistant/plots
 
 **Components (9 packages):**
-- @openassistant/chat
+- @openassistant/assistant
 - @openassistant/common
 - @openassistant/d3map
 - @openassistant/echarts

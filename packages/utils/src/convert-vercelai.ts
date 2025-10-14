@@ -30,7 +30,7 @@ import { z } from 'zod';
  * });
  * ```
  */
-export function convertToVercelAiTool(
+export function convertToVercelAiToolV5(
   tool: OpenAssistantTool<z.ZodTypeAny, unknown, unknown, unknown>
 ) {
   // Convert the OpenAssistant tool to AI SDK v5 tool configuration
@@ -43,6 +43,46 @@ export function convertToVercelAiTool(
       result: z.string(),
       error: z.string().optional(),
     }),
+    execute: async (
+      args: unknown,
+      options: {
+        toolCallId: string;
+        abortSignal?: AbortSignal;
+      }
+    ) => {
+      const { toolCallId } = options;
+      try {
+        const result = await tool.execute(args, {
+          ...options,
+          context: tool.context,
+        });
+
+        const { additionalData, llmResult } = result;
+
+        if (additionalData && toolCallId && tool.onToolCompleted) {
+          tool.onToolCompleted(toolCallId, additionalData);
+        }
+
+        return llmResult;
+      } catch (error) {
+        console.error(`Execute tool failed: ${error}`);
+        return {
+          success: false,
+          error: `Execute tool failed: ${error}`,
+        };
+      }
+    },
+  };
+}
+
+export function convertToVercelAiTool(
+  tool: OpenAssistantTool<z.ZodTypeAny, unknown, unknown, unknown>
+) {
+  // Convert the OpenAssistant tool to AI SDK v4 tool configuration
+  return {
+    name: tool.name,
+    description: tool.description,
+    parameters: tool.parameters,
     execute: async (
       args: unknown,
       options: {

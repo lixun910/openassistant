@@ -16,13 +16,7 @@ import { GetValues } from '@openassistant/plots';
 export type StandardizeVariableToolArgs = z.ZodObject<{
   datasetName: z.ZodString;
   variableName: z.ZodString;
-  standardizationMethod: z.ZodEnum<{
-    deviationFromMean: 'deviationFromMean';
-    standardizeMAD: 'standardizeMAD';
-    rangeAdjust: 'rangeAdjust';
-    rangeStandardize: 'rangeStandardize';
-    standardize: 'standardize';
-  }>;
+  standardizationMethod: z.ZodEnum<['deviationFromMean', 'standardizeMAD', 'rangeAdjust', 'rangeStandardize', 'standardize']>;
   saveData: z.ZodOptional<z.ZodBoolean>;
 }>;
 

@@ -21,11 +21,7 @@ export type SpatialRegressionFunctionArgs = z.ZodObject<{
   datasetName: z.ZodString;
   dependentVariable: z.ZodString;
   independentVariables: z.ZodArray<z.ZodString>;
-  modelType: z.ZodEnum<{
-    classic: 'classic';
-    'spatial-lag': 'spatial-lag';
-    'spatial-error': 'spatial-error';
-  }>;
+  modelType: z.ZodEnum<['classic', 'spatial-lag', 'spatial-error']>;
   weightsId: z.ZodOptional<z.ZodString>;
 }>;
 

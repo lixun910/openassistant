@@ -13,7 +13,7 @@ import { SpatialToolContext } from '../types';
 export type LengthFunctionArgs = z.ZodObject<{
   geojson: z.ZodOptional<z.ZodString>;
   datasetName: z.ZodOptional<z.ZodString>;
-  distanceUnit: z.ZodDefault<z.ZodEnum<{ KM: 'KM'; Mile: 'Mile' }>>;
+  distanceUnit: z.ZodDefault<z.ZodEnum<['KM', 'Mile']>>;
 }>;
 
 export type LengthLlmResult = {
@@ -95,7 +95,7 @@ export const length: OpenAssistantTool<
       .string()
       .optional()
       .describe('Name of the dataset with geometries to calculate length for'),
-    distanceUnit: z.enum({ KM: 'KM', Mile: 'Mile' }).default('KM'),
+    distanceUnit: z.enum(['KM', 'Mile']).default('KM'),
   }),
   execute: async (
     args: z.infer<LengthFunctionArgs>,

@@ -47,8 +47,8 @@ npm install @openassistant/h3
 ### Components (React)
 
 ```bash
-# Chat interface
-npm install @openassistant/chat
+# AI Assistant Chat interface
+npm install @openassistant/assistant
 
 # Visualization components
 npm install @openassistant/echarts

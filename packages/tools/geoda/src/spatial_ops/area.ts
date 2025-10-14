@@ -13,7 +13,7 @@ import { isSpatialToolContext } from '../utils';
 export type AreaFunctionArgs = z.ZodObject<{
   geojson: z.ZodOptional<z.ZodString>;
   datasetName: z.ZodOptional<z.ZodString>;
-  distanceUnit: z.ZodDefault<z.ZodEnum<{ KM: 'KM'; Mile: 'Mile' }>>;
+  distanceUnit: z.ZodDefault<z.ZodEnum<['KM', 'Mile']>>;
 }>;
 
 export type AreaLlmResult = {
