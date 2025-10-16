@@ -1,13 +1,17 @@
-# Blog
+## Recent Posts
 
-Welcome to the OpenAssistant blog. Here you'll find updates, tutorials, and insights about spatial data analysis with AI.
+### [Use OpenAssistant to Build AI Apps for Spatial Data Analysis)](./posts/build-ai-spatial-applications.md)
+*January 31, 2025*
+
+Join us to build AI applications for spatial data analysis using OpenAssistant. 
+
+<img src="/kepler-tool-demo-1.gif" />
 
 ## Recent Posts
 
 Stay tuned for upcoming posts about:
 
 - Getting started with OpenAssistant v1.0.0
-- Building AI-powered GIS applications
 - Advanced spatial analysis techniques
 - Case studies and real-world applications
 - Tool development guides

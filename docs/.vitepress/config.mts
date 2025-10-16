@@ -5,20 +5,18 @@ export default defineConfig({
   title: 'OpenAssistant',
   description: 'AI Tools for Spatial Data Analysis and GIS',
   base: '/openassistant/',
-  
-  head: [
-    ['link', { rel: 'icon', href: '/favicon.ico' }]
-  ],
+
+  head: [['link', { rel: 'icon', href: '/favicon.ico' }]],
 
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: '/logo.png',
-    
+
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/' },
-      { 
-        text: 'API Reference', 
+      {
+        text: 'API Reference',
         items: [
           {
             text: 'Tools',
@@ -29,8 +27,8 @@ export default defineConfig({
               { text: 'Map', link: '/api/@openassistant/map/README' },
               { text: 'OSM', link: '/api/@openassistant/osm/README' },
               { text: 'Places', link: '/api/@openassistant/places/README' },
-              { text: 'Plots', link: '/api/@openassistant/plots/README' }
-            ]
+              { text: 'Plots', link: '/api/@openassistant/plots/README' },
+            ],
           },
           {
             text: 'Components',
@@ -39,21 +37,27 @@ export default defineConfig({
               { text: 'Common', link: '/api/@openassistant/common/README' },
               { text: 'ECharts', link: '/api/@openassistant/echarts/README' },
               { text: 'Hooks', link: '/api/@openassistant/hooks/README' },
-              { text: 'Kepler.gl', link: '/api/@openassistant/keplergl/README' },
+              {
+                text: 'Kepler.gl',
+                link: '/api/@openassistant/keplergl/README',
+              },
               { text: 'Leaflet', link: '/api/@openassistant/leaflet/README' },
               { text: 'Tables', link: '/api/@openassistant/tables/README' },
-              { text: 'Vega-Lite', link: '/api/@openassistant/vegalite/README' }
-            ]
+              {
+                text: 'Vega-Lite',
+                link: '/api/@openassistant/vegalite/README',
+              },
+            ],
           },
           {
             text: 'Utils',
             items: [
-              { text: 'Utils', link: '/api/@openassistant/utils/README' }
-            ]
-          }
-        ]
+              { text: 'Utils', link: '/api/@openassistant/utils/README' },
+            ],
+          },
+        ],
       },
-      { text: 'Blog', link: '/blog/' }
+      { text: 'Blog', link: '/blog/' },
     ],
 
     sidebar: {
@@ -63,8 +67,8 @@ export default defineConfig({
           items: [
             { text: 'What is OpenAssistant?', link: '/guide/' },
             { text: 'Getting Started', link: '/guide/getting-started' },
-            { text: 'Architecture', link: '/guide/architecture' }
-          ]
+            { text: 'Architecture', link: '/guide/architecture' },
+          ],
         },
         {
           text: 'Tools',
@@ -76,47 +80,60 @@ export default defineConfig({
             { text: 'OSM Tools', link: '/guide/tools/osm' },
             { text: 'Places Tools', link: '/guide/tools/places' },
             { text: 'Plots Tools', link: '/guide/tools/plots' },
-            { text: 'H3 Tools', link: '/guide/tools/h3' }
-          ]
+            { text: 'H3 Tools', link: '/guide/tools/h3' },
+          ],
         },
         {
           text: 'Components',
           items: [
             { text: 'Overview', link: '/guide/components/' },
             { text: 'Chat Component', link: '/guide/components/chat' },
-            { text: 'Visualization Components', link: '/guide/components/visualization' }
-          ]
+            {
+              text: 'Visualization Components',
+              link: '/guide/components/visualization',
+            },
+          ],
         },
         {
           text: 'Advanced',
           items: [
-            { text: 'Creating Custom Tools', link: '/guide/advanced/custom-tools' },
-            { text: 'Integration with AI SDK', link: '/guide/advanced/ai-sdk-integration' }
-          ]
-        }
+            {
+              text: 'Creating Custom Tools',
+              link: '/guide/advanced/custom-tools',
+            },
+            {
+              text: 'Integration with AI SDK',
+              link: '/guide/advanced/ai-sdk-integration',
+            },
+          ],
+        },
       ],
       '/blog/': [
         {
           text: 'Blog',
           items: [
-            { text: 'All Posts', link: '/blog/' }
-          ]
-        }
-      ]
+            { text: 'All Posts', link: '/blog/' },
+            {
+              text: 'Use OpenAssistant to Build AI Apps for Spatial Data Analysis',
+              link: '/blog/posts/build-ai-spatial-applications',
+            },
+          ],
+        },
+      ],
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/geodaopenjs/openassistant' }
+      { icon: 'github', link: 'https://github.com/geodaopenjs/openassistant' },
     ],
 
     search: {
-      provider: 'local'
+      provider: 'local',
     },
 
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2025 Xun Li'
-    }
-  }
+      copyright: 'Copyright © 2025 Xun Li',
+    },
+  },
 });
 
