@@ -156,34 +156,6 @@ export function App() {
 }
 ```
 
-## Usage with Vercel AI SDK
-
-```typescript
-import { scatterplot } from '@openassistant/plots';
-import { convertToVercelAiTool } from '@openassistant/utils';
-import { generateText } from 'ai';
-import { openai } from '@ai-sdk/openai';
-
-const scatterplotTool = {
-  ...scatterplot,
-  context: {
-    getValues: async (datasetName: string, variableName: string) => {
-      return SAMPLE_DATASETS[datasetName].map((item) => item[variableName]);
-    },
-  },
-};
-
-const result = await generateText({
-  model: openai('gpt-4'),
-  prompt: 'What is the relationship between income and housing price in the cities dataset?',
-  tools: {
-    scatterplot: convertToVercelAiTool(scatterplotTool),
-  },
-});
-
-console.log(result.text);
-```
-
 ## Advanced Features
 
 ### Scatter Plot with Regression
@@ -248,59 +220,6 @@ type EChartsToolContext = {
     showLoess?: boolean;    // For scatterplot
   };
 };
-```
-
-## Tool Parameters
-
-### Histogram Parameters
-
-```typescript
-{
-  datasetName: string;
-  variableName: string;
-  numberOfBins?: number; // Default: 5
-}
-```
-
-### Scatterplot Parameters
-
-```typescript
-{
-  datasetName: string;
-  xVariableName: string;
-  yVariableName: string;
-}
-```
-
-### Boxplot Parameters
-
-```typescript
-{
-  datasetName: string;
-  variableName: string;
-  groupByVariableName?: string; // Optional: group by category
-}
-```
-
-### Bubble Chart Parameters
-
-```typescript
-{
-  datasetName: string;
-  xVariableName: string;
-  yVariableName: string;
-  sizeVariableName: string;
-  colorVariableName?: string; // Optional
-}
-```
-
-### Parallel Coordinate Plot Parameters
-
-```typescript
-{
-  datasetName: string;
-  variableNames: string[]; // Array of variables to include
-}
 ```
 
 ## Example User Prompts

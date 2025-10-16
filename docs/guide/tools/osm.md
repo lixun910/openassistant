@@ -177,65 +177,6 @@ export function App() {
 }
 ```
 
-## Tool Parameters
-
-### Geocoding Parameters
-
-```typescript
-{
-  address: string; // The address to geocode
-}
-```
-
-### Reverse Geocoding Parameters
-
-```typescript
-{
-  latitude: number;
-  longitude: number;
-}
-```
-
-### Routing Parameters
-
-```typescript
-{
-  origin: {
-    latitude: number;
-    longitude: number;
-  };
-  destination: {
-    latitude: number;
-    longitude: number;
-  };
-  mode?: 'driving' | 'walking' | 'cycling'; // Default: 'driving'
-}
-```
-
-### Isochrone Parameters
-
-```typescript
-{
-  location: {
-    latitude: number;
-    longitude: number;
-  };
-  mode: 'driving' | 'walking' | 'cycling';
-  contours: number[]; // Travel times in minutes (e.g., [5, 10, 15])
-}
-```
-
-### US City Query Parameters
-
-```typescript
-{
-  cityName?: string;
-  stateName?: string;
-  stateCode?: string;
-  limit?: number; // Default: 10
-}
-```
-
 ## Context Options
 
 ### Mapbox Tools (routing, isochrone)

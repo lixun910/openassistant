@@ -15,39 +15,6 @@ OpenAssistant focuses on providing a rich set of AI tools for spatial data analy
 
 ### 1. Use OpenAssistant tools in your AI application
 
-#### Example: create a map
-
-Add map tool to your AI application:
-
-```ts
-import { generateText } from 'ai';
-import { map, MapTool } from '@openassistant/maps';
-import { convertToVercelAiTool } from '@openassistant/utils';
-
-// Create a kepler map tool with your context
-const keplerMapTool = {
-  ...keplergl,
-  context: {
-    getDataset: async (datasetName: string) => {
-      if (datasetName in SAMPLE_DATASETS) {
-        return SAMPLE_DATASETS[datasetName as keyof typeof SAMPLE_DATASETS];
-      }
-      throw new Error(`Dataset ${datasetName} not found`);
-    },
-  },
-  component: KeplerGlComponent,
-};
-
-// Convert to Vercel AI SDK tool
-const aiTool = tool(convertToVercelAiTool(keplerMapTool));
-
-// Use in your AI application
-```
-
-<img src="https://geodaai.github.io/openassistant/kepler-tool-demo-1.gif" width="400" alt="Kepler.gl Tool Demo" />
-
-#### Example: create a histogram
-
 Add histogram tool to your AI application, e.g. Vercel AI SDK:
 
 ```ts
@@ -82,6 +49,65 @@ const result = await generateText({
 
 <img src="https://openassistant-doc.vercel.app/img/histogram-1-400.png" width="400" alt="Histogram Plugin" />
 
+#### Create a chat interface with map tool
+
+Add map tool to your AI application:
+
+```ts
+import { Assistant } from '@openassistant/assistant';
+import { keplergl } from '@openassistant/maps';
+import { KeplerGlComponent } from '@openassistant/keplergl';
+
+// Sample dataset for demonstration
+const SAMPLE_DATASETS = {
+  cities: [
+    { name: 'San Francisco', population: 800000, latitude: 37.774929, longitude: -122.419416 },
+    { name: 'New York', population: 8400000, latitude: 40.712776, longitude: -74.005974 },
+    { name: 'Los Angeles', population: 3900000, latitude: 34.052235, longitude: -118.243683 },
+    ...
+  ],
+};
+
+// Create a kepler map tool with your context
+const keplerMapTool = {
+  ...keplergl,
+  context: {
+    getDataset: async (datasetName: string) => {
+      if (datasetName in SAMPLE_DATASETS) {
+        return SAMPLE_DATASETS[datasetName as keyof typeof SAMPLE_DATASETS];
+      }
+      throw new Error(`Dataset ${datasetName} not found`);
+    },
+  },
+  component: KeplerGlComponent,
+};
+
+export function App() {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center p-4">
+      <div className="w-full max-w-[900px] h-full">
+        <Assistant options={{
+          ai: {
+            getInstructions: () => `You are a helpful assistant that can answer questions and help with tasks.
+Your name is George.
+You can use the following datasets to answer the user's question:
+- Dataset: venues
+ - Fields: name, city, ratin
+- Dataset: cities
+ - Fields: name, population, latitude, longitude`,
+            tools: {
+              keplergl: keplerMapTool,
+            },
+          },
+        }} />
+      </div>
+    </div>
+  );
+}
+```
+
+<img src="https://geodaai.github.io/openassistant/kepler-tool-demo-1.gif" width="400" alt="Kepler.gl Tool Demo" />
+
 You can combine all the tools together to create a more complex application.
 
 ### 2. Create your own tool
@@ -93,27 +119,36 @@ import { OpenAssistantTool, convertToVercelAiTool } from '@openassistant/utils';
 import { generateText } from 'ai';
 import { z } from 'zod';
 
-const weatherTool: OpenAssistantTool<{ cityName: string }, { weather: string }, { station: string }> = {
+type WeatherToolArgs = { cityName: string };
+type WeatherToolResult = { weather: string };
+type WeatherToolAdditionalData = { station: string };
+type WeatherToolContext = {
+  getStation: (cityName: string) => Promise<{ stationId: string; weather: string; timestamp: string }>;
+};
+
+const weatherTool: OpenAssistantTool<WeatherToolArgs, WeatherToolResult, WeatherToolAdditionalData, WeatherToolContext> = {
   name: 'getWeather',
   description: 'Get the weather in a city from a weather station',
   parameters: z.object({ cityName: z.string() }),
   context: {
     // provide your own implementation to get the data from your application as a context
-    const stations = {
-      'New York': {
-        stationId: '123',
-        weather: 'sunny',
-        timestamp: '2025-06-20 10:00:00',
-      },
-    };
-    return stations[args.cityName];
+    getStation: async (cityName: string) => {
+      const stations = {
+        'New York': {
+          stationId: '123',
+          weather: 'sunny',
+          timestamp: '2025-06-20 10:00:00',
+        },
+      };
+      return stations[cityName];
+    },
   },
   execute: async (args, options) => {
     if (!options || !options.context || !options.context['getStation']) {
       throw new Error('Context is required');
     }
     const getStation = options.context['getStation'];
-    const station = await getStation(args.cityName);
+    const station = await getStation(args.cityName as string);
     return {
       // the result returned to the LLM
       llmResult: {
@@ -131,7 +166,14 @@ const weatherTool: OpenAssistantTool<{ cityName: string }, { weather: string }, 
 
 ### 3. Add Chat Interface to your App
 
-OpenAssistant provides a chat interface component based on [@sqlrooms/ai](https://github.com/sqlrooms/sqlrooms).
+OpenAssistant provides a chat interface component based on [@sqlrooms/ai](https://github.com/sqlrooms/sqlrooms). It is a powerful chat interface component that can be used to build your own AI application.
+
+- Easy provider and model selection and configuration
+- Support provider and model settings management
+- Support custom models
+- Support model usage tracking
+
+<img src="https://geodaai.github.io/openassistant/sqlrooms_ai_chat.png" />
 
 #### Usage
 
@@ -192,8 +234,6 @@ const config = {
 
 export default config;
 ```
-
-<video src="https://sqlrooms.org/assets/ai-example-light.Bgw76g3w.mp4" width="300"></video>
 
 If you want to build your own chat interface, just simply pass your custom component in <Assistant> component.
 

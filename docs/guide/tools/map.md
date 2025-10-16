@@ -72,33 +72,6 @@ export function App() {
 }
 ```
 
-### Kepler.gl with Vercel AI SDK
-
-```typescript
-import { keplergl } from '@openassistant/map';
-import { convertToVercelAiTool } from '@openassistant/utils';
-import { generateText } from 'ai';
-import { openai } from '@ai-sdk/openai';
-
-const keplerglTool = {
-  ...keplergl,
-  context: {
-    getDataset: async (datasetName: string) => {
-      // Return your dataset (can be array of objects, Arrow Table, or GeoJSON)
-      return YOUR_DATASETS[datasetName];
-    },
-  },
-};
-
-const result = await generateText({
-  model: openai('gpt-4'),
-  prompt: 'Create a point map using the cities dataset',
-  tools: {
-    keplergl: convertToVercelAiTool(keplerglTool),
-  },
-});
-```
-
 ## Leaflet Maps
 
 ```typescript
