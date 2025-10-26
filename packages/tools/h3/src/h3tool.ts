@@ -35,8 +35,12 @@ export const h3Cell: OpenAssistantTool<
   name: 'h3Cell',
   description: 'Get the H3 cell for a given latitude, longitude and resolution',
   parameters: h3CellParameters,
-  execute: async (args: H3CellParams, _options) => {
-    void _options;
+  execute: async (args: H3CellParams, options) => {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('H3 cell operation was aborted');
+    }
+
     const { latitude, longitude, resolution } = args;
     const cell = latLngToCell(latitude, longitude, resolution);
     return {
@@ -54,7 +58,12 @@ export const h3CellToChildren: OpenAssistantTool = {
   parameters: z.object({
     cell: z.string(),
   }),
-  execute: async (args) => {
+  execute: async (args, options) => {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('H3 cell to children operation was aborted');
+    }
+
     const { cell } = args as { cell: string };
     // get current resolution of given cell
     const resolution = getResolution(cell);
@@ -101,6 +110,11 @@ export const h3CellsFromPolygon: OpenAssistantTool<
   }),
   execute: async (args, options) => {
     try {
+      // Check if operation was aborted before starting
+      if (options?.abortSignal?.aborted) {
+        throw new Error('H3 cells from polygon operation was aborted');
+      }
+
       const { polygonDatasetName, resolution } = args as H3CellsFromPolygonParams;
       
       if (!options?.context) {

@@ -130,8 +130,13 @@ export function isPCPToolArgs(data: unknown): data is PCPToolArgs {
   return typeof data === 'object' && data !== null && 'variableNames' in data;
 }
 
-async function executePCP(args, options?: { toolCallId: string; context?: EChartsToolContext }): Promise<ExecutePCPResult> {
+async function executePCP(args, options?: { toolCallId: string; abortSignal?: AbortSignal; context?: EChartsToolContext }): Promise<ExecutePCPResult> {
   try {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('PCP creation was aborted');
+    }
+
     if (!isPCPToolArgs(args)) {
       throw new Error('Invalid PCP function arguments.');
     }

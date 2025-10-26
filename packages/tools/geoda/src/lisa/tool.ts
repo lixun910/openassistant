@@ -227,6 +227,11 @@ async function executeLisa(
   OpenAssistantExecuteFunctionResult<LisaLlmResult, LisaAdditionalData>
 > {
   try {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('LISA operation was aborted');
+    }
+
     if (!isLisaArgs(args)) {
       throw new Error('Invalid arguments for lisa tool');
     }

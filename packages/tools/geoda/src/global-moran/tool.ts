@@ -173,6 +173,11 @@ async function executeGlobalMoran(
   }
 ): Promise<OpenAssistantExecuteFunctionResult<MoranScatterPlotLlmResult, MoranScatterPlotAdditionalData>> {
   try {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Global Moran operation was aborted');
+    }
+
     if (!isGlobalMoranArgs(args)) {
       throw new Error('Invalid arguments for globalMoran tool');
     }

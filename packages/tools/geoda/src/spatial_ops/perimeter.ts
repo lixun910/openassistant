@@ -111,6 +111,11 @@ export const perimeter: OpenAssistantTool<
       PerimeterAdditionalData
     >
   > => {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Perimeter calculation was aborted');
+    }
+
     const { datasetName, geojson, distanceUnit = 'KM' } = args;
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(

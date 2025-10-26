@@ -74,6 +74,11 @@ export const cartogram: OpenAssistantTool<
     abortSignal?: AbortSignal;
     context?: SpatialToolContext;
   }): Promise<OpenAssistantExecuteFunctionResult<CartogramLlmResult, CartogramAdditionalData>> => {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Cartogram operation was aborted');
+    }
+
     const { datasetName, variableName, iterations } = args;
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(

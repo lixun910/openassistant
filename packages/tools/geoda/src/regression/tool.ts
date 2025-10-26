@@ -178,6 +178,11 @@ async function executeSpatialRegression(
   >
 > {
   try {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Spatial regression operation was aborted');
+    }
+
     if (!isSpatialRegressionArgs(args)) {
       throw new Error('Invalid arguments for spatialRegression tool');
     }

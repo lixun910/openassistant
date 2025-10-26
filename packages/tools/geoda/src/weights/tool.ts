@@ -243,6 +243,11 @@ async function executeSpatialWeights(
   >
 > {
   try {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Spatial weights operation was aborted');
+    }
+
     if (!isSpatialWeightsArgs(args)) {
       throw new Error('Invalid arguments for spatialWeights tool');
     }

@@ -126,6 +126,11 @@ export const leaflet: OpenAssistantTool<
     options
   ) => {
     try {
+      // Check if operation was aborted before starting
+      if (options?.abortSignal?.aborted) {
+        throw new Error('Leaflet map creation was aborted');
+      }
+
       const context = options?.context;
       if (!isMapToolContext(context)) {
         throw new Error('Tool context is required');

@@ -125,6 +125,11 @@ export const buffer: OpenAssistantTool<
   ): Promise<
     OpenAssistantExecuteFunctionResult<BufferLlmResult, BufferAdditionalData>
   > => {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Buffer operation was aborted');
+    }
+
     const {
       datasetName,
       geojson,

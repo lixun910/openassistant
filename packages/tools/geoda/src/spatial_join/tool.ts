@@ -212,6 +212,11 @@ async function executeSpatialJoin(
     SpatialJoinAdditionalData
   >
 > {
+  // Check if operation was aborted before starting
+  if (options?.abortSignal?.aborted) {
+    throw new Error('Spatial join operation was aborted');
+  }
+
   if (!isSpatialJoinArgs(args)) {
     throw new Error('Invalid arguments for spatialJoin tool');
   }

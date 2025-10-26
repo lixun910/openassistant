@@ -222,6 +222,11 @@ export const grid: OpenAssistantTool<
   ): Promise<
     OpenAssistantExecuteFunctionResult<GridLlmResult, GridAdditionalData>
   > => {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Grid operation was aborted');
+    }
+
     const { datasetName, mapBounds, rows, columns } = args;
 
     if (!options?.context || !isSpatialToolContext(options.context)) {

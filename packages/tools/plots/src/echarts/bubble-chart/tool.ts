@@ -138,9 +138,14 @@ export function isBubbleChartFunctionArgs(
 
 async function executeBubbleChart(
   args,
-  options?: { toolCallId: string; context?: EChartsToolContext }
+  options?: { toolCallId: string; abortSignal?: AbortSignal; context?: EChartsToolContext }
 ): Promise<ExecuteBubbleChartResult> {
   try {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Bubble chart creation was aborted');
+    }
+
     if (!isBubbleChartFunctionArgs(args)) {
       throw new Error(
         'Invalid arguments for bubbleChart tool. Please provide a valid arguments.'

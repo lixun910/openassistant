@@ -78,6 +78,11 @@ export const thiessenPolygons: OpenAssistantTool<
     abortSignal?: AbortSignal;
     context?: SpatialToolContext;
   }): Promise<OpenAssistantExecuteFunctionResult<ThiessenPolygonsLlmResult, ThiessenPolygonsAdditionalData>> => {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Thiessen polygons operation was aborted');
+    }
+
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(
         'Context is required and must implement SpatialToolContext'

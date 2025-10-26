@@ -132,6 +132,11 @@ export const standardizeVariable: OpenAssistantTool<
     }
   ): Promise<StandardizeVariableToolResult> => {
     try {
+      // Check if operation was aborted before starting
+      if (options?.abortSignal?.aborted) {
+        throw new Error('Variable standardization was aborted');
+      }
+
       const { datasetName, variableName, standardizationMethod, saveData } =
         args;
       const { getValues } = options?.context as StandardizeVariableToolContext;
