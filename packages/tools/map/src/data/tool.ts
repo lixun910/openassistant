@@ -83,14 +83,14 @@ export const downloadMapData: OpenAssistantTool<
   name: 'downloadMapData',
   description: 'Download map data from a url',
   parameters: downloadMapDataParameters,
-  execute: async (args) => {
+  execute: async (args, options) => {
     const { url } = args;
     try {
       // download the url, which could be
       // - a geojson file
       // - a csv file
 
-      const rawData = await fetch(url);
+      const rawData = await fetch(url, { signal: options?.abortSignal });
 
       let content;
       let fields;

@@ -111,6 +111,11 @@ export const rate: OpenAssistantTool<
     OpenAssistantExecuteFunctionResult<RateLlmResult, RateAdditionalData>
   > => {
     try {
+      // Check if operation was aborted before starting
+      if (options?.abortSignal?.aborted) {
+        throw new Error('Rate calculation was aborted');
+      }
+
       const {
         datasetName,
         baseVariableName,

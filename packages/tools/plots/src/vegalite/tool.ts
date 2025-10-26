@@ -94,6 +94,11 @@ Use the following settings to avoid unnecessary axis range expansion for both x 
   }),
   execute: async ({ datasetName, variableNames, vegaLiteSpec }, options) => {
     try {
+      // Check if operation was aborted before starting
+      if (options?.abortSignal?.aborted) {
+        throw new Error('Vega-Lite plot creation was aborted');
+      }
+
       const { getValues } = options?.context as EChartsToolContext;
 
       const data = {};

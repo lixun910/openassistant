@@ -137,9 +137,14 @@ export type ExecuteBoxplotResult = {
 
 async function executeBoxplot(
   { datasetName, variableNames, boundIQR = 1.5 },
-  options?: { toolCallId: string; context?: EChartsToolContext }
+  options?: { toolCallId: string; abortSignal?: AbortSignal; context?: EChartsToolContext }
 ): Promise<ExecuteBoxplotResult> {
   try {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Boxplot creation was aborted');
+    }
+
     if (!options?.context || !isEChartsToolContext(options.context)) {
       throw new Error('Invalid context');
     }

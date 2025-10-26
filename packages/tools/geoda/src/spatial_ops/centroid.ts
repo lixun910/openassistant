@@ -95,6 +95,11 @@ export const centroid: OpenAssistantTool<
     abortSignal?: AbortSignal;
     context?: SpatialToolContext;
   }): Promise<OpenAssistantExecuteFunctionResult<CentroidLlmResult, CentroidAdditionalData>> => {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Centroid operation was aborted');
+    }
+
     const { datasetName, geojson } = args;
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(

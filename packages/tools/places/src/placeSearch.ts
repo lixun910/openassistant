@@ -332,8 +332,15 @@ export const placeSearch: OpenAssistantTool<
     );
     console.log('  - currentTimestamp:', args.currentTimestamp);
 
+    // Create an abort controller that responds to both timeout and external abort signal
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
+    // Listen to external abort signal if provided
+    if (options?.abortSignal) {
+      options.abortSignal.addEventListener('abort', () => controller.abort());
+    }
+    
     try {
       const {
         query,

@@ -191,8 +191,15 @@ export const geotagging: OpenAssistantTool<
     "Use Foursquare's Snap-to-Place or Check-in technology to detect where your user's device is and what is around them. Returns geotagging candidates based on location coordinates.",
   parameters: geotaggingParameters,
   execute: async (args, options): Promise<ExecuteGeotaggingResult> => {
+    // Create an abort controller that responds to both timeout and external abort signal
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
+    // Listen to external abort signal if provided
+    if (options?.abortSignal) {
+      options.abortSignal.addEventListener('abort', () => controller.abort());
+    }
+    
     try {
       const { ll, fields, hacc, altitude, query, limit = 10 } = args;
 

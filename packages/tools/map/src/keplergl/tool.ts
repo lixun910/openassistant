@@ -207,6 +207,11 @@ async function executeCreateMap(
   options
 ): Promise<ExecuteCreateMapResult> {
   try {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Map creation was aborted');
+    }
+
     if (!isMapToolContext(options.context)) {
       throw new Error('Invalid createMap function context.');
     }

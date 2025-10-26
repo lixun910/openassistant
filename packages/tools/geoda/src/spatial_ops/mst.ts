@@ -82,6 +82,11 @@ export const minimumSpanningTree: OpenAssistantTool<
     abortSignal?: AbortSignal;
     context?: SpatialToolContext;
   }): Promise<OpenAssistantExecuteFunctionResult<MinimumSpanningTreeLlmResult, MinimumSpanningTreeAdditionalData>> => {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Minimum spanning tree operation was aborted');
+    }
+
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(
         'Context is required and must implement SpatialToolContext'

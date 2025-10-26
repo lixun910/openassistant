@@ -142,8 +142,15 @@ export const isochrone: OpenAssistantTool<
     'Get isochrone polygons showing reachable areas within a given time limit from a starting point using Mapbox Isochrone API',
   parameters: isochroneParameters,
   execute: async (args, options): Promise<ExecuteIsochroneResult> => {
+    // Create an abort controller that responds to both timeout and external abort signal
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
+    // Listen to external abort signal if provided
+    if (options?.abortSignal) {
+      options.abortSignal.addEventListener('abort', () => controller.abort());
+    }
+    
     try {
       const {
         origin,

@@ -190,8 +190,15 @@ export const webSearch: OpenAssistantTool<
       JSON.stringify(args, null, 2)
     );
 
+    // Create an abort controller that responds to both timeout and external abort signal
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
+    
+    // Listen to external abort signal if provided
+    if (options?.abortSignal) {
+      options.abortSignal.addEventListener('abort', () => controller.abort());
+    }
+    
     try {
       const {
         query,

@@ -69,7 +69,8 @@ export const reverseGeocoding: OpenAssistantTool<
     'Reverse geocode coordinates to get the address and location information for a given latitude and longitude',
   parameters: reverseGeocodingParameters,
   execute: async (
-    args
+    args,
+    options
   ): Promise<{
     llmResult: ReverseGeocodingLlmResult;
     additionalData?: ReverseGeocodingAdditionalData;
@@ -96,8 +97,14 @@ export const reverseGeocoding: OpenAssistantTool<
       let lastError;
       
       for (let attempt = 1; attempt <= 3; attempt++) {
+        // Check abort signal in retry loop
+        if (options?.abortSignal?.aborted) {
+          throw new Error('Reverse geocoding was aborted');
+        }
+
         try {
           const response = await fetch(url, {
+            signal: options?.abortSignal,
             headers: {
               'User-Agent': 'OpenAssistant/1.0 (https://github.com/openassistant/openassistant)',
               'Accept': 'application/json',

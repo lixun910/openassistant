@@ -111,6 +111,11 @@ export const area: OpenAssistantTool<
   ): Promise<
     OpenAssistantExecuteFunctionResult<AreaLlmResult, AreaAdditionalData>
   > => {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Area calculation was aborted');
+    }
+
     const { datasetName, geojson, distanceUnit = 'KM' } = args;
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(

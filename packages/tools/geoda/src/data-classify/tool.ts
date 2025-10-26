@@ -194,6 +194,11 @@ async function executeDataClassify(
   >
 > {
   try {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Data classify operation was aborted');
+    }
+
     if (!isDataClassifyToolArgs(args)) {
       throw new Error('Invalid arguments for dataClassify tool');
     }

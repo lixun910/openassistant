@@ -91,7 +91,7 @@ export const getUsStateGeojson: OpenAssistantTool<
         )
     ),
   }),
-  execute: async (args): Promise<ExecuteGetUsStateGeojsonResult> => {
+  execute: async (args, options): Promise<ExecuteGetUsStateGeojsonResult> => {
     try {
       const { stateNames } = args;
       const features: GeoJSON.Feature[] = [];
@@ -105,7 +105,8 @@ export const getUsStateGeojson: OpenAssistantTool<
           // get the Geojson file from the following url:
           // https://raw.githubusercontent.com/glynnbird/usstatesgeojson/master/arizona.geojson
           const response = await fetch(
-            `https://raw.githubusercontent.com/glynnbird/usstatesgeojson/master/${stateName}.geojson`
+            `https://raw.githubusercontent.com/glynnbird/usstatesgeojson/master/${stateName}.geojson`,
+            { signal: options?.abortSignal }
           );
 
           // the above url return Feature directly, not FeatureCollection

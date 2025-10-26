@@ -129,9 +129,14 @@ export type ExecuteHistogramResult = {
 
 async function executeHistogram(
   { datasetName, variableName, numberOfBins = 5 },
-  options?: { toolCallId: string; context?: EChartsToolContext }
+  options?: { toolCallId: string; abortSignal?: AbortSignal; context?: EChartsToolContext }
 ): Promise<ExecuteHistogramResult> {
   try {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Histogram creation was aborted');
+    }
+
     if (!options?.context || !isEChartsToolContext(options.context)) {
       throw new Error(
         'Invalid context for histogram tool. Please provide a valid context.'

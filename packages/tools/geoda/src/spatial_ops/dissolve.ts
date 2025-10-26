@@ -141,6 +141,11 @@ If not provided, the entire dataset will be dissolved.
       DissolveAdditionalData
     >
   > => {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Dissolve operation was aborted');
+    }
+
     const { datasetName, geojson, dissolveBy, aggregateVariables } = args;
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(

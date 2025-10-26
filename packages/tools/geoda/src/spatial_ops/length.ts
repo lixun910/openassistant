@@ -107,6 +107,11 @@ export const length: OpenAssistantTool<
   ): Promise<
     OpenAssistantExecuteFunctionResult<LengthLlmResult, LengthAdditionalData>
   > => {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Length calculation was aborted');
+    }
+
     const { datasetName, geojson, distanceUnit = 'KM' } = args;
     if (!options?.context || !isSpatialToolContext(options.context)) {
       throw new Error(

@@ -164,9 +164,14 @@ export type ExecuteScatterplotResult = {
 
 async function executeScatterplot(
   args,
-  options?: { toolCallId: string; context?: EChartsToolContext }
+  options?: { toolCallId: string; abortSignal?: AbortSignal; context?: EChartsToolContext }
 ): Promise<ExecuteScatterplotResult> {
   try {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Scatterplot creation was aborted');
+    }
+
     if (!isScatterplotToolArgs(args)) {
       throw new Error('Invalid scatterplot function arguments.');
     }

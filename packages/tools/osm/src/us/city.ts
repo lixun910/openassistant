@@ -94,7 +94,7 @@ export const getUsCityGeojson: OpenAssistantTool<
   description:
     'Get GeoJSON data for US cities by their state code and city name',
   parameters: getUsCityGeojsonParameters,
-  execute: async (args): Promise<ExecuteGetUsCityGeojsonResult> => {
+  execute: async (args, options): Promise<ExecuteGetUsCityGeojsonResult> => {
     try {
       const { cityNames } = args;
       const features: GeoJSON.Feature[] = [];
@@ -107,7 +107,8 @@ export const getUsCityGeojson: OpenAssistantTool<
           await githubRateLimiter.waitForNextCall();
 
           const response = await fetch(
-            `https://raw.githubusercontent.com/generalpiston/geojson-us-city-boundaries/master/cities/${cityName}`
+            `https://raw.githubusercontent.com/generalpiston/geojson-us-city-boundaries/master/cities/${cityName}`,
+            { signal: options?.abortSignal }
           );
 
           if (!response.ok) {
