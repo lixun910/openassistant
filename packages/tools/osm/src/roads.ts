@@ -179,6 +179,7 @@ export const roads: OpenAssistantTool<
       const response = await fetch('https://overpass-api.de/api/interpreter', {
         method: 'POST',
         body: query,
+        signal: options?.abortSignal,
       });
 
       if (!response.ok) {
@@ -206,6 +207,11 @@ export const roads: OpenAssistantTool<
       const CHUNK_SIZE = 1000;
       
       for (let i = 0; i < ways.length; i += CHUNK_SIZE) {
+        // Check abort signal in loop
+        if (options?.abortSignal?.aborted) {
+          throw new Error('Roads processing was aborted');
+        }
+
         const end = Math.min(i + CHUNK_SIZE, ways.length);
         const chunkFeatures: GeoJSON.Feature[] = [];
         

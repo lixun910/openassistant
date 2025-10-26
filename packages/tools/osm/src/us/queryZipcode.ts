@@ -88,7 +88,7 @@ export const queryUSZipcodes: OpenAssistantTool<
         .describe('Southeast coordinates [longitude, latitude]'),
     }),
   }),
-  execute: async (args): Promise<ExecuteQueryUSZipcodesResult> => {
+  execute: async (args, options): Promise<ExecuteQueryUSZipcodesResult> => {
     try {
       const { mapBounds } = args;
       const { northwest, southeast } = mapBounds;
@@ -101,7 +101,8 @@ export const queryUSZipcodes: OpenAssistantTool<
         await githubRateLimiter.waitForNextCall();
 
         const response = await fetch(
-          'https://raw.githubusercontent.com/GeoDaCenter/data-and-lab/refs/heads/gh-pages/data/us_zipcodes_centroids.geojson'
+          'https://raw.githubusercontent.com/GeoDaCenter/data-and-lab/refs/heads/gh-pages/data/us_zipcodes_centroids.geojson',
+          { signal: options?.abortSignal }
         );
         geojson = await response.json();
         if (geojson) {

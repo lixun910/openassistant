@@ -121,6 +121,11 @@ async function executeLocalQuery(
   >
 > {
   try {
+    // Check if operation was aborted before starting
+    if (options?.abortSignal?.aborted) {
+      throw new Error('Query execution was aborted');
+    }
+
     const {
       getValues,
       getDuckDB: getUserDuckDB,
@@ -132,6 +137,10 @@ async function executeLocalQuery(
     // get values for each variable
     const columnData = {};
     for (const varName of variableNames) {
+      // Check abort signal in loop
+      if (options?.abortSignal?.aborted) {
+        throw new Error('Query execution was aborted');
+      }
       let values = await getValues(datasetName, varName);
 
       // for values of Features, we need to normalize the Polygon to MultiPolygon
@@ -188,6 +197,12 @@ async function executeLocalQuery(
       name: dbTableName,
       create: true,
     });
+
+    // Check abort signal before executing query
+    if (options?.abortSignal?.aborted) {
+      await conn.close();
+      throw new Error('Query execution was aborted');
+    }
 
     // query all table names in duckdb
     // const tableNamesResult = await conn.query('SHOW TABLES');

@@ -94,7 +94,7 @@ export const getUsCountyGeojson: OpenAssistantTool<
   description:
     'Get GeoJSON data for all counties in a US state by its state code',
   parameters: getUsCountyGeojsonParameters,
-  execute: async (args): Promise<ExecuteGetUsCountyGeojsonResult> => {
+  execute: async (args, options): Promise<ExecuteGetUsCountyGeojsonResult> => {
     try {
       const { fipsCodes } = args;
       const features: GeoJSON.Feature[] = [];
@@ -108,7 +108,8 @@ export const getUsCountyGeojson: OpenAssistantTool<
 
           const stateCode = fips.substring(0, 2);
           const response = await fetch(
-            `https://raw.githubusercontent.com/hyperknot/country-levels-export/master/geojson/medium/fips/${stateCode}/${fips}.geojson`
+            `https://raw.githubusercontent.com/hyperknot/country-levels-export/master/geojson/medium/fips/${stateCode}/${fips}.geojson`,
+            { signal: options?.abortSignal }
           );
 
           // the above url return Feature directly, not FeatureCollection

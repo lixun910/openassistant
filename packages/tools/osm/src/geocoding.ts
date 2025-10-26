@@ -64,7 +64,8 @@ export const geocoding: OpenAssistantTool<
     'Geocode an address to get the latitude and longitude of the address',
   parameters: geocodingParameters,
   execute: async (
-    args
+    args,
+    options
   ): Promise<{
     llmResult: GeocodingLlmResult;
     additionalData?: GeocodingAdditionalData;
@@ -83,8 +84,14 @@ export const geocoding: OpenAssistantTool<
       let lastError;
       
       for (let attempt = 1; attempt <= 3; attempt++) {
+        // Check abort signal in retry loop
+        if (options?.abortSignal?.aborted) {
+          throw new Error('Geocoding was aborted');
+        }
+
         try {
           const response = await fetch(url, {
+            signal: options?.abortSignal,
             headers: {
               'User-Agent': 'OpenAssistant/1.0 (https://github.com/openassistant/openassistant)',
               'Accept': 'application/json',

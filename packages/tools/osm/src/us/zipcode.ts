@@ -84,7 +84,7 @@ export const getUsZipcodeGeojson: OpenAssistantTool<
       z.string().describe('The 5-digit zipcode of a United States')
     ),
   }),
-  execute: async (args): Promise<ExecuteGetUsZipcodeGeojsonResult> => {
+  execute: async (args, options): Promise<ExecuteGetUsZipcodeGeojsonResult> => {
     try {
       const { zipcodes } = args;
       const features: GeoJSON.Feature[] = [];
@@ -100,7 +100,8 @@ export const getUsZipcodeGeojson: OpenAssistantTool<
           const stateCode = zips[prefix].state;
 
           const response = await fetch(
-            `https://raw.githubusercontent.com/greencoder/us-zipcode-to-geojson/refs/heads/master/data/${stateCode}/${zipcode}.geojson`
+            `https://raw.githubusercontent.com/greencoder/us-zipcode-to-geojson/refs/heads/master/data/${stateCode}/${zipcode}.geojson`,
+            { signal: options?.abortSignal }
           );
 
           // the above url return FeatureCollection

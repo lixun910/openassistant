@@ -89,6 +89,11 @@ IMPORTANT:
     options
   ): Promise<MergeTablesToolResult> => {
     try {
+      // Check if operation was aborted before starting
+      if (options?.abortSignal?.aborted) {
+        throw new Error('Merge operation was aborted');
+      }
+
       const { getValues, getDuckDB: getUserDuckDB } =
         options?.context as LocalQueryContext;
 
@@ -111,12 +116,20 @@ IMPORTANT:
       // get values for variables in tableA
       const columnDataA = {};
       for (const columnName of columnNamesA) {
+        // Check abort signal in loop
+        if (options?.abortSignal?.aborted) {
+          throw new Error('Merge operation was aborted');
+        }
         columnDataA[columnName] = await getValues(datasetNameA, columnName);
       }
 
       // get values for variables in tableB
       const columnDataB = {};
       for (const columnName of columnNamesB) {
+        // Check abort signal in loop
+        if (options?.abortSignal?.aborted) {
+          throw new Error('Merge operation was aborted');
+        }
         columnDataB[columnName] = await getValues(datasetNameB, columnName);
       }
 
@@ -143,6 +156,12 @@ IMPORTANT:
         name: dbTableNameB,
         create: true,
       });
+
+      // Check abort signal before executing query
+      if (options?.abortSignal?.aborted) {
+        await conn.close();
+        throw new Error('Merge operation was aborted');
+      }
 
       // run merge query
       const arrowResult = await conn.query(sql);
