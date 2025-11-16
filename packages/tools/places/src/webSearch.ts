@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { z } from 'zod';
-import { generateId, OpenAssistantTool } from '@openassistant/utils';
-import { isSearchAPIToolContext, SearchAPIToolContext } from './types';
+import { z } from "zod";
+import { generateId, OpenAssistantTool } from "@openassistant/utils";
+import { isSearchAPIToolContext, SearchAPIToolContext } from "./types";
 
 // Types for SearchAPI response
 interface SearchAPISearchMetadata {
@@ -83,33 +83,33 @@ const webSearchParameters = z.object({
   query: z
     .string()
     .describe(
-      'The search query to perform (e.g., "artificial intelligence", "latest news")'
+      'The search query to perform (e.g., "artificial intelligence", "latest news")',
     ),
   engine: z
     .string()
-    .describe('The search engine to use (default: google)')
+    .describe("The search engine to use (default: google)")
     .optional(),
   device: z
     .string()
-    .describe('The device type for search results (default: desktop)')
+    .describe("The device type for search results (default: desktop)")
     .optional(),
   google_domain: z
     .string()
-    .describe('The Google domain to use (default: google.com)')
+    .describe("The Google domain to use (default: google.com)")
     .optional(),
   hl: z
     .string()
-    .describe('The language for search results (default: en)')
+    .describe("The language for search results (default: en)")
     .optional(),
   gl: z
     .string()
-    .describe('The country for search results (default: us)')
+    .describe("The country for search results (default: us)")
     .optional(),
   num: z
     .number()
     .min(1)
     .max(20)
-    .describe('Number of search results to return (1-20, default: 10)')
+    .describe("Number of search results to return (1-20, default: 10)")
     .optional(),
 });
 
@@ -181,102 +181,106 @@ export const webSearch: OpenAssistantTool<
   WebSearchAdditionalData,
   SearchAPIToolContext
 > = {
-  name: 'webSearch',
-  description: 'Search the web using Google search engine via SearchAPI.',
+  name: "webSearch",
+  description: "Search the web using Google search engine via SearchAPI.",
   parameters: webSearchParameters,
   execute: async (args, options): Promise<ExecuteWebSearchResult> => {
     console.log(
-      '🔍 webSearch.execute called with args:',
-      JSON.stringify(args, null, 2)
+      "🔍 webSearch.execute called with args:",
+      JSON.stringify(args, null, 2),
     );
 
     // Create an abort controller that responds to both timeout and external abort signal
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
-    
-    // Listen to external abort signal if provided
-    if (options?.abortSignal) {
-      options.abortSignal.addEventListener('abort', () => controller.abort());
+    const externalAbortSignal = options?.abortSignal;
+    const handleExternalAbort = () => controller.abort();
+
+    if (externalAbortSignal) {
+      if (externalAbortSignal.aborted) {
+        controller.abort();
+      } else {
+        externalAbortSignal.addEventListener("abort", handleExternalAbort);
+      }
     }
-    
+
     try {
       const {
         query,
-        engine = 'google',
-        device = 'desktop',
-        google_domain = 'google.com',
-        hl = 'en',
-        gl = 'us',
+        engine = "google",
+        device = "desktop",
+        google_domain = "google.com",
+        hl = "en",
+        gl = "us",
         num = 10,
       } = args;
 
-      console.log('📋 Parsed arguments:');
-      console.log('  - query:', query);
-      console.log('  - engine:', engine);
-      console.log('  - device:', device);
-      console.log('  - google_domain:', google_domain);
-      console.log('  - hl:', hl);
-      console.log('  - gl:', gl);
-      console.log('  - num:', num);
+      console.log("📋 Parsed arguments:");
+      console.log("  - query:", query);
+      console.log("  - engine:", engine);
+      console.log("  - device:", device);
+      console.log("  - google_domain:", google_domain);
+      console.log("  - hl:", hl);
+      console.log("  - gl:", gl);
+      console.log("  - num:", num);
 
       // Generate output dataset name
       const outputDatasetName = `websearch_${generateId()}`;
 
       if (!options?.context || !isSearchAPIToolContext(options.context)) {
         throw new Error(
-          'Context is required and must implement SearchAPIToolContext'
+          "Context is required and must implement SearchAPIToolContext",
         );
       }
 
       const searchAPIKey = options.context.getSearchAPIKey();
 
       // Build SearchAPI URL
-      const url = new URL('https://www.searchapi.io/api/v1/search');
-      console.log('🌐 Building SearchAPI URL...');
+      const url = new URL("https://www.searchapi.io/api/v1/search");
+      console.log("🌐 Building SearchAPI URL...");
 
       // Add required parameters
-      url.searchParams.set('engine', engine);
-      url.searchParams.set('q', query);
-      url.searchParams.set('device', device);
-      url.searchParams.set('google_domain', google_domain);
-      url.searchParams.set('hl', hl);
-      url.searchParams.set('gl', gl);
-      url.searchParams.set('num', num.toString());
+      url.searchParams.set("engine", engine);
+      url.searchParams.set("q", query);
+      url.searchParams.set("device", device);
+      url.searchParams.set("google_domain", google_domain);
+      url.searchParams.set("hl", hl);
+      url.searchParams.set("gl", gl);
+      url.searchParams.set("num", num.toString());
 
-      console.log('  ✅ Added search parameters');
-      console.log('  - engine:', engine);
-      console.log('  - query:', query);
-      console.log('  - device:', device);
-      console.log('  - google_domain:', google_domain);
-      console.log('  - hl:', hl);
-      console.log('  - gl:', gl);
-      console.log('  - num:', num);
+      console.log("  ✅ Added search parameters");
+      console.log("  - engine:", engine);
+      console.log("  - query:", query);
+      console.log("  - device:", device);
+      console.log("  - google_domain:", google_domain);
+      console.log("  - hl:", hl);
+      console.log("  - gl:", gl);
+      console.log("  - num:", num);
 
       // Call SearchAPI
-      console.log('🚀 Making SearchAPI call to:', url.toString());
+      console.log("🚀 Making SearchAPI call to:", url.toString());
       console.log(
-        '🔑 Using API key:',
-        searchAPIKey ? '***' + searchAPIKey.slice(-4) : 'undefined'
+        "🔑 Using API key:",
+        searchAPIKey ? "***" + searchAPIKey.slice(-4) : "undefined",
       );
 
       const response = await fetch(url.toString(), {
         signal: controller.signal,
         headers: {
-          Accept: 'application/json',
+          Accept: "application/json",
           Authorization: `Bearer ${searchAPIKey}`,
         },
       });
-      clearTimeout(timeoutId);
 
       console.log(
-        '📡 API Response status:',
+        "📡 API Response status:",
         response.status,
-        response.statusText
+        response.statusText,
       );
 
       if (!response.ok) {
         throw new Error(
-          `SearchAPI error: ${response.status} ${response.statusText}`
+          `SearchAPI error: ${response.status} ${response.statusText}`,
         );
       }
 
@@ -286,7 +290,7 @@ export const webSearch: OpenAssistantTool<
         return {
           llmResult: {
             success: false,
-            error: 'No search results found for the given query',
+            error: "No search results found for the given query",
           },
         };
       }
@@ -317,7 +321,7 @@ export const webSearch: OpenAssistantTool<
           query,
           datasetName: outputDatasetName,
           [outputDatasetName]: {
-            type: 'websearch',
+            type: "websearch",
             content: {
               search_metadata: data.search_metadata,
               search_parameters: data.search_parameters,
@@ -330,16 +334,15 @@ export const webSearch: OpenAssistantTool<
         },
       };
     } catch (error) {
-      clearTimeout(timeoutId);
-      console.error('💥 Error in webSearch.execute:', error);
+      console.error("💥 Error in webSearch.execute:", error);
 
       const errorMessage =
         error instanceof Error ? error.message : String(error);
       const errorStack =
-        error instanceof Error ? error.stack : 'No stack trace available';
+        error instanceof Error ? error.stack : "No stack trace available";
 
-      console.error('  - Error message:', errorMessage);
-      console.error('  - Error stack:', errorStack);
+      console.error("  - Error message:", errorMessage);
+      console.error("  - Error stack:", errorStack);
 
       return {
         llmResult: {
@@ -347,11 +350,16 @@ export const webSearch: OpenAssistantTool<
           error: `Failed to perform web search: ${errorMessage}`,
         },
       };
+    } finally {
+      clearTimeout(timeoutId);
+      if (externalAbortSignal) {
+        externalAbortSignal.removeEventListener("abort", handleExternalAbort);
+      }
     }
   },
   context: {
     getSearchAPIKey: () => {
-      throw new Error('getSearchAPIKey not implemented.');
+      throw new Error("getSearchAPIKey not implemented.");
     },
   },
 };

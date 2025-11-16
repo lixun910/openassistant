@@ -35,10 +35,15 @@ These tools already had internal abort controllers for timeouts. Updated them to
 ```typescript
 const controller = new AbortController();
 const timeoutId = setTimeout(() => controller.abort(), 15000);
+const externalAbortSignal = options?.abortSignal;
+const handleExternalAbort = () => controller.abort();
 
-// Listen to external abort signal if provided
-if (options?.abortSignal) {
-  options.abortSignal.addEventListener('abort', () => controller.abort());
+if (externalAbortSignal) {
+  if (externalAbortSignal.aborted) {
+    controller.abort();
+  } else {
+    externalAbortSignal.addEventListener('abort', handleExternalAbort);
+  }
 }
 
 try {
@@ -46,8 +51,13 @@ try {
   // ...
 } finally {
   clearTimeout(timeoutId);
+  if (externalAbortSignal) {
+    externalAbortSignal.removeEventListener('abort', handleExternalAbort);
+  }
 }
 ```
+
+This pattern guarantees we respond to externally provided `AbortSignal`s while also cleaning up both the timeout and the temporary event listener to prevent leaks when the tool completes.
 
 #### B. Tools Using Fetch Without Abort Controllers
 
