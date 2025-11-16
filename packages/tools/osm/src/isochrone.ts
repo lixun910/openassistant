@@ -1,28 +1,28 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { z } from 'zod';
-import { generateId, OpenAssistantTool } from '@openassistant/utils';
-import { FeatureCollection } from 'geojson';
-import { isMapboxToolContext, MapboxToolContext } from './utils';
-import { mapboxRateLimiter } from './utils/rateLimiter';
+import { z } from "zod";
+import { generateId, OpenAssistantTool } from "@openassistant/utils";
+import { FeatureCollection } from "geojson";
+import { isMapboxToolContext, MapboxToolContext } from "./utils";
+import { mapboxRateLimiter } from "./utils/rateLimiter";
 
 interface MapboxIsochroneResponse {
-  type: 'FeatureCollection';
+  type: "FeatureCollection";
   features: Array<{
-    type: 'Feature';
+    type: "Feature";
     properties: {
       contour: number;
       color: string;
       opacity: number;
       fill: string;
-      'fill-opacity': number;
+      "fill-opacity": number;
       fillColor: string;
       fillOpacity: number;
-      metric: 'time' | 'distance';
+      metric: "time" | "distance";
     };
     geometry: {
-      type: 'Polygon' | 'LineString';
+      type: "Polygon" | "LineString";
       coordinates: number[][][];
     };
   }>;
@@ -30,26 +30,26 @@ interface MapboxIsochroneResponse {
 
 const isochroneParameters = z.object({
   origin: z.object({
-    longitude: z.number().describe('The longitude of the origin point'),
-    latitude: z.number().describe('The latitude of the origin point'),
+    longitude: z.number().describe("The longitude of the origin point"),
+    latitude: z.number().describe("The latitude of the origin point"),
   }),
   timeLimit: z
     .number()
-    .describe('The time limit in minutes for the isochrone')
+    .describe("The time limit in minutes for the isochrone")
     .default(10)
     .optional(),
   distanceLimit: z
     .number()
-    .describe('The distance limit in meters for the isochrone')
+    .describe("The distance limit in meters for the isochrone")
     .optional(),
   profile: z
-    .enum(['driving', 'walking', 'cycling'])
-    .describe('The routing profile to use')
-    .default('driving')
+    .enum(["driving", "walking", "cycling"])
+    .describe("The routing profile to use")
+    .default("driving")
     .optional(),
   polygons: z
     .boolean()
-    .describe('Whether to return the contours as polygons or linestrings')
+    .describe("Whether to return the contours as polygons or linestrings")
     .default(true)
     .optional(),
 });
@@ -87,7 +87,7 @@ export type ExecuteIsochroneResult = {
 
 /**
  * ## Isochrone Tool
- * 
+ *
  * This tool generates isochrone polygons showing reachable areas within a given time or distance limit
  * from a starting point using Mapbox's Isochrone API. It supports different transportation modes
  * and can return either polygons or linestrings.
@@ -137,26 +137,31 @@ export const isochrone: OpenAssistantTool<
   IsochroneAdditionalData,
   MapboxToolContext
 > = {
-  name: 'isochrone',
+  name: "isochrone",
   description:
-    'Get isochrone polygons showing reachable areas within a given time limit from a starting point using Mapbox Isochrone API',
+    "Get isochrone polygons showing reachable areas within a given time limit from a starting point using Mapbox Isochrone API",
   parameters: isochroneParameters,
   execute: async (args, options): Promise<ExecuteIsochroneResult> => {
     // Create an abort controller that responds to both timeout and external abort signal
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
-    
-    // Listen to external abort signal if provided
-    if (options?.abortSignal) {
-      options.abortSignal.addEventListener('abort', () => controller.abort());
+    const externalAbortSignal = options?.abortSignal;
+    const handleExternalAbort = () => controller.abort();
+
+    if (externalAbortSignal) {
+      if (externalAbortSignal.aborted) {
+        controller.abort();
+      } else {
+        externalAbortSignal.addEventListener("abort", handleExternalAbort);
+      }
     }
-    
+
     try {
       const {
         origin,
         timeLimit = 10,
         distanceLimit,
-        profile = 'driving',
+        profile = "driving",
         polygons = true,
       } = args;
       const { longitude: originLon, latitude: originLat } = origin;
@@ -166,7 +171,7 @@ export const isochrone: OpenAssistantTool<
 
       if (!options?.context || !isMapboxToolContext(options.context)) {
         throw new Error(
-          'Context is required and must implement OsmToolContext'
+          "Context is required and must implement OsmToolContext",
         );
       }
       const mapboxAccessToken = options.context.getMapboxToken();
@@ -187,14 +192,13 @@ export const isochrone: OpenAssistantTool<
 
       // Call Mapbox API if not in cache
       const response = await fetch(url, { signal: controller.signal });
-      clearTimeout(timeoutId);
       const data = (await response.json()) as MapboxIsochroneResponse;
 
       if (!data.features || data.features.length === 0) {
         return {
           llmResult: {
             success: false,
-            error: 'Failed to get isochrone information from Mapbox',
+            error: "Failed to get isochrone information from Mapbox",
           },
         };
       }
@@ -205,16 +209,16 @@ export const isochrone: OpenAssistantTool<
           time: feature.properties.contour,
           distance: feature.properties.contour,
           geometry: {
-            type: 'Polygon' as const,
+            type: "Polygon" as const,
             coordinates: feature.geometry.coordinates,
           },
         })),
       };
 
       const isochroneGeojson: FeatureCollection = {
-        type: 'FeatureCollection',
+        type: "FeatureCollection",
         features: isochroneData.polygons.map((polygon) => ({
-          type: 'Feature',
+          type: "Feature",
           geometry: polygon.geometry,
           properties: {},
         })),
@@ -235,24 +239,28 @@ export const isochrone: OpenAssistantTool<
           ...(distanceLimit && { distanceLimit }),
           datasetName: outputDatasetName,
           [outputDatasetName]: {
-            type: 'geojson',
+            type: "geojson",
             content: isochroneGeojson,
           },
         },
       };
     } catch (error) {
-      clearTimeout(timeoutId);
       return {
         llmResult: {
           success: false,
           error: `Failed to generate isochrone polygons: ${error}`,
         },
       };
+    } finally {
+      clearTimeout(timeoutId);
+      if (externalAbortSignal) {
+        externalAbortSignal.removeEventListener("abort", handleExternalAbort);
+      }
     }
   },
   context: {
     getMapboxToken: () => {
-      throw new Error('getMapboxToken not implemented.');
+      throw new Error("getMapboxToken not implemented.");
     },
   },
 };

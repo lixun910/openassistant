@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { z } from 'zod';
-import { generateId, OpenAssistantTool } from '@openassistant/utils';
-import { foursquareRateLimiter } from './utils/rateLimiter';
+import { z } from "zod";
+import { generateId, OpenAssistantTool } from "@openassistant/utils";
+import { foursquareRateLimiter } from "./utils/rateLimiter";
 import {
   isFoursquareToolContext,
   FoursquareToolContext,
@@ -15,7 +15,7 @@ import {
   FoursquareAttributes,
   FoursquareSocialMedia,
   FoursquareStats,
-} from './types';
+} from "./types";
 
 interface FoursquareGeotaggingCandidate extends FoursquarePlaceBase {
   photos?: FoursquarePhoto[];
@@ -77,36 +77,36 @@ const geotaggingParameters = z.object({
   ll: z
     .string()
     .describe(
-      'The latitude and longitude of the location (format: "latitude,longitude"). If not specified, the server will attempt to geolocate the IP address from the request.'
+      'The latitude and longitude of the location (format: "latitude,longitude"). If not specified, the server will attempt to geolocate the IP address from the request.',
     )
     .optional(),
   fields: z
     .array(z.string())
     .describe(
-      'Indicate which fields to return in the response, separated by commas. If no fields are specified, all Pro Fields are returned by default.'
+      "Indicate which fields to return in the response, separated by commas. If no fields are specified, all Pro Fields are returned by default.",
     )
     .optional(),
   hacc: z
     .number()
     .describe(
-      "The estimated horizontal accuracy radius in meters of the user's location at the 68th percentile confidence level as returned by the user's cell phone OS."
+      "The estimated horizontal accuracy radius in meters of the user's location at the 68th percentile confidence level as returned by the user's cell phone OS.",
     )
     .optional(),
   altitude: z
     .number()
     .describe(
-      "The altitude of the user's location in meters above the World Geodetic System 1984 (WGS84) reference ellipsoid as returned by the user's cell phone OS."
+      "The altitude of the user's location in meters above the World Geodetic System 1984 (WGS84) reference ellipsoid as returned by the user's cell phone OS.",
     )
     .optional(),
   query: z
     .string()
-    .describe('A string to be matched against place name for candidates.')
+    .describe("A string to be matched against place name for candidates.")
     .optional(),
   limit: z
     .number()
     .min(1)
     .max(50)
-    .describe('The number of results to return, up to 50. Defaults to 10.')
+    .describe("The number of results to return, up to 50. Defaults to 10.")
     .default(10)
     .optional(),
 });
@@ -186,7 +186,7 @@ export const geotagging: OpenAssistantTool<
   GeotaggingAdditionalData,
   FoursquareToolContext
 > = {
-  name: 'geotagging',
+  name: "geotagging",
   description:
     "Use Foursquare's Snap-to-Place or Check-in technology to detect where your user's device is and what is around them. Returns geotagging candidates based on location coordinates.",
   parameters: geotaggingParameters,
@@ -194,12 +194,17 @@ export const geotagging: OpenAssistantTool<
     // Create an abort controller that responds to both timeout and external abort signal
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
-    
-    // Listen to external abort signal if provided
-    if (options?.abortSignal) {
-      options.abortSignal.addEventListener('abort', () => controller.abort());
+    const externalAbortSignal = options?.abortSignal;
+    const handleExternalAbort = () => controller.abort();
+
+    if (externalAbortSignal) {
+      if (externalAbortSignal.aborted) {
+        controller.abort();
+      } else {
+        externalAbortSignal.addEventListener("abort", handleExternalAbort);
+      }
     }
-    
+
     try {
       const { ll, fields, hacc, altitude, query, limit = 10 } = args;
 
@@ -208,7 +213,7 @@ export const geotagging: OpenAssistantTool<
 
       if (!options?.context || !isFoursquareToolContext(options.context)) {
         throw new Error(
-          'Context is required and must implement FoursquareToolContext'
+          "Context is required and must implement FoursquareToolContext",
         );
       }
       const fsqAccessToken = options.context.getFsqToken();
@@ -218,35 +223,34 @@ export const geotagging: OpenAssistantTool<
 
       // Build Foursquare Geotagging API URL
       const url = new URL(
-        'https://places-api.foursquare.com/geotagging/candidates'
+        "https://places-api.foursquare.com/geotagging/candidates",
       );
 
       // Add optional parameters
-      if (ll) url.searchParams.set('ll', ll);
-      if (limit) url.searchParams.set('limit', limit.toString());
-      if (hacc) url.searchParams.set('hacc', hacc.toString());
-      if (altitude) url.searchParams.set('altitude', altitude.toString());
-      if (query) url.searchParams.set('query', query);
+      if (ll) url.searchParams.set("ll", ll);
+      if (limit) url.searchParams.set("limit", limit.toString());
+      if (hacc) url.searchParams.set("hacc", hacc.toString());
+      if (altitude) url.searchParams.set("altitude", altitude.toString());
+      if (query) url.searchParams.set("query", query);
 
       // Add fields if specified
       if (fields && fields.length > 0) {
-        url.searchParams.set('fields', fields.join(','));
+        url.searchParams.set("fields", fields.join(","));
       }
 
       // Call Foursquare Geotagging API
       const response = await fetch(url.toString(), {
         signal: controller.signal,
         headers: {
-          'X-Places-Api-Version': '2025-06-17',
-          Accept: 'application/json',
+          "X-Places-Api-Version": "2025-06-17",
+          Accept: "application/json",
           Authorization: `Bearer ${fsqAccessToken}`,
         },
       });
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(
-          `Foursquare Geotagging API error: ${response.status} ${response.statusText}`
+          `Foursquare Geotagging API error: ${response.status} ${response.statusText}`,
         );
       }
 
@@ -256,7 +260,7 @@ export const geotagging: OpenAssistantTool<
         return {
           llmResult: {
             success: false,
-            error: 'No geotagging candidates found for the specified location',
+            error: "No geotagging candidates found for the specified location",
           },
         };
       }
@@ -308,15 +312,15 @@ export const geotagging: OpenAssistantTool<
           stats: candidate.stats,
           tastes: candidate.tastes,
           tips: candidate.tips,
-        })
+        }),
       );
 
       // find the closest place from the candidatesData
       const closestPlace = candidatesData.sort(
-        (a, b) => (a.distance || 0) - (b.distance || 0)
+        (a, b) => (a.distance || 0) - (b.distance || 0),
       )[0];
 
-      console.log('fsq_place_id: ', closestPlace.id);
+      console.log("fsq_place_id: ", closestPlace.id);
 
       return {
         llmResult: {
@@ -330,7 +334,7 @@ export const geotagging: OpenAssistantTool<
           ...(ll && { location: ll }),
           datasetName: outputDatasetName,
           [outputDatasetName]: {
-            type: 'geotagging_candidates',
+            type: "geotagging_candidates",
             content: candidatesData,
             metadata: {
               totalResults: candidatesData.length,
@@ -344,18 +348,22 @@ export const geotagging: OpenAssistantTool<
         },
       };
     } catch (error) {
-      clearTimeout(timeoutId);
       return {
         llmResult: {
           success: false,
           error: `Failed to get geotagging candidates: ${error}`,
         },
       };
+    } finally {
+      clearTimeout(timeoutId);
+      if (externalAbortSignal) {
+        externalAbortSignal.removeEventListener("abort", handleExternalAbort);
+      }
     }
   },
   context: {
     getFsqToken: () => {
-      throw new Error('getFsqToken not implemented.');
+      throw new Error("getFsqToken not implemented.");
     },
   },
 };

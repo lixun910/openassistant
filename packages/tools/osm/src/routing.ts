@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright contributors to the openassistant project
 
-import { z } from 'zod';
-import { FeatureCollection } from 'geojson';
-import { generateId, OpenAssistantTool } from '@openassistant/utils';
-import { isMapboxToolContext, MapboxToolContext } from './utils';
-import { mapboxRateLimiter } from './utils/rateLimiter';
+import { z } from "zod";
+import { FeatureCollection } from "geojson";
+import { generateId, OpenAssistantTool } from "@openassistant/utils";
+import { isMapboxToolContext, MapboxToolContext } from "./utils";
+import { mapboxRateLimiter } from "./utils/rateLimiter";
 
 type MapboxStep = {
   distance: number;
@@ -46,16 +46,16 @@ type MapboxResponse = {
 
 const routingParameters = z.object({
   origin: z.object({
-    longitude: z.number().describe('The longitude of the origin point'),
-    latitude: z.number().describe('The latitude of the origin point'),
+    longitude: z.number().describe("The longitude of the origin point"),
+    latitude: z.number().describe("The latitude of the origin point"),
   }),
   destination: z.object({
-    longitude: z.number().describe('The longitude of the destination point'),
-    latitude: z.number().describe('The latitude of the destination point'),
+    longitude: z.number().describe("The longitude of the destination point"),
+    latitude: z.number().describe("The latitude of the destination point"),
   }),
   mode: z
-    .enum(['driving', 'walking', 'cycling'])
-    .describe('The mode of the routing')
+    .enum(["driving", "walking", "cycling"])
+    .describe("The mode of the routing")
     .optional(),
 });
 
@@ -100,7 +100,7 @@ export type ExecuteRoutingResult = {
 
 /**
  * ## Routing Tool
- * 
+ *
  * This tool calculates routes between two points using Mapbox's Directions API.
  * It supports different transportation modes (driving, walking, cycling) and returns
  * detailed route information including distance, duration, and turn-by-turn directions.
@@ -149,28 +149,33 @@ export const routing: OpenAssistantTool<
   RoutingAdditionalData,
   MapboxToolContext
 > = {
-  name: 'routing',
+  name: "routing",
   description:
-    'Get routing directions between two coordinates using Mapbox Directions API',
+    "Get routing directions between two coordinates using Mapbox Directions API",
   parameters: routingParameters,
   execute: async (args, options): Promise<ExecuteRoutingResult> => {
     // Create an abort controller that responds to both timeout and external abort signal
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
-    
-    // Listen to external abort signal if provided
-    if (options?.abortSignal) {
-      options.abortSignal.addEventListener('abort', () => controller.abort());
+    const externalAbortSignal = options?.abortSignal;
+    const handleExternalAbort = () => controller.abort();
+
+    if (externalAbortSignal) {
+      if (externalAbortSignal.aborted) {
+        controller.abort();
+      } else {
+        externalAbortSignal.addEventListener("abort", handleExternalAbort);
+      }
     }
-    
+
     try {
-      const { origin, destination, mode = 'driving' } = args;
+      const { origin, destination, mode = "driving" } = args;
       const { longitude: originLon, latitude: originLat } = origin;
       const { longitude: destLon, latitude: destLat } = destination;
 
       if (!options?.context || !isMapboxToolContext(options.context)) {
         throw new Error(
-          'Context is required and must implement OsmToolContext'
+          "Context is required and must implement OsmToolContext",
         );
       }
       const mapboxAccessToken = options.context.getMapboxToken();
@@ -183,7 +188,6 @@ export const routing: OpenAssistantTool<
 
       // Call Mapbox API if not in cache
       const response = await fetch(url, { signal: controller.signal });
-      clearTimeout(timeoutId);
       const data = (await response.json()) as MapboxResponse;
 
       if (data.message) {
@@ -191,7 +195,7 @@ export const routing: OpenAssistantTool<
           llmResult: {
             success: false,
             error:
-              data.message || 'Failed to get routing information from Mapbox',
+              data.message || "Failed to get routing information from Mapbox",
           },
         };
       }
@@ -201,7 +205,7 @@ export const routing: OpenAssistantTool<
         distance: data.routes[0].distance,
         duration: data.routes[0].duration,
         geometry: {
-          type: 'LineString' as const,
+          type: "LineString" as const,
           coordinates: data.routes[0].geometry.coordinates,
         },
         legs: data.routes[0].legs.map((leg: MapboxLeg) => ({
@@ -211,7 +215,7 @@ export const routing: OpenAssistantTool<
             distance: step.distance,
             duration: step.duration,
             geometry: {
-              type: 'LineString' as const,
+              type: "LineString" as const,
               coordinates: step.geometry.coordinates,
             },
             name: step.name,
@@ -228,10 +232,10 @@ export const routing: OpenAssistantTool<
       };
 
       const routingData: FeatureCollection = {
-        type: 'FeatureCollection',
+        type: "FeatureCollection",
         features: [
           {
-            type: 'Feature',
+            type: "Feature",
             geometry: route.geometry,
             properties: {},
           },
@@ -258,24 +262,28 @@ export const routing: OpenAssistantTool<
           mode,
           datasetName: outputDatasetName,
           [outputDatasetName]: {
-            type: 'geojson',
+            type: "geojson",
             content: routingData,
           },
         },
       };
     } catch (error) {
-      clearTimeout(timeoutId);
       return {
         llmResult: {
           success: false,
           error: `Failed to calculate the routing directions between the origin and destination points: ${error}`,
         },
       };
+    } finally {
+      clearTimeout(timeoutId);
+      if (externalAbortSignal) {
+        externalAbortSignal.removeEventListener("abort", handleExternalAbort);
+      }
     }
   },
   context: {
     getMapboxToken: () => {
-      throw new Error('getMapboxToken() not implemented.');
+      throw new Error("getMapboxToken() not implemented.");
     },
   },
 };
